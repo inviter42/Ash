@@ -3,7 +3,7 @@ using System.Linq;
 using Ash.GlobalUtils;
 using Character;
 using static Ash.GlobalUtils.GuiPrimitivesLib;
-using static Ash.Core.Features.Common.CommonLabels;
+using static Ash.Core.Features.Common.Misc.CommonLabels;
 
 namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView.Components
 {

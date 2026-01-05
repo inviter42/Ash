@@ -8,7 +8,7 @@ using Character;
 using UnityEngine;
 using OneOf;
 using static Ash.GlobalUtils.GuiPrimitivesLib;
-using static Ash.Core.Features.Common.CommonLabels;
+using static Ash.Core.Features.Common.Misc.CommonLabels;
 using static Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State.FormState;
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components

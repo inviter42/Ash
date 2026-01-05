@@ -1,4 +1,5 @@
-﻿using Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView.Components;
+﻿using Ash.Core.Features.Common.Components;
+using Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView.Components;
 using Ash.Core.UI.Types;
 using UnityEngine;
 using static Ash.GlobalUtils.GuiPrimitivesLib;
@@ -38,7 +39,7 @@ namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsVi
                 case HSceneWindow hSceneWindow:
                     return hSceneWindow.GetActiveFemale();
                 default:
-                    Ash.Logger.LogError($"Component(chunk) MasterItemSelectionChunk is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
+                    Ash.Logger.LogError($"View ItemsVisibilityControlsView is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
                     return null;
             }
         }
@@ -53,7 +54,7 @@ namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsVi
                     hSceneWindow.SetActiveFemale(female);
                     break;
                 default:
-                    Ash.Logger.LogError($"Component(chunk) MasterItemSelectionChunk is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
+                    Ash.Logger.LogError($"Component FemaleSelectionComponent is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
                     return;
             }
         }

@@ -128,7 +128,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ash.cs" />
-    <Compile Include="Core\Features\Common\CommonLabels.cs" />
+    <Compile Include="Core\Features\Common\Components\FemaleSelectionComponent.cs" />
+    <Compile Include="Core\Features\Common\Misc\CommonLabels.cs" />
+    <Compile Include="Core\Features\Common\Misc\SceneDataModifiers.cs" />
     <Compile Include="Core\Features\GameUIControls\UI\GameUIControlsView\GameUIControlsView.cs" />
     <Compile Include="Core\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIManagementHelper.cs" />
     <Compile Include="Core\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIStrings.cs" />
@@ -152,25 +154,27 @@
     <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\GenerateReverseRulesEnum.cs" />
     <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\ItemAccessoryFormData.cs" />
     <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\ItemWearFormData.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\Utils\IO.cs" />
     <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\AllAccessoriesVisibilitySelectionComponent.cs" />
     <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\AllClothingVisibilitySelectionComponent.cs" />
-    <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\FemaleSelectionComponent.cs" />
     <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\IndividualAccessoriesVisibilitySelectionComponent.cs" />
     <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\IndividualWearsVisibilitySelectionComponent.cs" />
     <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\ItemsVisibilityControlsView.cs" />
     <Compile Include="Core\SceneManagement\ObjectDestructionTracker.cs" />
     <Compile Include="Core\SceneManagement\SceneComponentRegistry.cs" />
-    <Compile Include="Core\SceneManagement\SceneDataTracker.cs" />
+    <Compile Include="Core\SceneManagement\SceneTypeTracker.cs" />
+    <Compile Include="Core\Settings\Settings.cs" />
     <Compile Include="Core\UI\AshUI.cs" />
     <Compile Include="Core\UI\Types\AshWindow.cs" />
     <Compile Include="Core\UI\Types\EditSceneWindow.cs" />
     <Compile Include="Core\UI\Types\HSceneWindow.cs" />
-    <Compile Include="HarmonyHooks\CharacterHooks.cs" />
+    <Compile Include="GlobalUtils\IO.cs" />
+    <Compile Include="HarmonyHooks\AccessoriesHooks.cs" />
+    <Compile Include="HarmonyHooks\FemaleHooks.cs" />
     <Compile Include="GlobalUtils\AutoTranslatorIntegration.cs" />
     <Compile Include="GlobalUtils\DictionaryUtils.cs" />
     <Compile Include="GlobalUtils\EnumUtils.cs" />
     <Compile Include="GlobalUtils\GuiPrimitivesLib.cs" />
+    <Compile Include="HarmonyHooks\WearsHooks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GlobalUtils\SceneUtils.cs" />
   </ItemGroup>

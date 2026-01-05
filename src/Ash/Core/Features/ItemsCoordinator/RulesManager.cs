@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Ash.Core.Features.ItemsCoordinator.Types;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
-using Ash.Core.Features.ItemsCoordinator.Utils;
 using Ash.Core.SceneManagement;
+using Ash.GlobalUtils;
 using Character;
 using OneOf;
 
@@ -25,7 +25,7 @@ namespace Ash.Core.Features.ItemsCoordinator
         }
 
         // RuleSets are stored here
-        public static List<RuleSet> RuleSets { get; } = IO.Load<List<RuleSet>>();
+        public static List<RuleSet> RuleSets { get; } = IO.Load<List<RuleSet>>(IO.ItemRulesFileName);
 
         public static void AddRule(
             Female female,
@@ -65,7 +65,7 @@ namespace Ash.Core.Features.ItemsCoordinator
             }
 
             // Write DB to disk after new rule is added
-            IO.Save(RuleSets);
+            IO.Save(RuleSets, IO.ItemRulesFileName);
 
             // Should only apply newly added rule and nothing else
             var females = SceneComponentRegistry.GetComponentsOfType<Female>().ToArray();
@@ -113,7 +113,7 @@ namespace Ash.Core.Features.ItemsCoordinator
                 RuleSets.RemoveAt(idx);
 
             // Write DB to disk after rule is removed
-            IO.Save(RuleSets);
+            IO.Save(RuleSets, IO.ItemRulesFileName);
         }
 
         private static MasterItem MakeMasterItem(OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemData) {

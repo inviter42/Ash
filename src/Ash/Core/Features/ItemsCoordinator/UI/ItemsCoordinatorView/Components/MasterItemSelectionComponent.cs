@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Ash.Core.Features.Common.Components;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
 using Ash.Core.SceneManagement;
 using Ash.Core.UI.Types;
@@ -7,7 +8,7 @@ using Ash.GlobalUtils;
 using Character;
 using UnityEngine;
 using static Ash.GlobalUtils.GuiPrimitivesLib;
-using static Ash.Core.Features.Common.CommonLabels;
+using static Ash.Core.Features.Common.Misc.CommonLabels;
 using static Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State.FormState;
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
@@ -32,7 +33,12 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
             using (new GUILayout.VerticalScope("box")) {
                 Title(NewRuleTitle);
 
-                FemaleSelection(activeFemale);
+                FemaleSelectionComponent.Component(
+                    activeFemale,
+                    female => {
+                        FormData[FemaleFormDataKey] = female;
+                        SetActiveFemale(female);
+                });
 
                 // MasterItem selection
                 Subtitle(NewRuleSubtitle);
@@ -51,7 +57,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
                 case HSceneWindow hSceneWindow:
                     return hSceneWindow.GetActiveFemale();
                 default:
-                    Ash.Logger.LogError($"Component(chunk) MasterItemSelectionChunk is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
+                    Ash.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
                     return null;
             }
         }
@@ -66,7 +72,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
                     hSceneWindow.SetActiveFemale(female);
                     break;
                 default:
-                    Ash.Logger.LogError($"Component(chunk) MasterItemSelectionChunk is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
+                    Ash.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
                     return;
             }
         }

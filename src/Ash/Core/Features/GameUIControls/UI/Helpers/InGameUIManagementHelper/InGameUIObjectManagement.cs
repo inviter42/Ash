@@ -56,8 +56,8 @@ namespace Ash.Core.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper
 
         // Must have these exact params to match the shape of its event binding!
         public static void UpdateData(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode) {
-            if (SceneDataTracker.TypeOfCurrentScene != SceneDataTracker.SceneTypes.H) {
-                Ash.Logger.LogDebug($"Skipping update for the scene type '{SceneDataTracker.TypeOfCurrentScene}'");
+            if (SceneTypeTracker.TypeOfCurrentScene != SceneTypeTracker.SceneTypes.H) {
+                Ash.Logger.LogDebug($"Skipping update for the scene type '{SceneTypeTracker.TypeOfCurrentScene}'");
                 return;
             }
 
@@ -88,7 +88,7 @@ namespace Ash.Core.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper
         }
 
         private static void UpdateTalkImgRef() {
-            if (SceneDataTracker.TypeOfCurrentScene != SceneDataTracker.SceneTypes.H)
+            if (SceneTypeTracker.TypeOfCurrentScene != SceneTypeTracker.SceneTypes.H)
                 return;
 
             if (TalkImage != null)

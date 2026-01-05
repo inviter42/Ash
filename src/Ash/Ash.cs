@@ -1,5 +1,7 @@
 ﻿using Ash.Core.SceneManagement;
+using Ash.Core.Settings;
 using Ash.Core.UI;
+using Ash.GlobalUtils;
 using Ash.HarmonyHooks;
 using BepInEx;
 using BepInEx.Configuration;
@@ -23,7 +25,7 @@ namespace Ash
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.anotherscenehelper";
-        public const string Version = "0.2.0";
+        public const string Version = "1.1.0";
 
         // ReSharper disable once InconsistentNaming
         private const string MoreAccessoriesGUID = "com.joan6694.illusionplugins.moreaccessories";
@@ -31,6 +33,8 @@ namespace Ash
         internal new static ManualLogSource Logger;
 
         internal static ConfigEntry<KeyboardShortcut> ConfigEntryToggleWindowHotkey { get; private set; }
+
+        internal static PersistentSettings Settings { get; private set; }
 
         internal static GameObject AshGameObj;
         internal static AshUI AshUI;
@@ -47,6 +51,8 @@ namespace Ash
             Logger = base.Logger;
             Harmony = new Harmony($"{GUID}.harmony");
 
+            Settings = IO.Load<PersistentSettings>(IO.SettingsFileName);
+
             // Setup hotkey binding
             ConfigEntryToggleWindowHotkey = Config.Bind(
                 "Keyboard shortcuts",
@@ -55,7 +61,9 @@ namespace Ash
             );
 
             // Register hooks
-            Harmony.PatchAll(typeof(CharacterHooks));
+            Harmony.PatchAll(typeof(FemaleHooks));
+            Harmony.PatchAll(typeof(WearsHooks));
+            Harmony.PatchAll(typeof(AccessoriesHooks));
 
             // Initialize UI
             InitPluginUI();
@@ -67,7 +75,7 @@ namespace Ash
         // ReSharper disable once MemberCanBeMadeStatic.Local
         private void InitPluginUI() {
             AshGameObj = new GameObject("AshGameObj");
-            AshGameObj.AddComponent<SceneDataTracker>();
+            AshGameObj.AddComponent<SceneTypeTracker>();
             AshUI = AshGameObj.AddComponent<AshUI>();
             DontDestroyOnLoad(AshGameObj);
         }

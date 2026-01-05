@@ -29,12 +29,11 @@ namespace Ash.Core.UI.Types
 
         protected override string[] SetTabsModel() {
             return new[] {
-                    GameUIControlsView.UIControlsLabel,
-                    ItemsVisibilityControlsView.ItemsVisibilityControlsTabLabel,
-                    ItemsCoordinatorView.ItemsVisibilityCoordinatorTabLabel
-                }
-                .Concat(SceneUtils.GetHeroineIDsInSceneAsStrings())
-                .ToArray();
+                GameUIControlsView.UIControlsLabel,
+                ItemsVisibilityControlsView.ItemsVisibilityControlsTabLabel,
+                ItemsCoordinatorView.ItemsVisibilityCoordinatorTabLabel,
+                HSceneControlsView.HSceneControlsViewTabLabel
+            };
         }
 
         protected override List<Action> SetTabViewsModel() {
@@ -42,8 +41,7 @@ namespace Ash.Core.UI.Types
                 GameUIControlsViewInstance.DrawView,
                 ItemsVisibilityControlsViewInstance.DrawView,
                 ItemsCoordinatorViewInstance.DrawView,
-                () => HSceneControlsViewInstance.DrawFemaleTabContents(ToolbarTabs[SelectedTabIndex]),
-                () => HSceneControlsViewInstance.DrawFemaleTabContents(ToolbarTabs[SelectedTabIndex]),
+                () => HSceneControlsViewInstance.DrawView()
             };
         }
 

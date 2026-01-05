@@ -12,7 +12,9 @@ The plugin has a separate tab that provides visibility controls for all the item
 This is a beta feature that allows to hide some of the less used buttons and UI elements, and scales down the others to provide more immersive h-scene experience.
 
 ### Scene Controls
-More of a QoL, than a feature. Allows to clean any unwanted fluids from the girls.
+Just a few QoL things to control during H-Scene.
+- Toggles for bodily fluids
+- Toggle to automatically mute inactive girl
 
 ## Installation
 Download the latest release, unzip the archive, drag and drop the contents into the game directory.
@@ -31,7 +33,8 @@ The main plugin window is bound by default to a backquote `` ` `` key. The hotke
  1. When everything is selected, and in (7) you selected `Yes` you will be able to choose the state of the `Slave Item` in *other* master states. This allows to quickly create cyclic rules. For example - *hide* the dependent item, when the master is visible, and *show* it in all the other states.   
 
 ### Persistence
-The rules are stored in `PlayHome/BepInEx/config/Ash.ItemRules.json`[^1].
+- The rules are stored in `PlayHome/BepInEx/config/Ash.ItemRules.json`[^1].
+- Settings are stored in `PlayHome/BepInEx/config/Ash.Settings.json`.
 
 ## Dependencies
 The plugin relies on two external libraries - `Newtonsoft.Json` for JSON serialization and `OneOf` for type unions. Both libraries are packaged with the plugin.

@@ -33,8 +33,8 @@ namespace Ash.Core.UI
             if (!HotkeyIsDown())
                 return;
 
-            if (!SceneDataTracker.IsLegalScene()) {
-                Ash.Logger.LogWarning($"Illegal scene {SceneDataTracker.TypeOfCurrentScene}");
+            if (!SceneTypeTracker.IsLegalScene()) {
+                Ash.Logger.LogWarning($"Illegal scene {SceneTypeTracker.TypeOfCurrentScene}");
                 return;
             }
 
@@ -67,17 +67,17 @@ namespace Ash.Core.UI
         // ReSharper disable Unity.PerformanceAnalysis
         private void CreateWindowComponent() {
             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-            switch (SceneDataTracker.TypeOfCurrentScene) {
-                case SceneDataTracker.SceneTypes.H:
+            switch (SceneTypeTracker.TypeOfCurrentScene) {
+                case SceneTypeTracker.SceneTypes.H:
                     Window = Ash.AshGameObj.AddComponent<HSceneWindow>();
                     break;
-                case SceneDataTracker.SceneTypes.EditScene:
-                case SceneDataTracker.SceneTypes.SelectScene:
+                case SceneTypeTracker.SceneTypes.EditScene:
+                case SceneTypeTracker.SceneTypes.SelectScene:
                     Window = Ash.AshGameObj.AddComponent<EditSceneWindow>();
                     break;
                 default:
                     Ash.Logger.LogError(
-                        $"Unable to create Window component for unregistered scene type {SceneDataTracker.TypeOfCurrentScene}");
+                        $"Unable to create Window component for unregistered scene type {SceneTypeTracker.TypeOfCurrentScene}");
                     break;
             }
         }
