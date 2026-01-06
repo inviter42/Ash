@@ -17,10 +17,12 @@ Just a few QoL things to control during H-Scene.
 - Toggle to automatically mute inactive girl
 
 ## Installation
-Download the latest release, unzip the archive, drag and drop the contents into the game directory.
+Download and install: 
+1. Download and install the dependent versions of [BepInEx](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.22), [Bepis Plugins](https://github.com/IllusionMods/BepisPlugins/releases/tag/r21.1.2) and [ModdingAPI](https://github.com/IllusionMods/IllusionModdingAPI/releases/tag/v1.45.1)  
+1. Download the [latest release](https://github.com/inviter42/Ash/releases), unzip the archive, drag and drop the contents into the game directory.
 
 ## How to Use
-The main plugin window is bound by default to a backquote `` ` `` key. The hotkey can be changed in the BepInEx plugin/mod settings menu.
+The main plugin window is bound by default to a backquote `` ` `` key. In a non-English keyboard layouts, this key might have a different charcode associated with it. The hotkey can be changed in the BepInEx plugin/mod settings menu.
 
 ### Adding a new rule
  1. Go to the `Items Visibility Coordinator` tab.
