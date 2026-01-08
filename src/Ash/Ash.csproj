@@ -142,15 +142,24 @@
     <Compile Include="Core\Features\ItemsCoordinator\Types\BaseItem.cs" />
     <Compile Include="Core\Features\ItemsCoordinator\Types\DataOfAccessoryItem.cs" />
     <Compile Include="Core\Features\ItemsCoordinator\Types\DataOfWearItem.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\Types\MasterItem.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\HPosRuleData.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\HPosRuleSet.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\HStyleDetail.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\InterItemRuleData.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\InterItemRuleSet.cs" />
     <Compile Include="Core\Features\ItemsCoordinator\Types\SlaveItem.cs" />
     <Compile Include="Core\Features\ItemsCoordinator\ItemsCoordinator.cs" />
     <Compile Include="Core\Features\ItemsCoordinator\RulesManager.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\MasterItemSelectionComponent.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\RuleDetailsComponent.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\RulesListComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\Common\RuleTypeSelectionComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRuleDetailsComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRuleItemSelectionComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRulesListComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\MasterItemSelectionComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\InterItemRuleDetailsComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\InterItemRulesListComponent.cs" />
     <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\ItemsCoordinatorView.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\State\FormState.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\State\InterItemRuleForm.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\State\HPosRuleForm.cs" />
     <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\GenerateReverseRulesEnum.cs" />
     <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\ItemAccessoryFormData.cs" />
     <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\ItemWearFormData.cs" />
@@ -167,6 +176,7 @@
     <Compile Include="Core\UI\Types\AshWindow.cs" />
     <Compile Include="Core\UI\Types\EditSceneWindow.cs" />
     <Compile Include="Core\UI\Types\HSceneWindow.cs" />
+    <Compile Include="GlobalUtils\Migrations.cs" />
     <Compile Include="GlobalUtils\IO.cs" />
     <Compile Include="HarmonyHooks\AccessoriesHooks.cs" />
     <Compile Include="HarmonyHooks\FemaleHooks.cs" />
@@ -174,11 +184,13 @@
     <Compile Include="GlobalUtils\DictionaryUtils.cs" />
     <Compile Include="GlobalUtils\EnumUtils.cs" />
     <Compile Include="GlobalUtils\GuiPrimitivesLib.cs" />
+    <Compile Include="HarmonyHooks\HMembersHooks.cs" />
     <Compile Include="HarmonyHooks\WearsHooks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GlobalUtils\SceneUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="TODO.md" />
   </ItemGroup>

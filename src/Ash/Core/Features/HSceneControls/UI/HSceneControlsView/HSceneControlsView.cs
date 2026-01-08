@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Ash.Core.Features.Common.Components;
 using Ash.Core.SceneManagement;
-using Ash.Core.Settings;
 using Ash.Core.UI.Types;
 using Ash.GlobalUtils;
 using UnityEngine;

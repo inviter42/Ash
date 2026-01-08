@@ -5,11 +5,13 @@ namespace Ash.Core.Settings
 {
     public class PersistentSettings
     {
+        // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public Setting<bool> ShouldMuteBackgroundFemale = new Setting<bool>(false);
     }
 
     public class Setting<T> {
         [JsonProperty("Value")]
+        // ReSharper disable once InconsistentNaming
         internal T _value;
 
         // ignore, so IO.Save() isn't triggered during object construction

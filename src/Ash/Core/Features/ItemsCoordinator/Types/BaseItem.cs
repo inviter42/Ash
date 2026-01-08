@@ -4,7 +4,7 @@ using OneOf;
 
 namespace Ash.Core.Features.ItemsCoordinator.Types
 {
-    public abstract class BaseItem : IEquatable<BaseItem>
+    public class BaseItem : IEquatable<BaseItem>
     {
         public int Id { get; }
 
@@ -18,7 +18,7 @@ namespace Ash.Core.Features.ItemsCoordinator.Types
         public readonly OneOf<DataOfWearItem, DataOfAccessoryItem> ItemData;
 
         [JsonConstructor]
-        protected BaseItem(int id, string assetbundleName, string prefab, string name,
+        public BaseItem(int id, string assetbundleName, string prefab, string name,
             OneOf<DataOfWearItem, DataOfAccessoryItem> data) {
             Id = id;
             AssetbundleName = assetbundleName;

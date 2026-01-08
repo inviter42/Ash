@@ -15,17 +15,14 @@ using MoreAccessoriesPH;
 namespace Ash
 {
     [BepInPlugin(GUID, PluginName, Version)]
-    // Tell BepInEx that this plugin needs KKAPI of at least the specified version.
-    // If not found, this plugi will not be loaded and a warning will be shown.
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
     public class Ash : BaseUnityPlugin
     {
-        // Project information
         public const string PluginName = "Ash";
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.anotherscenehelper";
-        public const string Version = "1.1.0";
+        public const string Version = "1.2.0";
 
         // ReSharper disable once InconsistentNaming
         private const string MoreAccessoriesGUID = "com.joan6694.illusionplugins.moreaccessories";
@@ -64,6 +61,7 @@ namespace Ash
             Harmony.PatchAll(typeof(FemaleHooks));
             Harmony.PatchAll(typeof(WearsHooks));
             Harmony.PatchAll(typeof(AccessoriesHooks));
+            Harmony.PatchAll(typeof(HMembersHooks));
 
             // Initialize UI
             InitPluginUI();

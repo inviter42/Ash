@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Ash.Core.Features.ItemsCoordinator.Types;
 using Character;
+using H;
 
 namespace Ash.Core.Features.Common.Misc
 {
@@ -51,6 +53,24 @@ namespace Ash.Core.Features.Common.Misc
                 [ACCESSORY_TYPE.NUM] = "??"
             };
 
+        public static readonly Dictionary<H_StyleData.TYPE, string> HStylesLabels =
+            new Dictionary<H_StyleData.TYPE, string> {
+                [H_StyleData.TYPE.INSERT] = "Insert",
+                [H_StyleData.TYPE.PETTING] = "Service",
+                [H_StyleData.TYPE.SERVICE] = "Caress"
+            };
+
+        public static readonly Dictionary<HStyleDetail, string> HStylesExtendedLabels =
+            new Dictionary<HStyleDetail, string> {
+                [new HStyleDetail{ Type = H_StyleData.TYPE.SERVICE, Detail = H_StyleData.DETAIL.TITTY_FUCK }] = "Boob Job",
+                [new HStyleDetail{ Type = H_StyleData.TYPE.PETTING, Detail = H_StyleData.DETAIL.VAGINA }] = "Caress → Any Vaginal",
+                [new HStyleDetail{ Type = H_StyleData.TYPE.PETTING, Detail = H_StyleData.DETAIL.ANAL }] = "Caress → Any Anal",
+                [new HStyleDetail{ Type = H_StyleData.TYPE.INSERT, Detail = H_StyleData.DETAIL.ANAL }] = "Insert → Any Anal",
+                [new HStyleDetail{ Type = (H_StyleData.TYPE)(-2), Detail = (H_StyleData.DETAIL)(-2) }] = "All poses"
+            };
+
         public const string ErrorLabel = "???";
+
+        public const string CreateButtonLabel = "Create";
     }
 }

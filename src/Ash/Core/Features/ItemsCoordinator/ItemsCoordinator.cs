@@ -12,7 +12,7 @@ namespace Ash.Core.Features.ItemsCoordinator
     {
         public static bool SkipRulesApplication { get; set; }
 
-        public static void ApplyRules(Female female, List<RulesManager.RuleSet> ruleset) {
+        public static void ApplyRules(Female female, List<InterItemRuleSet> ruleset) {
             if (SkipRulesApplication) {
                 Ash.Logger.LogDebug("Not applying rules, because skip flag was set.");
                 return;
@@ -83,7 +83,7 @@ namespace Ash.Core.Features.ItemsCoordinator
             }
 
             // Retrieve the ruleset for passed MasterItem
-            var rulesets = RulesManager.RuleSets
+            var rulesets = RulesManager.InterItemRuleSets
                 .Where(ruleSet =>
                     ruleSet.MasterItem.ItemData.IsT0
                     && ruleSet.MasterItem.ItemData.AsT0.ItemPart == itemPart
@@ -113,7 +113,7 @@ namespace Ash.Core.Features.ItemsCoordinator
             }
 
             // Retrieve the ruleset for passed MasterItem
-            var rulesets = RulesManager.RuleSets
+            var rulesets = RulesManager.InterItemRuleSets
                 .Where(ruleSet =>
                     ruleSet.MasterItem.ItemData.IsT1
                     && ruleSet.MasterItem.ItemData.AsT1.SlotNo == slotNo
@@ -199,8 +199,8 @@ namespace Ash.Core.Features.ItemsCoordinator
                 });
         }
 
-        private static void TryToApplyRule(RulesManager.RuleSet ruleSet, Female female, OneOf<WEAR_SHOW, bool> masterItemState, SlaveItem slaveItem) {
-            if (ruleSet.MasterItem.ItemData.IsT0 && !masterItemState.IsT0 || ruleSet.MasterItem.ItemData.IsT1 && !masterItemState.IsT1){
+        private static void TryToApplyRule(InterItemRuleSet interItemRuleSet, Female female, OneOf<WEAR_SHOW, bool> masterItemState, SlaveItem slaveItem) {
+            if (interItemRuleSet.MasterItem.ItemData.IsT0 && !masterItemState.IsT0 || interItemRuleSet.MasterItem.ItemData.IsT1 && !masterItemState.IsT1){
                 Ash.Logger.LogWarning("Inconsistent data types between RuleSet.MasterItem.ItemData " +
                     "and SlaveItem.MasterItemState");
                 return;
@@ -208,10 +208,10 @@ namespace Ash.Core.Features.ItemsCoordinator
 
             // check if MasterItem state matches what's required by the Rule
             if (masterItemState.IsT0) {
-                if (female.wears.GetShow(ruleSet.MasterItem.ItemData.AsT0.ItemPart, false) != masterItemState.AsT0)
+                if (female.wears.GetShow(interItemRuleSet.MasterItem.ItemData.AsT0.ItemPart, false) != masterItemState.AsT0)
                     return;
             } else if (masterItemState.IsT1) {
-                if (SceneUtils.GetAccessoryShow(female, ruleSet.MasterItem.ItemData.AsT1.SlotNo) != masterItemState.AsT1)
+                if (SceneUtils.GetAccessoryShow(female, interItemRuleSet.MasterItem.ItemData.AsT1.SlotNo) != masterItemState.AsT1)
                     return;
             } else {
                 Ash.Logger.LogWarning("Unknown type of MasterItemState!");
@@ -234,9 +234,9 @@ namespace Ash.Core.Features.ItemsCoordinator
                     }
 
                     if (masterItemState.IsT0) {
-                        PrintRuleInfo(female, ruleSet.MasterItem.ItemData.AsT0, masterItemState, slaveItemDataCastToWear, slaveItem.SlaveItemState);
+                        PrintRuleInfo(female, interItemRuleSet.MasterItem.ItemData.AsT0, masterItemState, slaveItemDataCastToWear, slaveItem.SlaveItemState);
                     } else if (masterItemState.IsT1) {
-                        PrintRuleInfo(female, ruleSet.MasterItem.ItemData.AsT1, masterItemState, slaveItemDataCastToWear, slaveItem.SlaveItemState);
+                        PrintRuleInfo(female, interItemRuleSet.MasterItem.ItemData.AsT1, masterItemState, slaveItemDataCastToWear, slaveItem.SlaveItemState);
                     }
 
                     SceneUtils.ChangeStateOfClothingItem(female, slaveItemDataCastToWear.ItemPart,
@@ -258,9 +258,9 @@ namespace Ash.Core.Features.ItemsCoordinator
                     }
 
                     if (masterItemState.IsT0) {
-                        PrintRuleInfo(female, ruleSet.MasterItem.ItemData.AsT0, masterItemState, slaveCastToAccessory, slaveItem.SlaveItemState);
+                        PrintRuleInfo(female, interItemRuleSet.MasterItem.ItemData.AsT0, masterItemState, slaveCastToAccessory, slaveItem.SlaveItemState);
                     } else if (masterItemState.IsT1) {
-                        PrintRuleInfo(female, ruleSet.MasterItem.ItemData.AsT1, masterItemState, slaveCastToAccessory, slaveItem.SlaveItemState);
+                        PrintRuleInfo(female, interItemRuleSet.MasterItem.ItemData.AsT1, masterItemState, slaveCastToAccessory, slaveItem.SlaveItemState);
                     }
 
                     SceneUtils.ChangeStateOfAccessoryItem(

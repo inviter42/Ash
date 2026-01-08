@@ -6,26 +6,16 @@ using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
 using Ash.Core.SceneManagement;
 using Ash.GlobalUtils;
 using Character;
+using H;
 using OneOf;
 
 namespace Ash.Core.Features.ItemsCoordinator
 {
     internal static class RulesManager
     {
-        public struct RuleSet
-        {
-            public MasterItem MasterItem;
-            public HashSet<SlaveItem> SlaveItems;
-        }
-
-        public struct RuleData
-        {
-            public MasterItem MasterItem;
-            public SlaveItem SlaveItem;
-        }
-
         // RuleSets are stored here
-        public static List<RuleSet> RuleSets { get; } = IO.Load<List<RuleSet>>(IO.ItemRulesFileName);
+        public static List<InterItemRuleSet> InterItemRuleSets { get; } = IO.Load<List<InterItemRuleSet>>(IO.InterItemRulesFileName);
+        public static List<HPosRuleSet> HPosRuleSets { get; } =  IO.Load<List<HPosRuleSet>>(IO.HPosRulesFileName);
 
         public static void AddRule(
             Female female,
@@ -44,13 +34,13 @@ namespace Ash.Core.Features.ItemsCoordinator
             var masterItem = MakeMasterItem(masterItemFormData);
             var slaveItem = MakeSlaveItem(slaveItemFormData, masterItemStateFormData, slaveItemStateFormData);
 
-            var idx = RuleSets.FindIndex(rule => rule.MasterItem == masterItem);
+            var idx = InterItemRuleSets.FindIndex(rule => rule.MasterItem == masterItem);
             if (idx != -1) {
-                var slavesHashSet = RuleSets[idx].SlaveItems;
+                var slavesHashSet = InterItemRuleSets[idx].SlaveItems;
                 if (slavesHashSet == null) {
                     Ash.Logger.LogWarning(
                         "Rule for item was found, but Slaves array is null. This empty rule will be erased.");
-                    RuleSets.RemoveAt(idx);
+                    InterItemRuleSets.RemoveAt(idx);
                     return;
                 }
 
@@ -58,14 +48,14 @@ namespace Ash.Core.Features.ItemsCoordinator
                     Ash.Logger.LogWarning("Failed to add new SlaveItem to HashSet - already exists?");
             }
             else {
-                RuleSets.Add(new RuleSet {
+                InterItemRuleSets.Add(new InterItemRuleSet {
                     MasterItem = masterItem,
                     SlaveItems = new HashSet<SlaveItem> { slaveItem }
                 });
             }
 
             // Write DB to disk after new rule is added
-            IO.Save(RuleSets, IO.ItemRulesFileName);
+            IO.Save(InterItemRuleSets, IO.InterItemRulesFileName);
 
             // Should only apply newly added rule and nothing else
             var females = SceneComponentRegistry.GetComponentsOfType<Female>().ToArray();
@@ -96,32 +86,65 @@ namespace Ash.Core.Features.ItemsCoordinator
                 );
         }
 
-        public static void RemoveRule(RuleData data) {
-            var idx = RuleSets.FindIndex(rule => rule.MasterItem == data.MasterItem);
-            if (idx == -1) {
-                Ash.Logger.LogWarning("Unable to the rule for this MasterItem.");
+        public static void AddRule(
+            Female female,
+            OneOf<ItemWearFormData, WEAR_SHOW_TYPE> hPosItemFormData,
+            OneOf<H_StyleData.TYPE, HStyleDetail> hPosStyleFormData
+        ) {
+            if (!female) {
+                Ash.Logger.LogWarning("Attempting to add the Rule, but Female is null");
                 return;
             }
 
-            if (!RuleSets[idx].SlaveItems.Remove(data.SlaveItem)) {
+            var hPosItem = hPosItemFormData.IsT0
+                ? MakeMasterItem(hPosItemFormData.AsT0)
+                : (OneOf<BaseItem, WEAR_SHOW_TYPE>)hPosItemFormData.AsT1;
+
+            HPosRuleSets.Add(new HPosRuleSet(hPosItem, hPosStyleFormData));
+
+            IO.Save(HPosRuleSets, IO.HPosRulesFileName);
+        }
+
+        public static void RemoveRule(InterItemRuleData data) {
+            var idx = InterItemRuleSets.FindIndex(rule => rule.MasterItem == data.MasterItem);
+            if (idx == -1) {
+                Ash.Logger.LogWarning("Unable to remove the rule for this MasterItem.");
+                return;
+            }
+
+            if (!InterItemRuleSets[idx].SlaveItems.Remove(data.SlaveItem)) {
                 Ash.Logger.LogWarning("Unable to remove the rule - SlaveItem was not found in the HashSet<SlaveItems>");
                 return;
             }
 
             // nuke the ruleset if there are no rules left in it
-            if (RuleSets[idx].SlaveItems.Count == 0)
-                RuleSets.RemoveAt(idx);
+            if (InterItemRuleSets[idx].SlaveItems.Count == 0)
+                InterItemRuleSets.RemoveAt(idx);
 
             // Write DB to disk after rule is removed
-            IO.Save(RuleSets, IO.ItemRulesFileName);
+            IO.Save(InterItemRuleSets, IO.InterItemRulesFileName);
         }
 
-        private static MasterItem MakeMasterItem(OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemData) {
+        public static void RemoveRule(HPosRuleData data) {
+            var idx = HPosRuleSets.FindIndex(rule => rule.HPosItem.Equals(data.HPosItem)
+            );
+            if (idx == -1) {
+                Ash.Logger.LogWarning("Unable to remove the rule for this HPosItem.");
+                return;
+            }
+
+            HPosRuleSets.RemoveAt(idx);
+
+            // Write DB to disk after rule is removed
+            IO.Save(HPosRuleSets, IO.HPosRulesFileName);
+        }
+
+        private static BaseItem MakeMasterItem(OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemData) {
             switch (masterItemData.Value) {
                 case ItemWearFormData masterCastToWear:
                 {
                     var dataOfWearItem = new DataOfWearItem(masterCastToWear.Type);
-                    return new MasterItem(
+                    return new BaseItem(
                         masterCastToWear.WearData.id,
                         masterCastToWear.WearData.assetbundleName,
                         masterCastToWear.WearData.prefab,
@@ -138,7 +161,7 @@ namespace Ash.Core.Features.ItemsCoordinator
                         accessoryCustom.nowAttach
                     );
 
-                    return new MasterItem(
+                    return new BaseItem(
                         masterCastToAccessory.AccessoryData.id,
                         masterCastToAccessory.AccessoryData.assetbundleName,
                         masterCastToAccessory.AccessoryData.prefab_F,

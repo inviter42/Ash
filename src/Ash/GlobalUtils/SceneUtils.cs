@@ -63,7 +63,7 @@ namespace Ash.GlobalUtils
                     foreach (WEAR_SHOW_TYPE item in Enum.GetValues(typeof(WEAR_SHOW_TYPE))) {
                         ChangeStateOfClothingItem(female, item, state);
                     }
-                    ItemsCoordinator.ApplyRules(female, RulesManager.RuleSets);
+                    ItemsCoordinator.ApplyRules(female, RulesManager.InterItemRuleSets);
                     break;
             }
         }
@@ -121,7 +121,7 @@ namespace Ash.GlobalUtils
             switch (state) {
                 case true:
                     female.accessories.ChangeAllShow(true);
-                    ItemsCoordinator.ApplyRules(female, RulesManager.RuleSets);
+                    ItemsCoordinator.ApplyRules(female, RulesManager.InterItemRuleSets);
                     break;
                 case false:
                     ItemsCoordinator.SkipRulesApplication = true;
@@ -145,6 +145,35 @@ namespace Ash.GlobalUtils
                 .acceObj)
                 .obj
                 .activeSelf;
+        }
+
+        public static WEAR_SHOW_TYPE[] GetActiveWearShowTypes(Female female) {
+            if (female == null)
+                return null;
+
+            return Enum.GetValues(typeof(WEAR_SHOW_TYPE))
+                .Cast<WEAR_SHOW_TYPE>()
+                .Where(wearShowType => wearShowType != WEAR_SHOW_TYPE.NUM)
+                .Where(e => female.wears.wearObjs[(int)Wears.ShowToWearType[(int)e]] != null)
+                .Where(e => {
+                    var wearObj = female.wears.wearObjs[(int)Wears.ShowToWearType[(int)e]];
+                    // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+                    switch (e) {
+                        case WEAR_SHOW_TYPE.TOPUPPER:
+                        case WEAR_SHOW_TYPE.SWIMUPPER:
+                        case WEAR_SHOW_TYPE.SWIM_TOPUPPER:
+                            return wearObj.ShowUpperNum > 0;
+                        case WEAR_SHOW_TYPE.TOPLOWER:
+                        case WEAR_SHOW_TYPE.SWIMLOWER:
+                        case  WEAR_SHOW_TYPE.SWIM_TOPLOWER:
+                            return wearObj.ShowLowerNum > 0;
+                        default:
+                            return true;
+
+                    }
+                })
+                .ToArray();
+
         }
     }
 }

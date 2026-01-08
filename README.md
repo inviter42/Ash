@@ -24,18 +24,33 @@ Download and install:
 ## How to Use
 The main plugin window is bound by default to a backquote `` ` `` key. In a non-English keyboard layouts, this key might have a different charcode associated with it. The hotkey can be changed in the BepInEx plugin/mod settings menu.
 
-### Adding a new rule
- 1. Go to the `Items Visibility Coordinator` tab.
- 1. Select a girl (the plugin displays only the items currently worn by the girl)
- 1. From the list Clothing and Accessories select a `Master Item` - this will be the parent item that will control the behavior of all the dependent items bound to it.
- 1. Select the `State of Master Item` - when Master Item will be in that state, all the items dependent on it will chance according to their rules.
- 1. Select the `Slave Item` - this is the dependent item.
- 1. Select the `State of Slave Item` - this is how the visibility of the dependent item will change, when the Master Item will assume the state you selected for it in (4).
- 1. Optionally you can choose to create the rules for every *other* state of the `Master Item`. For example, if in (4) you selected `Dressed` for your master item, it will create rules for `Half` and `Hidden` states.
- 1. When everything is selected, and in (7) you selected `Yes` you will be able to choose the state of the `Slave Item` in *other* master states. This allows to quickly create cyclic rules. For example - *hide* the dependent item, when the master is visible, and *show* it in all the other states.   
+### Adding a new Inter Item rule
+The Inter Item rules are controlling the visibility of the dependent items based on the state of their parent items. Any combinations of Clothing and Accessory items are supported.
+1. Go to the `Items Visibility Coordinator` tab
+1. Select the rule type `Inter Item Rule`
+1. Select a girl (the plugin displays only the items currently worn by the girl)
+1. From the list Clothing and Accessories select a `Master Item` - this will be the parent item that will control the behavior of all the dependent items bound to it.
+1. Select the `State of Master Item` - when Master Item will be in that state, all the items dependent on it will chance according to their rules.
+1. Select the `Slave Item` - this is the dependent item.
+1. Select the `State of Slave Item` - this is how the visibility of the dependent item will change, when the Master Item will assume the state you selected for it in (4).
+1. Optionally you can choose to create the rules for every *other* state of the `Master Item`. For example, if in (4) you selected `Dressed` for your master item, it will create rules for `Half` and `Hidden` states.
+1. When everything is selected, and in (7) you selected `Yes` you will be able to choose the state of the `Slave Item` in *other* master states. This allows to quickly create cyclic rules. For example - *hide* the dependent item, when the master is visible, and *show* it in all the other states.   
+1. Click `Create rule`
+1. Newly created rule will appear in the list of `Active Rules`
+
+### Adding a new H-Pose rule
+The H-Pose rules are controlling the auto-stripping behavior, when the pose is selected. `Inter Item rules` apply *after* the `H-Pose rules`.
+1. Go to the `Items Visibility Coordinator` tab
+1. Select the rule type `H-Pose Rule`
+1. Select a girl (the plugin displays only the items currently worn by the girl)
+1. Select and an individual clothing item or an item category
+1. Select pose type (only applicable poses are displayed)
+1. Click `Create rule`
+1. Newly created rule will appear in the list of `Active Rules` 
 
 ### Persistence
-- The rules are stored in `PlayHome/BepInEx/config/Ash.ItemRules.json`[^1].
+- The Inter Item rules are stored in `PlayHome/BepInEx/config/Ash.InterItemRules.json`[^1].
+- The Inter Item rules are stored in `PlayHome/BepInEx/config/Ash.HPosItemRules.json`
 - Settings are stored in `PlayHome/BepInEx/config/Ash.Settings.json`.
 
 ## Dependencies
@@ -50,4 +65,4 @@ Copyright 2025-2026 Ivan Alantiev
 
 Licensed under the GNU GPLv3: https://www.gnu.org/licenses/gpl-3.0.html
 
-[^1]: Note that if you want to edit the file manually, all of the type and assembly names under `$type` property *must* be preserved. Otherwise the file will fail to deserialize.
+[^1]: Note that if you want to edit a file manually, all the type and assembly names under `$type` property *must* be preserved. Otherwise, the file will fail to deserialize.

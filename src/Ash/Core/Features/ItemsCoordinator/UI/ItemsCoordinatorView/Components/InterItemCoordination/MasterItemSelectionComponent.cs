@@ -1,38 +1,41 @@
-using System;
 using System.Linq;
 using Ash.Core.Features.Common.Components;
+using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.Common;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
-using Ash.Core.SceneManagement;
 using Ash.Core.UI.Types;
 using Ash.GlobalUtils;
-using Character;
 using UnityEngine;
 using static Ash.GlobalUtils.GuiPrimitivesLib;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
-using static Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State.FormState;
+using static Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State.InterItemRuleForm;
 
-namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
+namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.InterItemCoordination
 {
     public static class MasterItemSelectionComponent
     {
-        public const string FemaleFormDataKey = "FemaleFormData";
-
+        public const string InterItemRuleTypeStateKey = "InterItemRuleType";
         public const string MasterItemFormDataKey = "MasterItemData";
 
         private const string NewRuleTitle = "New Rule";
 
-        private const string ChooseFemaleSubtitle = "Select female:";
         private const string NewRuleSubtitle = "Select Master item:";
 
+        public static bool IsMasterItemSelected() =>
+            FormData.ContainsKey(MasterItemFormDataKey);
+
         public static void DrawMasterItemSelectionComponent() {
+            Title(NewRuleTitle);
+
+            GUILayout.Space(8);
+
+            RuleTypeSelectionComponent.DrawRuleTypeSelection();
+
             if (!FormData.ContainsKey(FemaleFormDataKey))
                 FormData[FemaleFormDataKey] = GetActiveFemale();
 
             var activeFemale = GetActiveFemale();
 
             using (new GUILayout.VerticalScope("box")) {
-                Title(NewRuleTitle);
-
                 FemaleSelectionComponent.Component(
                     activeFemale,
                     female => {
@@ -77,31 +80,8 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
             }
         }
 
-        private static void FemaleSelection(Female activeFemale) {
-            // Female selection
-            Subtitle(ChooseFemaleSubtitle);
-            Flow(
-                SceneComponentRegistry.GetComponentsOfType<Female>().ToArray(),
-                (female, idx) => RadioButton(
-                    female.HeroineID.ToString(),
-                    activeFemale.heroineID == female.heroineID,
-                    () => {
-                        FormData[FemaleFormDataKey] = female;
-                        SetActiveFemale(female);
-                    })
-            );
-        }
-
         private static void MasterWearSelection(Female activeFemale) {
-            var masterWearsModel = Enum.GetValues(typeof(WEAR_SHOW_TYPE))
-                .Cast<WEAR_SHOW_TYPE>()
-                .Where(wearShowType => wearShowType != WEAR_SHOW_TYPE.NUM)
-                .Where(wearShowType => Array.Exists(
-                    activeFemale.wears.wearObjs,
-                    wo => wo != null
-                          && wo.type == Wears.ShowToWearType[(int)wearShowType]))
-                .ToArray();
-
+            var masterWearsModel = SceneUtils.GetActiveWearShowTypes(activeFemale);
             Flow(masterWearsModel, (itemPart, idx) => Button(
                 WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
                 () => {

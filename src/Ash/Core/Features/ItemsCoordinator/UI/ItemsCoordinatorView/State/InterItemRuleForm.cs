@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components;
+using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.HPosItemCoordination;
+using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.InterItemCoordination;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
 using Character;
 using OneOf;
@@ -14,15 +15,12 @@ using InputsValues = OneOf.OneOf<
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State
 {
-    public static class FormState
+    public static class InterItemRuleForm
     {
+        // Common keys
+        public const string FemaleFormDataKey = "FemaleFormData";
+
         public static readonly Dictionary<string, InputsValues> FormData = new Dictionary<string, InputsValues>();
-
-        public static bool IsMasterItemSelected() =>
-            FormData.ContainsKey(MasterItemSelectionComponent.MasterItemFormDataKey);
-
-        public static void ResetMasterItemSelection() =>
-            FormData.Clear();
 
         public static void SubmitForm() {
             if (!ValidateInputs())
@@ -30,37 +28,29 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State
 
             // indexing here is safe after passing validation
             var masterItemFormDataRaw = FormData[MasterItemSelectionComponent.MasterItemFormDataKey];
-            OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData;
-            if (masterItemFormDataRaw.IsT0)
-                masterItemFormData = masterItemFormDataRaw.AsT0;
-            else
-                masterItemFormData = masterItemFormDataRaw.AsT1;
+            var masterItemFormData = masterItemFormDataRaw.IsT0
+                ? masterItemFormDataRaw.AsT0
+                : (OneOf<ItemWearFormData, ItemAccessoryFormData>)masterItemFormDataRaw.AsT1;
 
-            var masterItemStateFormDataRaw = FormData[RuleDetailsComponent.MasterItemStateFormDataKey];
-            OneOf<WEAR_SHOW, bool> masterItemStateFormData;
-            if (masterItemStateFormDataRaw.IsT2)
-                masterItemStateFormData = masterItemStateFormDataRaw.AsT2;
-            else
-                masterItemStateFormData = masterItemStateFormDataRaw.AsT3;
+            var masterItemStateFormDataRaw = FormData[InterItemRuleDetailsComponent.MasterItemStateFormDataKey];
+            var masterItemStateFormData = masterItemStateFormDataRaw.IsT2
+                ? masterItemStateFormDataRaw.AsT2
+                : (OneOf<WEAR_SHOW, bool>)masterItemStateFormDataRaw.AsT3;
 
-            var slaveItemFormDataRaw = FormData[RuleDetailsComponent.SlaveItemFormDataKey];
-            OneOf<ItemWearFormData, ItemAccessoryFormData> slaveItemFormData;
-            if (slaveItemFormDataRaw.IsT0)
-                slaveItemFormData = slaveItemFormDataRaw.AsT0;
-            else
-                slaveItemFormData = slaveItemFormDataRaw.AsT1;
+            var slaveItemFormDataRaw = FormData[InterItemRuleDetailsComponent.SlaveItemFormDataKey];
+            var slaveItemFormData = slaveItemFormDataRaw.IsT0
+                ? slaveItemFormDataRaw.AsT0
+                : (OneOf<ItemWearFormData, ItemAccessoryFormData>)slaveItemFormDataRaw.AsT1;
 
-            var slaveItemStateFormDataRaw = FormData[RuleDetailsComponent.SlaveItemStateFormDataKey];
-            OneOf<WEAR_SHOW, bool> slaveItemStateFormData;
-            if (slaveItemStateFormDataRaw.IsT2)
-                slaveItemStateFormData = slaveItemStateFormDataRaw.AsT2;
-            else
-                slaveItemStateFormData = slaveItemStateFormDataRaw.AsT3;
+            var slaveItemStateFormDataRaw = FormData[InterItemRuleDetailsComponent.SlaveItemStateFormDataKey];
+            var slaveItemStateFormData = slaveItemStateFormDataRaw.IsT2
+                ? slaveItemStateFormDataRaw.AsT2
+                : (OneOf<WEAR_SHOW, bool>)slaveItemStateFormDataRaw.AsT3;
 
-            var femaleFormDataRaw = FormData[MasterItemSelectionComponent.FemaleFormDataKey];
+            var femaleFormDataRaw = FormData[FemaleFormDataKey];
 
             FormData.TryGetValue(
-                RuleDetailsComponent.GenerateReverseRulesFormDataKey,
+                InterItemRuleDetailsComponent.GenerateReverseRulesFormDataKey,
                 out var generateReverseRulesFormData
             );
 
@@ -69,7 +59,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State
 
             OneOf<WEAR_SHOW, bool> reverseRulesStateFormData = default;
             if (shouldGenerateReverseRules) {
-                var reverseRulesStateFormDataRaw = FormData[RuleDetailsComponent.ReverseRulesStateFormDataKey];
+                var reverseRulesStateFormDataRaw = FormData[InterItemRuleDetailsComponent.ReverseRulesStateFormDataKey];
                 if (reverseRulesStateFormDataRaw.IsT2)
                     reverseRulesStateFormData = reverseRulesStateFormDataRaw.AsT2;
                 else
@@ -86,47 +76,53 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State
                 reverseRulesStateFormData
             );
 
-            ResetMasterItemSelection();
+            FormData.Clear();
         }
 
         private static bool ValidateInputs() {
             if (!FormData.ContainsKey(MasterItemSelectionComponent.MasterItemFormDataKey)) {
                 Ash.Logger.LogWarning("MasterItem form data was not found. Rule will not be created.");
-                ResetMasterItemSelection();
+                FormData.Clear();
                 return false;
             }
 
-            if (!FormData.ContainsKey(RuleDetailsComponent.MasterItemStateFormDataKey)) {
+            if (!FormData.ContainsKey(InterItemRuleDetailsComponent.MasterItemStateFormDataKey)) {
                 Ash.Logger.LogWarning("MasterItem state form data was not found. Rule will not be created.");
-                ResetMasterItemSelection();
+                FormData.Clear();
                 return false;
             }
 
-            if (!FormData.ContainsKey(RuleDetailsComponent.SlaveItemFormDataKey)) {
+            if (!FormData.ContainsKey(InterItemRuleDetailsComponent.SlaveItemFormDataKey)) {
                 Ash.Logger.LogWarning("SlaveItem form data was not found. Rule will not be created.");
-                ResetMasterItemSelection();
+                FormData.Clear();
                 return false;
             }
 
-            if (!FormData.ContainsKey(RuleDetailsComponent.SlaveItemStateFormDataKey)) {
+            if (!FormData.ContainsKey(InterItemRuleDetailsComponent.SlaveItemStateFormDataKey)) {
                 Ash.Logger.LogWarning("SlaveItem state form data was not found. Rule will not be created.");
-                ResetMasterItemSelection();
+                FormData.Clear();
                 return false;
             }
 
-            if (!FormData.ContainsKey(RuleDetailsComponent.GenerateReverseRulesFormDataKey)) {
+            if (!FormData.ContainsKey(FemaleFormDataKey)) {
+                Ash.Logger.LogWarning("Female form data was not found. Rule will not be created.");
+                FormData.Clear();
+                return false;
+            }
+
+            if (!FormData.ContainsKey(InterItemRuleDetailsComponent.GenerateReverseRulesFormDataKey)) {
                 Ash.Logger.LogWarning(
                     "Generate reverse rules form data was not found. Rule will not be created.");
-                ResetMasterItemSelection();
+                FormData.Clear();
                 return false;
             }
 
             var masterItemFormData = FormData[MasterItemSelectionComponent.MasterItemFormDataKey];
-            var masterItemStateFormData = FormData[RuleDetailsComponent.MasterItemStateFormDataKey];
-            var slaveItemFormData = FormData[RuleDetailsComponent.SlaveItemFormDataKey];
-            var slaveItemStateFormData = FormData[RuleDetailsComponent.SlaveItemStateFormDataKey];
-            var femaleFormData = FormData[MasterItemSelectionComponent.FemaleFormDataKey];
-            var generateReverseRulesFormData = FormData[RuleDetailsComponent.GenerateReverseRulesFormDataKey];
+            var masterItemStateFormData = FormData[InterItemRuleDetailsComponent.MasterItemStateFormDataKey];
+            var slaveItemFormData = FormData[InterItemRuleDetailsComponent.SlaveItemFormDataKey];
+            var slaveItemStateFormData = FormData[InterItemRuleDetailsComponent.SlaveItemStateFormDataKey];
+            var femaleFormData = FormData[FemaleFormDataKey];
+            var generateReverseRulesFormData = FormData[InterItemRuleDetailsComponent.GenerateReverseRulesFormDataKey];
 
             if (masterItemFormData.IsT0 && !masterItemStateFormData.IsT2
                 || masterItemFormData.IsT1 && !masterItemStateFormData.IsT3
@@ -134,42 +130,50 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State
                 || slaveItemFormData.IsT1 && !slaveItemStateFormData.IsT3
                ) {
                 Ash.Logger.LogWarning("Item and its state have non-matching types. Rule will not be created.");
-                ResetMasterItemSelection();
-                return false;
-            }
-
-            if (ReferenceEquals(masterItemFormData.Value, null)) {
-                Ash.Logger.LogWarning("Master item is null. Rule will not be created.");
-                return false;
-            }
-
-            if (ReferenceEquals(slaveItemFormData.Value, null)) {
-                Ash.Logger.LogWarning("Slave item is null. Rule will not be created.");
+                FormData.Clear();
                 return false;
             }
 
             if (!femaleFormData.IsT4) {
                 Ash.Logger.LogWarning("Female form data is of a wrong type. Rule will not be created.");
-                ResetMasterItemSelection();
+                FormData.Clear();
                 return false;
             }
 
             if (!generateReverseRulesFormData.IsT5) {
                 Ash.Logger.LogWarning(
                     "Generate reverse rules form data is of a wrong type. Rule will not be created.");
-                ResetMasterItemSelection();
+                FormData.Clear();
+                return false;
+            }
+
+            if (ReferenceEquals(masterItemFormData.Value, null)) {
+                Ash.Logger.LogWarning("Master item is null. Rule will not be created.");
+                FormData.Clear();
+                return false;
+            }
+
+            if (ReferenceEquals(slaveItemFormData.Value, null)) {
+                Ash.Logger.LogWarning("Slave item is null. Rule will not be created.");
+                FormData.Clear();
+                return false;
+            }
+
+            if (ReferenceEquals(femaleFormData.AsT4, null)) {
+                Ash.Logger.LogWarning("Female is null. Rule will not be created.");
+                FormData.Clear();
                 return false;
             }
 
             if (generateReverseRulesFormData.AsT5 == GenerateReverseRulesEnum.GenerateReverseRules.Ignore)
                 return true;
 
-            var reverseRulesStateFormData = FormData[RuleDetailsComponent.ReverseRulesStateFormDataKey];
+            var reverseRulesStateFormData = FormData[InterItemRuleDetailsComponent.ReverseRulesStateFormDataKey];
             // ReSharper disable once InvertIf
             if (!reverseRulesStateFormData.IsT2 && !reverseRulesStateFormData.IsT3) {
                 Ash.Logger.LogWarning(
                     "Reverse rules state form data is of a wrong type. Rule will not be created.");
-                ResetMasterItemSelection();
+                FormData.Clear();
                 return false;
             }
 

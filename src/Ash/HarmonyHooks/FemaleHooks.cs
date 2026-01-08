@@ -3,7 +3,6 @@ using Character;
 using HarmonyLib;
 using System;
 using Ash.Core.Features.Common.Misc;
-using Ash.Core.Features.HSceneControls;
 using Ash.Core.Features.ItemsCoordinator;
 
 namespace Ash.HarmonyHooks
@@ -25,7 +24,7 @@ namespace Ash.HarmonyHooks
         [HarmonyPatch(typeof(Female), nameof(Female.Start), new Type[] { })]
         // ReSharper disable once InconsistentNaming
         public static void FemaleStartPostfix(Female __instance) {
-            ItemsCoordinator.ApplyRules(__instance, RulesManager.RuleSets);
+            ItemsCoordinator.ApplyRules(__instance, RulesManager.InterItemRuleSets);
         }
 
         // this fixes incorrect original return result for Mariko

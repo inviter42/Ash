@@ -5,15 +5,15 @@ using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
 using Ash.Core.UI;
 using Ash.GlobalUtils;
 using Character;
-using UnityEngine;
 using OneOf;
+using UnityEngine;
 using static Ash.GlobalUtils.GuiPrimitivesLib;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
-using static Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State.FormState;
+using static Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State.InterItemRuleForm;
 
-namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
+namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.InterItemCoordination
 {
-    public static class RuleDetailsComponent
+    public static class InterItemRuleDetailsComponent
     {
         public const string MasterItemStateFormDataKey = "MasterItemState";
         public const string SlaveItemFormDataKey = "SlaveItemData";
@@ -32,15 +32,14 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
         private const string SlaveItemStateSelectionSubtitle = "To:";
         private const string GenerateReverseRulesSubtitle = "Automatically create rules for other Master states:";
         private const string ReverseRulesStateSubtitle = "In other Master states set Slave to:";
-        private const string CreateButtonLabel = "Create";
 
-        public static void DrawRuleDetailsView() {
-            Button("Back", ResetMasterItemSelection);
+        public static void DrawInterItemRuleDetailsView() {
+            Button("Back", FormData.Clear);
 
-            if (!IsMasterItemSelected())
+            if (!MasterItemSelectionComponent.IsMasterItemSelected())
                 return;
 
-            FormData.TryGetValue(MasterItemSelectionComponent.FemaleFormDataKey, out var femaleFormData);
+            FormData.TryGetValue(FemaleFormDataKey, out var femaleFormData);
             var activeFemale = femaleFormData.AsT4;
 
             if (activeFemale == null) {
@@ -180,7 +179,6 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
 
         private static void SlaveItemSelection(Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
             Subtitle(SlaveItemSelectionSubtitle);
-
             SlaveItemWearSelection(activeFemale, masterItemFormData);
 
             GUILayout.Space(12);
@@ -191,9 +189,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
         }
 
         private static void SlaveItemWearSelection(Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
-            var slaveItemWearsModelFiltered = Enum.GetValues(typeof(WEAR_SHOW_TYPE))
-                .Cast<WEAR_SHOW_TYPE>()
-                .Where(type => type != WEAR_SHOW_TYPE.NUM)
+            var slaveItemWearsModelFiltered = SceneUtils.GetActiveWearShowTypes(activeFemale)
                 .Where(type => {
                     if (masterItemFormData.IsT1)
                         return true;
@@ -203,10 +199,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
                     return type != masterItemFormData.AsT0.Type
                            && !thisWearData.Equals(masterItemFormData.AsT0.WearData);
                 })
-                .Where(type => Array.Exists(activeFemale.wears.wearObjs,
-                    wo => wo != null && wo.type == Wears.ShowToWearType[(int)type]))
                 .ToArray();
-
 
             Flow(slaveItemWearsModelFiltered, (itemPart, idx) => {
                 var slaveWearData = activeFemale.wears.GetWearData(Wears.ShowToWearType[(int)itemPart]);

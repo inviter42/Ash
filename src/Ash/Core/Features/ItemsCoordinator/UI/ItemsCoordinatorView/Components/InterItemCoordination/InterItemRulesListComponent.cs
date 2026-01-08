@@ -6,18 +6,18 @@ using UnityEngine;
 using static Ash.GlobalUtils.GuiPrimitivesLib;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
 
-namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
+namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.InterItemCoordination
 {
-    public static class RulesListComponent
+    public static class InterItemRulesListComponent
     {
         private const string ActiveRulesTitle = "Active Rules";
-        private const string NoActiveRulesLabel = "No active rules";
+        private const string NoActiveRulesLabel = "No active Inter Item rules";
 
         private static readonly List<Action> ListOfRuleChanges = new List<Action>();
 
         private static Vector2 RulesScrollPosition;
 
-        public static void DrawRulesList() {
+        public static void DrawInterItemRulesList() {
             Title(ActiveRulesTitle);
 
             GUILayout.Space(4);
@@ -26,10 +26,10 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
                 GUILayout.ExpandHeight(true));
 
             using (new GUILayout.VerticalScope("box", GUILayout.ExpandHeight(true))) {
-                foreach (var ruleSet in RulesManager.RuleSets) {
+                foreach (var ruleSet in RulesManager.InterItemRuleSets) {
                     foreach (var slaveItem in ruleSet.SlaveItems) {
                         CreateRuleGuiElement(
-                            new RulesManager.RuleData {
+                            new InterItemRuleData {
                                 MasterItem = ruleSet.MasterItem,
                                 SlaveItem = slaveItem
                             }
@@ -42,7 +42,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
 
                 ListOfRuleChanges.Clear();
 
-                if (RulesManager.RuleSets.Count == 0) {
+                if (RulesManager.InterItemRuleSets.Count == 0) {
                     GUILayout.FlexibleSpace();
 
                     using (new GUILayout.HorizontalScope()) {
@@ -58,7 +58,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
             GUILayout.EndScrollView();
         }
 
-        private static void CreateRuleGuiElement(RulesManager.RuleData data) {
+        private static void CreateRuleGuiElement(InterItemRuleData data) {
             var translatedMasterName = AutoTranslatorIntegration.Translate(data.MasterItem.Name);
             var translatedSlaveName = AutoTranslatorIntegration.Translate(data.SlaveItem.Name);
 
@@ -94,7 +94,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components
             GUILayout.EndVertical();
         }
 
-        private static KeyValuePair<string, string> GetMasterItemLabelsData(MasterItem masterItem, SlaveItem slaveItem) {
+        private static KeyValuePair<string, string> GetMasterItemLabelsData(BaseItem masterItem, SlaveItem slaveItem) {
             var masterItemSlotLabel = ErrorLabel;
             var masterItemStateLabel = ErrorLabel;
 

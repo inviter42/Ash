@@ -11,14 +11,19 @@ namespace Ash.GlobalUtils
 {
     public static class IO
     {
-        public const string ItemRulesFileName = "Ash.ItemRules.json";
+        public const string InterItemRulesFileName = "Ash.InterItemRules.json";
+        public const string HPosRulesFileName = "Ash.HPosItemRules.json";
         public const string SettingsFileName = "Ash.Settings.json";
 
         public static void Save<T>(T data, string fileName) {
             var filePath = Path.Combine(Paths.ConfigPath, fileName);
+            var envelope = new PersistenceEnvelope<T> {
+                Version = Ash.Version,
+                Data = data
+            };
 
             try {
-                var json = JsonConvert.SerializeObject(data, typeof(object), JsonConfig.Settings);
+                var json = JsonConvert.SerializeObject(envelope, typeof(object), JsonConfig.GetGlobalSettings());
                 File.WriteAllText(filePath, json);
             }
             catch (Exception e) {
@@ -27,31 +32,62 @@ namespace Ash.GlobalUtils
         }
 
         public static T Load<T>(string fileName) where T : new() {
-            var filePath = Path.Combine(Paths.ConfigPath, fileName);
+            var data = Migrations.GetVersionSpecificFileData(fileName);
+            var currentFilePath = data.Key;
+            var currentFileName = data.Value;
 
-            try {
-                if (!File.Exists(filePath)) {
-                    Ash.Logger.LogWarning("Unable to load data - file doesn't exist on disk.");
-                    return new T();
-                }
-            }
-            catch (Exception e) {
-                Ash.Logger.LogWarning($"Unable to load data - {e.Message}.");
+            if (!File.Exists(currentFilePath)) {
+                Ash.Logger.LogWarning($"Unable to load data - file {fileName} doesn't exist on disk.");
                 return new T();
             }
 
-            var json = File.ReadAllText(filePath);
-            return JsonConvert.DeserializeObject<T>(json, JsonConfig.Settings);
+            try {
+                var json = File.ReadAllText(currentFilePath);
+                var jObject = JObject.Parse(json);
+                var fileVersion = GetFileVersion(jObject);
+                PersistenceEnvelope<T> envelope;
+
+                try {
+                    envelope = JsonConvert.DeserializeObject<PersistenceEnvelope<T>>(json, JsonConfig.GetMigrationSettings(currentFileName, fileVersion));
+                }
+                catch (Exception) {
+                    T intermediate;
+                    try {
+                        intermediate = JsonConvert.DeserializeObject<T>(json, JsonConfig.GetMigrationSettings(currentFileName, fileVersion));
+                    }
+                    catch (Exception e) {
+                        Ash.Logger.LogError($"Deserialization failed with exception {e.Message}");
+                        throw;
+                    }
+
+                    envelope = new PersistenceEnvelope<T> {
+                        Version = Ash.Version,
+                        Data = intermediate
+                    };
+                }
+
+                Save(envelope.Data, fileName);
+                if (currentFileName == fileName)
+                    return envelope.Data;
+
+                File.Delete(currentFilePath);
+                return envelope.Data;
+            }
+            catch (Exception e) {
+                Ash.Logger.LogError($"Failed to load JSON - {e.Message}");
+                throw;
+            }
         }
 
-        public class OneOfConverter : JsonConverter
+        private class OneOfConverter : JsonConverter
         {
             public override bool CanConvert(Type objectType) => typeof(IOneOf).IsAssignableFrom(objectType);
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
                 if (value is IOneOf oneOf) {
                     serializer.Serialize(writer, oneOf.Value, typeof(object));
-                } else {
+                }
+                else {
                     writer.WriteNull();
                 }
             }
@@ -79,7 +115,8 @@ namespace Ash.GlobalUtils
                         index = i;
                         break;
                     }
-                } else { // handle ambiguous primitive types
+                }
+                else { // handle ambiguous primitive types
                     for (var i = 0; i < unionTypes.Length; i++) {
                         try {
                             if (unionTypes[i].IsEnum && token.Type == JTokenType.Integer) {
@@ -95,7 +132,8 @@ namespace Ash.GlobalUtils
                                 break;
                             }
                         }
-                        catch { /*ignored*/ }
+                        catch { /*ignored*/
+                        }
                     }
                 }
 
@@ -111,16 +149,42 @@ namespace Ash.GlobalUtils
                     : method.Invoke(null, new[] { val });
             }
         }
-    }
 
-    public static class JsonConfig
-    {
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings {
-            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-            Formatting = Formatting.Indented,
-            NullValueHandling = NullValueHandling.Ignore,
-            TypeNameHandling = TypeNameHandling.Auto,
-            Converters = new List<JsonConverter> { new IO.OneOfConverter() }
-        };
+        private static class JsonConfig
+        {
+            private static readonly JsonSerializerSettings GlobalSettings = new JsonSerializerSettings {
+                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore,
+                TypeNameHandling = TypeNameHandling.Auto,
+                Converters = new List<JsonConverter> { new OneOfConverter() },
+            };
+
+            public static JsonSerializerSettings GetGlobalSettings() {
+                return GlobalSettings;
+            }
+
+            public static JsonSerializerSettings GetMigrationSettings(string fileName, string fileVersion) {
+                return new JsonSerializerSettings {
+                    ConstructorHandling = GlobalSettings.ConstructorHandling,
+                    Formatting = GlobalSettings.Formatting,
+                    NullValueHandling = GlobalSettings.NullValueHandling,
+                    TypeNameHandling = GlobalSettings.TypeNameHandling,
+                    Converters = GlobalSettings.Converters,
+                    Binder = new Migrations.MigrationBinder(fileName, fileVersion)
+                };
+            }
+        }
+
+        private class PersistenceEnvelope<T>
+        {
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            public string Version { get; set; }
+            public T Data { get; set; }
+        }
+
+        private static string GetFileVersion(JObject obj) {
+            return obj["Version"]?.Value<string>() ?? "1.1.0";
+        }
     }
 }

@@ -6,7 +6,6 @@ using Ash.Core.Features.HSceneControls.UI.HSceneControlsView;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView;
 using Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView;
 using Ash.Core.SceneManagement;
-using Ash.GlobalUtils;
 
 namespace Ash.Core.UI.Types
 {
