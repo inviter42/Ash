@@ -28,7 +28,11 @@ namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsVi
             if (Ash.MoreAccessoriesInstance == null)
                 return;
 
-            var extendedModel = Ash.MoreAccessoriesInstance.GetAdditionalData(activeFemale.customParam).accessories;
+            var extendedModel = Ash.MoreAccessoriesInstance
+                .GetAdditionalData(activeFemale.customParam)
+                .accessories
+                .Where(accessoryData => accessoryData?.acceObj != null)
+                .ToArray();
 
             Flow(extendedModel, (maAccessoryData, idx) => {
                 var accessoryObj = (Accessories.AcceObj)maAccessoryData.acceObj;

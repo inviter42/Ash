@@ -259,6 +259,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             var extendedModel = Ash.MoreAccessoriesInstance
                 .GetAdditionalData(activeFemale.customParam)
                 .accessories
+                .Where(accessoryData => accessoryData?.acceObj != null)
                 .Where(maAccessoryData => {
                     var accessoryObj = (Accessories.AcceObj)maAccessoryData.acceObj;
                     if (masterItemFormData.IsT0)

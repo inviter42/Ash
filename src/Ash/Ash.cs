@@ -22,7 +22,7 @@ namespace Ash
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.anotherscenehelper";
-        public const string Version = "1.2.1";
+        public const string Version = "1.2.2";
 
         // ReSharper disable once InconsistentNaming
         private const string MoreAccessoriesGUID = "com.joan6694.illusionplugins.moreaccessories";

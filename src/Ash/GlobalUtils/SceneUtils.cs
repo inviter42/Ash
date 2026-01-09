@@ -139,9 +139,14 @@ namespace Ash.GlobalUtils
             if (Ash.MoreAccessoriesInstance == null)
                 return false;
 
-            return ((Accessories.AcceObj)Ash.MoreAccessoriesInstance
+            var accessoryData = Ash.MoreAccessoriesInstance
                 .GetAdditionalData(female.customParam)
-                .accessories[slotNo - AccessoryCustom.SLOT_NUM]
+                .accessories[slotNo - AccessoryCustom.SLOT_NUM];
+
+            if (accessoryData?.acceObj == null)
+                return false;
+
+            return ((Accessories.AcceObj)accessoryData
                 .acceObj)
                 .obj
                 .activeSelf;
