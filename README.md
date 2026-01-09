@@ -50,7 +50,7 @@ The H-Pose rules are controlling the auto-stripping behavior, when the pose is s
 
 ### Persistence
 - The Inter Item rules are stored in `PlayHome/BepInEx/config/Ash.InterItemRules.json`[^1].
-- The Inter Item rules are stored in `PlayHome/BepInEx/config/Ash.HPosItemRules.json`
+- The H-Pose Item rules are stored in `PlayHome/BepInEx/config/Ash.HPosItemRules.json`
 - Settings are stored in `PlayHome/BepInEx/config/Ash.Settings.json`.
 
 ## Dependencies
