@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using Ash.Core.Features.Common.Components;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.Common;
+using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
 using Ash.Core.UI.Types;
 using Ash.GlobalUtils;
@@ -20,35 +22,43 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
 
         private const string NewRuleSubtitle = "Select Master item:";
 
-        public static bool IsMasterItemSelected() =>
-            FormData.ContainsKey(MasterItemFormDataKey);
+        public static bool IsMasterItemSelected(InterItemRuleForm form) =>
+            form.FormData.ContainsKey(MasterItemFormDataKey);
 
-        public static void DrawMasterItemSelectionComponent() {
+        public static void DrawMasterItemSelectionComponent(InterItemRuleForm form) {
+            var formData = form.FormData;
+
             Title(NewRuleTitle);
 
             GUILayout.Space(8);
 
             RuleTypeSelectionComponent.DrawRuleTypeSelection();
 
-            if (!FormData.ContainsKey(FemaleFormDataKey))
-                FormData[FemaleFormDataKey] = GetActiveFemale();
+            if (!formData.ContainsKey(FemaleFormDataKey))
+                formData[FemaleFormDataKey] = GetActiveFemale();
 
             var activeFemale = GetActiveFemale();
+            if (activeFemale == null) {
+                Ash.Logger.LogWarning("Female is null");
+                Ash.Logger.LogWarning(Environment.StackTrace);
+                formData.Clear();
+                return;
+            }
 
             using (new GUILayout.VerticalScope("box")) {
                 FemaleSelectionComponent.Component(
                     activeFemale,
                     female => {
-                        FormData[FemaleFormDataKey] = female;
+                        formData[FemaleFormDataKey] = female;
                         SetActiveFemale(female);
                 });
 
                 // MasterItem selection
                 Subtitle(NewRuleSubtitle);
 
-                MasterWearSelection(activeFemale);
+                MasterWearSelection(form, activeFemale);
                 GUILayout.Space(12);
-                MasterAccessorySelection(activeFemale);
+                MasterAccessorySelection(form, activeFemale);
             }
         }
 
@@ -80,18 +90,20 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             }
         }
 
-        private static void MasterWearSelection(Female activeFemale) {
+        private static void MasterWearSelection(InterItemRuleForm form, Female activeFemale) {
+            var formData = form.FormData;
             var masterWearsModel = SceneUtils.GetActiveWearShowTypes(activeFemale);
             Flow(masterWearsModel, (itemPart, idx) => Button(
                 WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
                 () => {
                     var wearData = activeFemale.wears.GetWearData(Wears.ShowToWearType[(int)itemPart]);
-                    FormData[MasterItemFormDataKey] = new ItemWearFormData { Type = itemPart, WearData = wearData };
+                    formData[MasterItemFormDataKey] = new ItemWearFormData { Type = itemPart, WearData = wearData };
                 })
             );
         }
 
-        private static void MasterAccessorySelection(Female activeFemale) {
+        private static void MasterAccessorySelection(InterItemRuleForm form, Female activeFemale) {
+            var formData = form.FormData;
             var masterAccessoriesModel = activeFemale.accessories.acceObjs
                 .Where(accessoryObj => accessoryObj != null)
                 .ToArray();
@@ -101,7 +113,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 Button(
                     $"{accessoryObj.slot}: " +
                     $"{AutoTranslatorIntegration.Translate(accessoryData.name)}",
-                    () => FormData[MasterItemFormDataKey] =
+                    () => formData[MasterItemFormDataKey] =
                         new ItemAccessoryFormData {
                             SlotNo = accessoryObj.slot, AccessoryParameter = accessoryObj.acceParam,
                             AccessoryData = accessoryData
@@ -125,7 +137,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 Button(
                     $"{accessoryObj.slot}: " +
                     $"{AutoTranslatorIntegration.Translate(accessoryData.name)}",
-                    () => FormData[MasterItemFormDataKey] =
+                    () => formData[MasterItemFormDataKey] =
                         new ItemAccessoryFormData {
                             SlotNo = accessoryObj.slot, AccessoryParameter = accessoryObj.acceParam,
                             AccessoryData = accessoryData

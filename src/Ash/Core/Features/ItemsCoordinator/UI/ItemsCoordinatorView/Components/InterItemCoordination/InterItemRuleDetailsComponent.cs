@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
 using Ash.Core.UI;
 using Ash.GlobalUtils;
@@ -33,22 +34,25 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
         private const string GenerateReverseRulesSubtitle = "Automatically create rules for other Master states:";
         private const string ReverseRulesStateSubtitle = "In other Master states set Slave to:";
 
-        public static void DrawInterItemRuleDetailsView() {
-            Button("Back", FormData.Clear);
+        public static void DrawInterItemRuleDetailsView(InterItemRuleForm form) {
+            var formData = form.FormData;
 
-            if (!MasterItemSelectionComponent.IsMasterItemSelected())
+            Button("Back", formData.Clear);
+
+            if (!MasterItemSelectionComponent.IsMasterItemSelected(form))
                 return;
 
-            FormData.TryGetValue(FemaleFormDataKey, out var femaleFormData);
+            formData.TryGetValue(FemaleFormDataKey, out var femaleFormData);
             var activeFemale = femaleFormData.AsT4;
-
             if (activeFemale == null) {
                 Ash.Logger.LogWarning("Female is null.");
+                Ash.Logger.LogWarning(Environment.StackTrace);
+                formData.Clear();
                 return;
             }
 
             // OneOf is never nullish
-            if (!FormData.TryGetValue(MasterItemSelectionComponent.MasterItemFormDataKey, out var masterItemFormDataRaw)) {
+            if (!formData.TryGetValue(MasterItemSelectionComponent.MasterItemFormDataKey, out var masterItemFormDataRaw)) {
                 Ash.Logger.LogWarning("MasterItem form data doesn't exist.");
                 return;
             }
@@ -58,29 +62,29 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 : (OneOf<ItemWearFormData, ItemAccessoryFormData>)masterItemFormDataRaw.AsT1;
 
             // MasterItem state selection
-            MasterItemStateSelection(activeFemale, masterItemFromData);
+            MasterItemStateSelection(form, activeFemale, masterItemFromData);
 
             GUILayout.Space(8);
 
             // SlaveItem selection
-            SlaveItemSelection(activeFemale, masterItemFromData);
+            SlaveItemSelection(form, activeFemale, masterItemFromData);
             // SlaveItem state selection
-            SlaveItemStateSelection();
+            SlaveItemStateSelection(form);
 
             // Generate reverse rules
-            GenerateReverseRulesRadioSet();
+            GenerateReverseRulesRadioSet(form);
 
             GUILayout.Space(10);
 
             // Reverse rules state
-            ReverseRulesItemState();
+            ReverseRulesItemState(form);
 
             // Submit form
             GUILayout.Space(10);
-            Button(CreateButtonLabel, SubmitForm, GUILayout.Height(30));
+            Button(CreateButtonLabel, form.SubmitForm, GUILayout.Height(30));
         }
 
-        private static void MasterItemStateSelection(Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
+        private static void MasterItemStateSelection(InterItemRuleForm form, Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
             switch (masterItemFormData.Value) {
                 case ItemWearFormData masterItemFormDataWear:
                 {
@@ -91,7 +95,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                     Title(RuleParametersTitle);
                     Subtitle(
                         $"When {WearShowTypeLabels.GetValueOrDefaultValue(masterItemFormDataWear.Type, ErrorLabel)} is:");
-                    ItemWearStateSelection(MasterItemStateFormDataKey);
+                    ItemWearStateSelection(form, MasterItemStateFormDataKey);
                     break;
                 }
 
@@ -106,7 +110,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                         masterItemFormDataAccessory.AccessoryParameter.slot[masterItemFormDataAccessory.SlotNo % AccessoryCustom.SLOT_NUM].type,
                         ErrorLabel);
                     Subtitle($"When {accessoryTypeLabel} is:");
-                    ItemAccessoryStateSelection(MasterItemStateFormDataKey);
+                    ItemAccessoryStateSelection(form, MasterItemStateFormDataKey);
                     break;
                 }
 
@@ -153,42 +157,45 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             );
         }
 
-        private static void ItemWearStateSelection(string formDataKey) {
+        private static void ItemWearStateSelection(InterItemRuleForm form, string formDataKey) {
+            var formData = form.FormData;
             Flow(
                 Enum.GetValues(typeof(WEAR_SHOW)).Cast<WEAR_SHOW>().Reverse().ToArray(),
                 (state, idx) => RadioButton(
                     WearShowLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                    FormData.ContainsKey(formDataKey)
-                    && FormData[formDataKey].IsT2
-                    && FormData[formDataKey].AsT2 == state,
-                    () => FormData[formDataKey] = state)
+                    formData.ContainsKey(formDataKey)
+                    && formData[formDataKey].IsT2
+                    && formData[formDataKey].AsT2 == state,
+                    () => formData[formDataKey] = state)
             );
         }
 
-        private static void ItemAccessoryStateSelection(string formDataKey) {
+        private static void ItemAccessoryStateSelection(InterItemRuleForm form, string formDataKey) {
+            var formData = form.FormData;
             Flow(
                 new[] { false, true },
                 (state, idx) => RadioButton(
                     AccessoryShowLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                    FormData.ContainsKey(formDataKey)
-                    && FormData[formDataKey].IsT3
-                    && FormData[formDataKey].AsT3 == state,
-                    () => FormData[formDataKey] = state)
+                    formData.ContainsKey(formDataKey)
+                    && formData[formDataKey].IsT3
+                    && formData[formDataKey].AsT3 == state,
+                    () => formData[formDataKey] = state)
             );
         }
 
-        private static void SlaveItemSelection(Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
+        private static void SlaveItemSelection(InterItemRuleForm form, Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
             Subtitle(SlaveItemSelectionSubtitle);
-            SlaveItemWearSelection(activeFemale, masterItemFormData);
+            SlaveItemWearSelection(form, activeFemale, masterItemFormData);
 
             GUILayout.Space(12);
 
             // slave item accessories model
-            SlaveItemAccessorySelection(activeFemale, masterItemFormData);
-            SlaveItemExtendedAccessorySelection(activeFemale, masterItemFormData);
+            SlaveItemAccessorySelection(form, activeFemale, masterItemFormData);
+            SlaveItemExtendedAccessorySelection(form, activeFemale, masterItemFormData);
         }
 
-        private static void SlaveItemWearSelection(Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
+        private static void SlaveItemWearSelection(InterItemRuleForm form, Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
+            var formData = form.FormData;
             var slaveItemWearsModelFiltered = SceneUtils.GetActiveWearShowTypes(activeFemale)
                 .Where(type => {
                     if (masterItemFormData.IsT1)
@@ -205,21 +212,22 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 var slaveWearData = activeFemale.wears.GetWearData(Wears.ShowToWearType[(int)itemPart]);
                 RadioButton(
                     WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
-                    FormData.ContainsKey(SlaveItemFormDataKey)
-                    && FormData[SlaveItemFormDataKey].IsT0
-                    && FormData[SlaveItemFormDataKey].AsT0.Type == itemPart,
+                    formData.ContainsKey(SlaveItemFormDataKey)
+                    && formData[SlaveItemFormDataKey].IsT0
+                    && formData[SlaveItemFormDataKey].AsT0.Type == itemPart,
                     () => {
-                        if (FormData.ContainsKey(SlaveItemFormDataKey) && FormData[SlaveItemFormDataKey].IsT3)
-                            FormData.Remove(SlaveItemStateFormDataKey);
+                        if (formData.ContainsKey(SlaveItemFormDataKey) && formData[SlaveItemFormDataKey].IsT3)
+                            formData.Remove(SlaveItemStateFormDataKey);
 
-                        FormData[SlaveItemFormDataKey] = new ItemWearFormData
+                        formData[SlaveItemFormDataKey] = new ItemWearFormData
                             { Type = itemPart, WearData = slaveWearData };
                     }
                 );
             });
         }
 
-        private static void SlaveItemAccessorySelection(Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
+        private static void SlaveItemAccessorySelection(InterItemRuleForm form, Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
+            var formData = form.FormData;
             var slaveItemAccessoriesModel = activeFemale.accessories.acceObjs
                 .Where(accessoryObj => accessoryObj != null)
                 .Where(accessoryObj => {
@@ -235,14 +243,14 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 RadioButton(
                     $"{accessoryObj.slot}: " +
                     $"{AutoTranslatorIntegration.Translate(accessoryData.name)}",
-                    FormData.ContainsKey(SlaveItemFormDataKey)
-                    && FormData[SlaveItemFormDataKey].IsT1
-                    && FormData[SlaveItemFormDataKey].AsT1.SlotNo == accessoryObj.slot,
+                    formData.ContainsKey(SlaveItemFormDataKey)
+                    && formData[SlaveItemFormDataKey].IsT1
+                    && formData[SlaveItemFormDataKey].AsT1.SlotNo == accessoryObj.slot,
                     () => {
-                        if (FormData.ContainsKey(SlaveItemStateFormDataKey) && FormData[SlaveItemStateFormDataKey].IsT2)
-                            FormData.Remove(SlaveItemStateFormDataKey);
+                        if (formData.ContainsKey(SlaveItemStateFormDataKey) && formData[SlaveItemStateFormDataKey].IsT2)
+                            formData.Remove(SlaveItemStateFormDataKey);
 
-                        FormData[SlaveItemFormDataKey] =
+                        formData[SlaveItemFormDataKey] =
                             new ItemAccessoryFormData {
                                 SlotNo = accessoryObj.slot, AccessoryParameter = accessoryObj.acceParam,
                                 AccessoryData = accessoryData
@@ -252,7 +260,9 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             }, 3);
         }
 
-        private static void SlaveItemExtendedAccessorySelection(Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
+        private static void SlaveItemExtendedAccessorySelection(InterItemRuleForm form, Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
+            var formData = form.FormData;
+
             if (Ash.MoreAccessoriesInstance == null)
                 return;
 
@@ -276,14 +286,14 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 RadioButton(
                     $"{accessoryObj.slot}: " +
                     $"{AutoTranslatorIntegration.Translate(accessoryData.name)}",
-                    FormData.ContainsKey(SlaveItemFormDataKey)
-                    && FormData[SlaveItemFormDataKey].IsT1
-                    && FormData[SlaveItemFormDataKey].AsT1.SlotNo == accessoryObj.slot,
+                    formData.ContainsKey(SlaveItemFormDataKey)
+                    && formData[SlaveItemFormDataKey].IsT1
+                    && formData[SlaveItemFormDataKey].AsT1.SlotNo == accessoryObj.slot,
                     () => {
-                        if (FormData.ContainsKey(SlaveItemStateFormDataKey) && FormData[SlaveItemStateFormDataKey].IsT2)
-                            FormData.Remove(SlaveItemStateFormDataKey);
+                        if (formData.ContainsKey(SlaveItemStateFormDataKey) && formData[SlaveItemStateFormDataKey].IsT2)
+                            formData.Remove(SlaveItemStateFormDataKey);
 
-                        FormData[SlaveItemFormDataKey] =
+                        formData[SlaveItemFormDataKey] =
                             new ItemAccessoryFormData {
                                 SlotNo = accessoryObj.slot, AccessoryParameter = accessoryObj.acceParam,
                                 AccessoryData = accessoryData
@@ -293,16 +303,17 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             }, 3);
         }
 
-        private static void SlaveItemStateSelection() {
+        private static void SlaveItemStateSelection(InterItemRuleForm form) {
+            var formData = form.FormData;
             Subtitle(SlaveItemStateSelectionSubtitle);
-            FormData.TryGetValue(SlaveItemFormDataKey, out var slaveItemFromData);
+            formData.TryGetValue(SlaveItemFormDataKey, out var slaveItemFromData);
             switch (slaveItemFromData.Value) {
                 case ItemWearFormData _:
-                    ItemWearStateSelection(SlaveItemStateFormDataKey);
+                    ItemWearStateSelection(form, SlaveItemStateFormDataKey);
                     break;
 
                 case ItemAccessoryFormData _:
-                    ItemAccessoryStateSelection(SlaveItemStateFormDataKey);
+                    ItemAccessoryStateSelection(form, SlaveItemStateFormDataKey);
                     break;
 
                 default:
@@ -311,33 +322,36 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             }
         }
 
-        private static void GenerateReverseRulesRadioSet() {
+        private static void GenerateReverseRulesRadioSet(InterItemRuleForm form) {
+            var formData = form.FormData;
+
             Subtitle(GenerateReverseRulesSubtitle);
 
-            if (!FormData.ContainsKey(GenerateReverseRulesFormDataKey))
-                FormData[GenerateReverseRulesFormDataKey] = GenerateReverseRulesEnum.GenerateReverseRules.Ignore;
+            if (!formData.ContainsKey(GenerateReverseRulesFormDataKey))
+                formData[GenerateReverseRulesFormDataKey] = GenerateReverseRulesEnum.GenerateReverseRules.Ignore;
 
             Flow(
                 Enum.GetValues(typeof(GenerateReverseRulesEnum.GenerateReverseRules)).Cast<GenerateReverseRulesEnum.GenerateReverseRules>().ToArray(),
                 (state, idx) => RadioButton(
                     GenerateReverseRulesLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                    FormData.ContainsKey(GenerateReverseRulesFormDataKey)
-                    && FormData[GenerateReverseRulesFormDataKey].IsT5
-                    && FormData[GenerateReverseRulesFormDataKey].AsT5 == state,
-                    () => FormData[GenerateReverseRulesFormDataKey] = state)
+                    formData.ContainsKey(GenerateReverseRulesFormDataKey)
+                    && formData[GenerateReverseRulesFormDataKey].IsT5
+                    && formData[GenerateReverseRulesFormDataKey].AsT5 == state,
+                    () => formData[GenerateReverseRulesFormDataKey] = state)
             );
         }
 
-        private static void ReverseRulesItemState() {
-            if (!FormData.ContainsKey(SlaveItemFormDataKey)
-                || !FormData.ContainsKey(SlaveItemStateFormDataKey)
-                || !FormData.ContainsKey(GenerateReverseRulesFormDataKey)
-                || (GenerateReverseRulesEnum.GenerateReverseRules)FormData[GenerateReverseRulesFormDataKey].Value
+        private static void ReverseRulesItemState(InterItemRuleForm form) {
+            var formData = form.FormData;
+            if (!formData.ContainsKey(SlaveItemFormDataKey)
+                || !formData.ContainsKey(SlaveItemStateFormDataKey)
+                || !formData.ContainsKey(GenerateReverseRulesFormDataKey)
+                || (GenerateReverseRulesEnum.GenerateReverseRules)formData[GenerateReverseRulesFormDataKey].Value
                    != GenerateReverseRulesEnum.GenerateReverseRules.Generate)
                 return;
 
             Subtitle(ReverseRulesStateSubtitle);
-            FormData.TryGetValue(SlaveItemFormDataKey, out var slaveItemFormData);
+            formData.TryGetValue(SlaveItemFormDataKey, out var slaveItemFormData);
             switch (slaveItemFormData.Value) {
                 case ItemWearFormData _:
                 {
@@ -348,10 +362,10 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                             .ToArray(),
                         (state, idx) => RadioButton(
                             WearShowLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                            FormData.ContainsKey(ReverseRulesStateFormDataKey)
-                            && FormData[ReverseRulesStateFormDataKey].IsT2
-                            && FormData[ReverseRulesStateFormDataKey].AsT2 == state,
-                            () => FormData[ReverseRulesStateFormDataKey] = state)
+                            formData.ContainsKey(ReverseRulesStateFormDataKey)
+                            && formData[ReverseRulesStateFormDataKey].IsT2
+                            && formData[ReverseRulesStateFormDataKey].AsT2 == state,
+                            () => formData[ReverseRulesStateFormDataKey] = state)
                     );
 
                     break;
@@ -363,10 +377,10 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                         new[] {false, true},
                         (state, idx) => RadioButton(
                             AccessoryShowLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                            FormData.ContainsKey(ReverseRulesStateFormDataKey)
-                            && FormData[ReverseRulesStateFormDataKey].IsT3
-                            && FormData[ReverseRulesStateFormDataKey].AsT3 == state,
-                            () => FormData[ReverseRulesStateFormDataKey] = state)
+                            formData.ContainsKey(ReverseRulesStateFormDataKey)
+                            && formData[ReverseRulesStateFormDataKey].IsT3
+                            && formData[ReverseRulesStateFormDataKey].AsT3 == state,
+                            () => formData[ReverseRulesStateFormDataKey] = state)
                     );
 
                     break;

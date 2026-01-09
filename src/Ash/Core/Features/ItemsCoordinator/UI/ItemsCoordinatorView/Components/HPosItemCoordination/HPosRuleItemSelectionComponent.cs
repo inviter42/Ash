@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using Ash.Core.Features.Common.Components;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.Common;
+using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
 using Ash.Core.UI.Types;
 using Ash.GlobalUtils;
@@ -21,35 +23,43 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
         private const string NewRuleSubtitle1 = "Select item (individual item):";
         private const string NewRuleSubtitle2 = "Select item type (global, all items of the type):";
 
-        public static bool IsHPosItemSelected() =>
-            FormData.ContainsKey(HPosRuleItemFormDataKey);
+        public static bool IsHPosItemSelected(HPosRuleForm form) =>
+            form.FormData.ContainsKey(HPosRuleItemFormDataKey);
 
-        public static void DrawHPosRuleItemSelectionComponent() {
+        public static void DrawHPosRuleItemSelectionComponent(HPosRuleForm form) {
+            var formData = form.FormData;
             Title(NewRuleTitle);
 
             GUILayout.Space(8);
 
             RuleTypeSelectionComponent.DrawRuleTypeSelection();
 
-            if (!FormData.ContainsKey(FemaleFormDataKey))
-                FormData[FemaleFormDataKey] = GetActiveFemale();
+            if (!formData.ContainsKey(FemaleFormDataKey))
+                formData[FemaleFormDataKey] = GetActiveFemale();
 
             var activeFemale = GetActiveFemale();
+            if (activeFemale == null) {
+                Ash.Logger.LogWarning("Female is null");
+                Ash.Logger.LogWarning(Environment.StackTrace);
+                formData.Clear();
+                return;
+            }
 
             using (new GUILayout.VerticalScope("box")) {
                 FemaleSelectionComponent.Component(
                     activeFemale,
                     female => {
-                        FormData[FemaleFormDataKey] = female;
+                        formData[FemaleFormDataKey] = female;
                         SetActiveFemale(female);
                     });
 
                 // HPosItem selection
-                HPosRuleItemSelection(activeFemale);
+                HPosRuleItemSelection(form, activeFemale);
             }
         }
 
-        private static void HPosRuleItemSelection(Female activeFemale) {
+        private static void HPosRuleItemSelection(HPosRuleForm form, Female activeFemale) {
+            var formData = form.FormData;
             var model = SceneUtils.GetActiveWearShowTypes(activeFemale);
             var strippedTypes = new[] {
                 WEAR_SHOW_TYPE.TOPUPPER,
@@ -71,7 +81,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
                 () => {
                     var wearData = activeFemale.wears.GetWearData(Wears.ShowToWearType[(int)itemPart]);
-                    FormData[HPosRuleItemFormDataKey] = new ItemWearFormData { Type = itemPart, WearData = wearData };
+                    formData[HPosRuleItemFormDataKey] = new ItemWearFormData { Type = itemPart, WearData = wearData };
                 })
             );
 
@@ -86,7 +96,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             Subtitle(NewRuleSubtitle2);
             Flow(model, (itemPart, idx) => Button(
                 WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
-                () => FormData[HPosRuleItemFormDataKey] = itemPart)
+                () => formData[HPosRuleItemFormDataKey] = itemPart)
             );
         }
 

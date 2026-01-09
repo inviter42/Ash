@@ -16,10 +16,9 @@ namespace Ash.Core.UI.Types
         private ItemsVisibilityControlsView ItemsVisibilityControlsViewInstance;
         private ItemsCoordinatorView ItemsCoordinatorViewInstance;
 
-        public Female ActiveFemale { get; set; }
+        private Female ActiveFemale { get; set; }
 
         public void Awake() {
-            InitializeActiveFemale();
             GameUIControlsViewInstance = new GameUIControlsView();
             ItemsVisibilityControlsViewInstance = new ItemsVisibilityControlsView();
             ItemsCoordinatorViewInstance = new ItemsCoordinatorView();
@@ -45,6 +44,9 @@ namespace Ash.Core.UI.Types
         }
 
         public Female GetActiveFemale() {
+            if (ActiveFemale == null)
+                InitializeActiveFemale();
+
             return ActiveFemale;
         }
 

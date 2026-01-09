@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Ash.Core.Features.Common.Components;
 using Ash.Core.SceneManagement;
 using Ash.Core.UI.Types;
@@ -26,6 +27,12 @@ namespace Ash.Core.Features.HSceneControls.UI.HSceneControlsView
         // ReSharper disable once MemberCanBeMadeStatic.Global
         public void DrawView() {
             var activeFemale = GetActiveFemale();
+            if (activeFemale == null) {
+                Ash.Logger.LogWarning("Female is null");
+                Ash.Logger.LogWarning(Environment.StackTrace);
+                return;
+            }
+
             using (new GUILayout.VerticalScope("box")) {
                 FemaleSelectionComponent.Component(activeFemale, SetActiveFemale);
 

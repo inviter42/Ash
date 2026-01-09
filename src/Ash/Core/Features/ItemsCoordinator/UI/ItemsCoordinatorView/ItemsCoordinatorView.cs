@@ -1,5 +1,6 @@
 ﻿using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.HPosItemCoordination;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.InterItemCoordination;
+using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State;
 using UnityEngine;
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView
@@ -10,25 +11,34 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView
         public const string ItemsVisibilityCoordinatorTabLabel = "Items Visibility Coordinator";
         public static string SelectedRuleType = HPosRuleItemSelectionComponent.HPosRuleTypeStateKey;
 
+        public HPosRuleForm HPosRuleForm;
+        public InterItemRuleForm InterItemRuleForm;
+
         // ReSharper disable once MemberCanBeMadeStatic.Global
         public void DrawView() {
             switch (SelectedRuleType) {
                 case HPosRuleItemSelectionComponent.HPosRuleTypeStateKey:
-                    if (HPosRuleItemSelectionComponent.IsHPosItemSelected()) {
-                        HPosRuleDetailsComponent.DrawHPosRuleDetailsView();
+                    if (HPosRuleForm == null)
+                        HPosRuleForm = new HPosRuleForm();
+
+                    if (HPosRuleItemSelectionComponent.IsHPosItemSelected(HPosRuleForm)) {
+                        HPosRuleDetailsComponent.DrawHPosRuleDetailsView(HPosRuleForm);
                     }
                     else {
-                        HPosRuleItemSelectionComponent.DrawHPosRuleItemSelectionComponent();
+                        HPosRuleItemSelectionComponent.DrawHPosRuleItemSelectionComponent(HPosRuleForm);
                         GUILayout.Space(10);
                         HPosRulesListComponent.DrawHPosRulesList();
                     }
                     break;
                 case MasterItemSelectionComponent.InterItemRuleTypeStateKey:
-                    if (MasterItemSelectionComponent.IsMasterItemSelected()) {
-                        InterItemRuleDetailsComponent.DrawInterItemRuleDetailsView();
+                    if (InterItemRuleForm == null)
+                        InterItemRuleForm = new InterItemRuleForm();
+
+                    if (MasterItemSelectionComponent.IsMasterItemSelected(InterItemRuleForm)) {
+                        InterItemRuleDetailsComponent.DrawInterItemRuleDetailsView(InterItemRuleForm);
                     }
                     else {
-                        MasterItemSelectionComponent.DrawMasterItemSelectionComponent();
+                        MasterItemSelectionComponent.DrawMasterItemSelectionComponent(InterItemRuleForm);
                         GUILayout.Space(10);
                         InterItemRulesListComponent.DrawInterItemRulesList();
                     }

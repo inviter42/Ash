@@ -14,14 +14,14 @@ using InputsValues = OneOf.OneOf<
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State
 {
-    public static class InterItemRuleForm
+    public class InterItemRuleForm
     {
         // Common keys
         public const string FemaleFormDataKey = "FemaleFormData";
 
-        public static readonly Dictionary<string, InputsValues> FormData = new Dictionary<string, InputsValues>();
+        public readonly Dictionary<string, InputsValues> FormData = new Dictionary<string, InputsValues>();
 
-        public static void SubmitForm() {
+        public void SubmitForm() {
             if (!ValidateInputs())
                 return;
 
@@ -78,7 +78,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State
             FormData.Clear();
         }
 
-        private static bool ValidateInputs() {
+        private bool ValidateInputs() {
             if (!FormData.ContainsKey(MasterItemSelectionComponent.MasterItemFormDataKey)) {
                 Ash.Logger.LogWarning("MasterItem form data was not found. Rule will not be created.");
                 FormData.Clear();

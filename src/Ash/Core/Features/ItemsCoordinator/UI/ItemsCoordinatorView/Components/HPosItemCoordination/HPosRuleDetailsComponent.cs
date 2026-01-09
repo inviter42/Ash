@@ -1,4 +1,6 @@
+using System;
 using Ash.Core.Features.ItemsCoordinator.Types;
+using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
 using Ash.GlobalUtils;
 using Character;
@@ -15,21 +17,24 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
     {
         public const string HPosStyleFormDataKey = "HPosStyle";
 
-        public static void DrawHPosRuleDetailsView() {
-            Button("Back", FormData.Clear);
+        public static void DrawHPosRuleDetailsView(HPosRuleForm form) {
+            var formData = form.FormData;
 
-            if (!HPosRuleItemSelectionComponent.IsHPosItemSelected())
+            Button("Back", formData.Clear);
+
+            if (!HPosRuleItemSelectionComponent.IsHPosItemSelected(form))
                 return;
 
-            FormData.TryGetValue(FemaleFormDataKey, out var femaleFormData);
+            formData.TryGetValue(FemaleFormDataKey, out var femaleFormData);
             var activeFemale = femaleFormData.AsT1;
-
             if (activeFemale == null) {
                 Ash.Logger.LogWarning("Female is null.");
+                Ash.Logger.LogWarning(Environment.StackTrace);
+                formData.Clear();
                 return;
             }
 
-            if (!FormData.TryGetValue(HPosRuleItemSelectionComponent.HPosRuleItemFormDataKey, out var hPosRuleItemFormDataRaw)) {
+            if (!formData.TryGetValue(HPosRuleItemSelectionComponent.HPosRuleItemFormDataKey, out var hPosRuleItemFormDataRaw)) {
                 Ash.Logger.LogWarning("MasterItem form data doesn't exist.");
                 return;
             }
@@ -53,14 +58,16 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
 
             GUILayout.Space(8);
 
-            SelectPoseType(hPosItemFormData);
+            SelectPoseType(form, hPosItemFormData);
 
             // Submit form
             GUILayout.Space(10);
-            Button(CreateButtonLabel, SubmitForm, GUILayout.Height(30));
+            Button(CreateButtonLabel, form.SubmitForm, GUILayout.Height(30));
         }
 
-        private static void SelectPoseType(OneOf<ItemWearFormData, WEAR_SHOW_TYPE> hPosItemFormData) {
+        private static void SelectPoseType(HPosRuleForm form, OneOf<ItemWearFormData, WEAR_SHOW_TYPE> hPosItemFormData) {
+            var formData = form.FormData;
+
             Subtitle("Select pose type:");
 
             var itemTypeData = hPosItemFormData.IsT0 ? hPosItemFormData.AsT0.Type : hPosItemFormData.AsT1;
@@ -117,18 +124,18 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
 
             Flow(hStylesModel, (type, idx) => RadioButton(
                 HStylesLabels.GetValueOrDefaultValue(type, ErrorLabel),
-                FormData.ContainsKey(HPosStyleFormDataKey)
-                && FormData[HPosStyleFormDataKey].IsT2
-                && FormData[HPosStyleFormDataKey].AsT2 == type,
-                () => FormData[HPosStyleFormDataKey] = type
+                formData.ContainsKey(HPosStyleFormDataKey)
+                && formData[HPosStyleFormDataKey].IsT2
+                && formData[HPosStyleFormDataKey].AsT2 == type,
+                () => formData[HPosStyleFormDataKey] = type
             ));
 
             Flow(hStyleDetailModel, (hStyleDetail, idx) => RadioButton(
                 HStylesExtendedLabels.GetValueOrDefaultValue(hStyleDetail, ErrorLabel),
-                FormData.ContainsKey(HPosStyleFormDataKey)
-                && FormData[HPosStyleFormDataKey].IsT4
-                && FormData[HPosStyleFormDataKey].AsT4 == hStyleDetail,
-                () => FormData[HPosStyleFormDataKey] = hStyleDetail
+                formData.ContainsKey(HPosStyleFormDataKey)
+                && formData[HPosStyleFormDataKey].IsT4
+                && formData[HPosStyleFormDataKey].AsT4 == hStyleDetail,
+                () => formData[HPosStyleFormDataKey] = hStyleDetail
             ));
         }
     }

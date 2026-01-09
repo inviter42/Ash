@@ -1,4 +1,5 @@
-﻿using Ash.Core.Features.Common.Components;
+﻿using System;
+using Ash.Core.Features.Common.Components;
 using Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView.Components;
 using Ash.Core.UI.Types;
 using UnityEngine;
@@ -13,6 +14,11 @@ namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsVi
 
         public void DrawView() {
             var activeFemale = GetActiveFemale();
+            if (activeFemale == null) {
+                Ash.Logger.LogWarning("Female is null");
+                Ash.Logger.LogWarning(Environment.StackTrace);
+                return;
+            }
 
             using (new GUILayout.VerticalScope("box")) {
                 Title(activeFemale.heroineID.ToString());

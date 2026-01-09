@@ -56,8 +56,8 @@ namespace Ash.Core.Features.Common.Misc
         public static readonly Dictionary<H_StyleData.TYPE, string> HStylesLabels =
             new Dictionary<H_StyleData.TYPE, string> {
                 [H_StyleData.TYPE.INSERT] = "Insert",
-                [H_StyleData.TYPE.PETTING] = "Service",
-                [H_StyleData.TYPE.SERVICE] = "Caress"
+                [H_StyleData.TYPE.SERVICE] = "Service",
+                [H_StyleData.TYPE.PETTING] = "Caress"
             };
 
         public static readonly Dictionary<HStyleDetail, string> HStylesExtendedLabels =
