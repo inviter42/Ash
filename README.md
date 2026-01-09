@@ -34,7 +34,7 @@ The Inter Item rules are controlling the visibility of the dependent items based
 1. Select the `Slave Item` - this is the dependent item.
 1. Select the `State of Slave Item` - this is how the visibility of the dependent item will change, when the Master Item will assume the state you selected for it in (4).
 1. Optionally you can choose to create the rules for every *other* state of the `Master Item`. For example, if in (4) you selected `Dressed` for your master item, it will create rules for `Half` and `Hidden` states.
-1. When everything is selected, and in (7) you selected `Yes` you will be able to choose the state of the `Slave Item` in *other* master states. This allows to quickly create cyclic rules. For example - *hide* the dependent item, when the master is visible, and *show* it in all the other states.   
+1. When everything is selected, and in (8) you selected `Yes` you will be able to choose the state of the `Slave Item` in *other* master states. This allows to quickly create cyclic rules. For example - *hide* the dependent item, when the master is visible, and *show* it in all the other states.   
 1. Click `Create rule`
 1. Newly created rule will appear in the list of `Active Rules`
 
