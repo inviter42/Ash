@@ -147,13 +147,13 @@ namespace Ash.Core.Features.ItemsCoordinator
                 var extendedAccessoryObjects = Ash.MoreAccessoriesInstance
                     .GetAdditionalData(female.customParam)
                     .accessories
+                    .Where(ad => ad?.acceObj != null)
                     .Select(ad => (Accessories.AcceObj)ad.acceObj)
                     .ToArray();
 
                 validAccessoryObjects = validAccessoryObjects
                     .Concat(extendedAccessoryObjects)
                     .ToArray();
-
             }
 
             var currentlyWornData = validAccessoryObjects

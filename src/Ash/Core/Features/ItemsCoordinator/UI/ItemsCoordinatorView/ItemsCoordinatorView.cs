@@ -1,7 +1,6 @@
 ﻿using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.HPosItemCoordination;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.InterItemCoordination;
 using UnityEngine;
-using static Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State.InterItemRuleForm;
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView
 {
