@@ -20,6 +20,7 @@ namespace Ash.Core.SceneManagement
         }
 
         public static SceneTypes TypeOfCurrentScene = SceneTypes.Unknown;
+        public static Scene CurrentScene;
 
         public static bool IsLegalScene() => LegalScenes.Contains(TypeOfCurrentScene);
 
@@ -27,10 +28,10 @@ namespace Ash.Core.SceneManagement
             { SceneTypes.H, SceneTypes.EditScene, SceneTypes.SelectScene };
 
         public void Awake() {
-            SceneManager.sceneLoaded += UpdateTypeOfCurrentScene;
+            SceneManager.sceneLoaded += UpdateSceneData;
         }
 
-        public static void UpdateTypeOfCurrentScene(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode) {
+        private static void UpdateSceneData(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode) {
             foreach (SceneTypes type in Enum.GetValues(typeof(SceneTypes))) {
                 if (scene.name != type.ToString())
                     continue;
@@ -38,6 +39,15 @@ namespace Ash.Core.SceneManagement
                 TypeOfCurrentScene = type;
                 break;
             }
+
+            var gc = (GameControl)FindObjectOfType(typeof(GameControl));
+            if (gc == null) {
+
+                Ash.Logger.LogWarning("GameControl not found");
+                return;
+            }
+
+            CurrentScene = gc.sceneCtrl.nowScene;
         }
     }
 }

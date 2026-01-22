@@ -18,6 +18,8 @@ namespace Ash.Core.Features.HSceneControls.UI.HSceneControlsView
         private const string RemoveSpermButtonLabel = "Remove sperm";
         private const string ToggleVirginBloodButtonLabel = "Toggle blood";
         private const string MuteBackgroundFemaleSubtitle = "Mute background female:";
+        private const string FemaleNeckTargetLabel = "Female neck follows:";
+        private const string FemaleLookTargetLabel = "Female eyes follow:";
 
         private static readonly Dictionary<bool, string> MuteBackgroundFemaleLabels = new Dictionary<bool, string> {
             [true] = "On",
@@ -69,6 +71,58 @@ namespace Ash.Core.Features.HSceneControls.UI.HSceneControlsView
                             }
                         })
                 );
+
+                GUILayout.Space(12);
+
+                Subtitle(FemaleNeckTargetLabel);
+                Flow(
+                    new[] { LookAtRotator.TYPE.NO, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD },
+                    (type, idx) => RadioButton(LookRotatorTypeLabels.GetValueOrDefaultValue(type, ErrorLabel),
+                        activeFemale.neckLookType == type,
+                        () => {
+                            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+                            switch (type) {
+                                case LookAtRotator.TYPE.NO:
+                                case LookAtRotator.TYPE.HOLD:
+                                {
+                                    activeFemale.ChangeNeckLook(type, null, false);
+                                    break;
+                                }
+
+                                case LookAtRotator.TYPE.TARGET:
+                                {
+                                    activeFemale.ChangeNeckLook(type, GetCameraTransform(), false);
+                                    break;
+                                }
+                            }
+                        })
+                );
+
+                GUILayout.Space(12);
+
+                Subtitle(FemaleLookTargetLabel);
+                Flow(
+                    new[] { LookAtRotator.TYPE.FORWARD, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD },
+                    (type, idx) => RadioButton(LookRotatorTypeLabels.GetValueOrDefaultValue(type, ErrorLabel),
+                        activeFemale.eyeLookType == type,
+                        () => {
+                            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+                            switch (type) {
+                                case LookAtRotator.TYPE.FORWARD:
+                                case LookAtRotator.TYPE.HOLD:
+                                {
+                                    activeFemale.ChangeEyeLook(type, null, false);
+                                    break;
+                                }
+
+                                case LookAtRotator.TYPE.TARGET:
+                                {
+                                    activeFemale.ChangeEyeLook(type, GetCameraTransform(), false);
+                                    break;
+                                }
+                            }
+                        })
+                );
             }
         }
 
@@ -92,6 +146,18 @@ namespace Ash.Core.Features.HSceneControls.UI.HSceneControlsView
                 default:
                     Ash.Logger.LogError($"View HSceneControlsView is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
                     return;
+            }
+        }
+
+        // ReSharper disable once MemberCanBeMadeStatic.Local
+        private Transform GetCameraTransform() {
+            switch (SceneTypeTracker.CurrentScene) {
+                case SelectScene selectScene:
+                    return selectScene.cam.transform;
+                case H_Scene hScene:
+                    return hScene.camera.transform;
+                default:
+                    return null;
             }
         }
     }

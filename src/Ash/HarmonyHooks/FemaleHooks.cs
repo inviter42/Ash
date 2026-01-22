@@ -2,6 +2,7 @@
 using Character;
 using HarmonyLib;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Ash.Core.Features.Common.Misc;
 using Ash.Core.Features.ItemsCoordinator;
 
@@ -30,7 +31,7 @@ namespace Ash.HarmonyHooks
         // this fixes incorrect original return result for Mariko
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Female), nameof(Female.GetVolume), new Type[] { })]
-        // ReSharper disable once InconsistentNaming
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         public static bool GetVolumePrefix(Female __instance, ref float __result) {
             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
             switch (__instance.heroineID) {

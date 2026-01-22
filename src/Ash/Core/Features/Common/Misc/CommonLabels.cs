@@ -69,6 +69,14 @@ namespace Ash.Core.Features.Common.Misc
                 [new HStyleDetail{ Type = (H_StyleData.TYPE)(-2), Detail = (H_StyleData.DETAIL)(-2) }] = "All poses"
             };
 
+        public static readonly Dictionary<LookAtRotator.TYPE, string> LookRotatorTypeLabels =
+            new Dictionary<LookAtRotator.TYPE, string> {
+                [LookAtRotator.TYPE.NO] = "Pose",
+                [LookAtRotator.TYPE.FORWARD] = "Forward",
+                [LookAtRotator.TYPE.TARGET] = "Camera",
+                [LookAtRotator.TYPE.HOLD] = "Fixed"
+            };
+
         public const string ErrorLabel = "???";
 
         public const string CreateButtonLabel = "Create";
