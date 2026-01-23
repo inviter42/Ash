@@ -15,6 +15,7 @@ This is a beta feature that allows to hide some of the less used buttons and UI 
 Just a few QoL things to control during H-Scene.
 - Toggles for bodily fluids
 - Toggle to automatically mute inactive girl
+- Follow target selection for eyes and neck
 
 ## Installation
 Download and install: 
