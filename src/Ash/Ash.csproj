@@ -1,0 +1,318 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{799E8918-D6E9-47AF-9218-466D328960FC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Ash</RootNamespace>
+    <AssemblyName>Ash</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+    <LangVersion>7.3</LangVersion>
+    <TieredCompilation>false</TieredCompilation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\BepInEx\plugins\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>7.3</LangVersion>
+    <TieredCompilation>false</TieredCompilation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>embedded</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\BepInEx\plugins\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>7.3</LangVersion>
+    <TieredCompilation>false</TieredCompilation>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony, Version=2.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.BepInEx.Harmony.2.9.0\lib\net35\0Harmony.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\packages\IllusionLibs.PlayHome.Assembly-CSharp.2018.3.11.4\lib\net35\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.PlayHome.Assembly-CSharp-firstpass.2018.3.11.4\lib\net35\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BepInEx, Version=5.4.22.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.BepInEx.5.4.22\lib\net35\BepInEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.BepInEx.Mono.Cecil.0.10.4.1\lib\net35\Mono.Cecil.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.BepInEx.Mono.Cecil.0.10.4.1\lib\net35\Mono.Cecil.Mdb.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.BepInEx.Mono.Cecil.0.10.4.1\lib\net35\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.BepInEx.Mono.Cecil.0.10.4.1\lib\net35\Mono.Cecil.Rocks.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoMod.RuntimeDetour, Version=22.1.29.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.BepInEx.MonoMod.22.1.29.1\lib\net35\MonoMod.RuntimeDetour.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoMod.Utils, Version=22.1.29.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.BepInEx.MonoMod.22.1.29.1\lib\net35\MonoMod.Utils.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MoreAccessories">
+      <HintPath>..\packages\MoreAccessories\MoreAccessories.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Json.Net.Unity3D.9.0.1\lib\net35\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OneOf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OneOf.3.0.271\lib\net35\OneOf.dll</HintPath>
+    </Reference>
+    <Reference Include="PHAPI, Version=1.45.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionModdingAPI.PHAPI.1.45.1\lib\net35\PHAPI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PH_ExtensibleSaveFormat, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExtensibleSaveFormat.PlayHome.21.1.2\lib\net35\PH_ExtensibleSaveFormat.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\packages\IllusionLibs.PlayHome.UnityEngine.5.5.5.4\lib\net35\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.PlayHome.UnityEngine.UI.5.5.5.4\lib\net35\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="XUnity.AutoTranslator.Plugin.Core, Version=4.18.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.XUnity.AutoTranslator.Plugin.Core.4.18.0\lib\net35\XUnity.AutoTranslator.Plugin.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="XUnity.ResourceRedirector, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionLibs.XUnity.ResourceRedirector.4.18.0\lib\net35\XUnity.ResourceRedirector.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Ash.cs" />
+    <Compile Include="Core\AssetBundleManagement\AssetBundleManager.cs" />
+    <Compile Include="Core\Features\Common\Components\FemaleSelectionComponent.cs" />
+    <Compile Include="Core\Features\Common\Misc\CommonLabels.cs" />
+    <Compile Include="Core\Features\Common\Misc\CommonImGuiStyles.cs" />
+    <Compile Include="Core\Features\GameUIControls\UI\GameUIControlsView\GameUIControlsView.cs" />
+    <Compile Include="Core\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIManagementHelper.cs" />
+    <Compile Include="Core\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIAdjustments.cs" />
+    <Compile Include="Core\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIResets.cs" />
+    <Compile Include="Core\Features\HSceneControls\UI\HSceneControlsView\HSceneControlsView.cs" />
+    <Compile Include="Core\Features\HSceneSettings\UI\HSceneSettingsView\HSceneSettingsView.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\CommandBufferBlur.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Components\Config\GenericComponentsConfig.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Components\Generic\RoundButton.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Components\Generic\RoundButtonWithIcon.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Components\Textures\SharedTextures.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Extras\Helpers\Configs\IuiMenuConfigTemplate.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Extras\Helpers\Configs\IuiScreenResolutionMathHelpers.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Extras\Helpers\Interactive\IuiPointerEventsHandler.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Extras\Helpers\Interactive\IuiTextState.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Extras\Helpers\Interactive\IuiTextToggleState.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Extras\Helpers\UIPositioning\IuiPositioningHelpers.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Extras\Helpers\Textures\IuiSdfs.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Extras\Helpers\Textures\IuiTextureGen.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Extras\Extensions\IuiToggle.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\InputHandler\IuiInputHandler.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\IuiMain.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\IuiSettings.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\GagMenu\Components\GagMenuGagSelectionToggle.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\GagMenu\Config\GagMenuConfig.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\GagMenu\GagMenuMain.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\GagMenu\State\GagMenuStateControl.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\GagMenu\Textures\GagMenuMaskAtlas.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\GagMenu\Textures\GagMenuTextures.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\RadialMenu\Config\RadialMenuConfig.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\RadialMenu\InputHandler\RadialMenuInputHandler.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\RadialMenu\RadialMenuMain.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\RadialMenu\State\RadialMenuStateControl.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\RadialMenu\Textures\RadialMenuAtlasMask.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\RadialMenu\Textures\RadialMenuTextures.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Components\FemaleStateSelectionToggle.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Components\GenreSelectionToggle.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Components\StyleThumbnail.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Components\ScrollView\StylesScrollBar.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Components\ScrollView\StylesScrollView.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Components\ScrollView\StylesScrollViewButton.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Config\StylesMenuConfig.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Data\StylesMenuStylesData.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\StylesMenuMain.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Textures\StylesMenuMaskAtlas.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Textures\StylesMenuTextures.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\State\StylesMenuStateControl.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Textures\StylesMenuThumbnailCollection.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\Accessories\ExpandAccessoriesButton.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\Accessories\InteractableRing.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\Accessories\AccessoryItemButton.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\Accessories\Alpha8RaycastFilter.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\ItemButtonBase.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\SwitchFemale\CurrentFemaleText.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\SwitchFemale\SwitchFemaleButton.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\WearAndAccessoryButtonsContainer.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\Wears\WearItemButton.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\XButton.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\Wears\WearButtonsContainer.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Config\WearsMenuConfig.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Utils\ThumbnailUtils.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\WearsMenuMain.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\State\WearsMenuStateControl.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Textures\WearsMenuMaskAtlas.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Textures\WearsMenuTextures.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\State\IuiMainStateControl.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\BaseItem.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\DataOfAccessoryItem.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\DataOfWearItem.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\HPosRuleSet.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\HStyleDetail.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\InterItemRuleSet.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\Types\SlaveItem.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\ItemsCoordinator.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\RulesManager.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\Common\RuleTypeSelectionComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRuleDetailsComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRuleItemSelectionComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRulesListComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\MasterItemSelectionComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\InterItemRuleDetailsComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\InterItemRulesListComponent.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\ItemsCoordinatorView.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\State\InterItemRuleForm.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\State\HPosRuleForm.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\GenerateReverseRulesEnum.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\ItemAccessoryFormData.cs" />
+    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\ItemWearFormData.cs" />
+    <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\AllAccessoriesVisibilitySelectionComponent.cs" />
+    <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\AllClothingVisibilitySelectionComponent.cs" />
+    <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\IndividualAccessoriesVisibilitySelectionComponent.cs" />
+    <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\IndividualWearsVisibilitySelectionComponent.cs" />
+    <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\ItemsVisibilityControlsView.cs" />
+    <Compile Include="Core\SceneManagement\ObjectDestructionTracker.cs" />
+    <Compile Include="Core\SceneManagement\SceneComponentRegistry.cs" />
+    <Compile Include="Core\SceneManagement\SceneDataModifiers.cs" />
+    <Compile Include="Core\SceneManagement\SceneTypeTracker.cs" />
+    <Compile Include="Core\Settings\PersistentSettings.cs" />
+    <Compile Include="Core\UI\AshUI.cs" />
+    <Compile Include="Core\UI\State\AshUIStateControl.cs" />
+    <Compile Include="Core\UI\Types\AshWindow.cs" />
+    <Compile Include="Core\UI\Types\EditSceneWindow.cs" />
+    <Compile Include="Core\UI\Types\HSceneWindow.cs" />
+    <Compile Include="Core\UI\WindowManager.cs" />
+    <Compile Include="GlobalUtils\AssetBundleUtils.cs" />
+    <Compile Include="GlobalUtils\ColorUtils.cs" />
+    <Compile Include="GlobalUtils\FileUtils.cs" />
+    <Compile Include="GlobalUtils\HotkeyUtils.cs" />
+    <Compile Include="GlobalUtils\ImageUtils.cs" />
+    <Compile Include="GlobalUtils\Migrations.cs" />
+    <Compile Include="GlobalUtils\IO.cs" />
+    <Compile Include="GlobalUtils\AutoTranslatorIntegration.cs" />
+    <Compile Include="GlobalUtils\DictionaryUtils.cs" />
+    <Compile Include="GlobalUtils\EnumUtils.cs" />
+    <Compile Include="GlobalUtils\ImGuiPrimitivesLib.cs" />
+    <Compile Include="GlobalUtils\TransformUtils.cs" />
+    <Compile Include="HarmonyHooks\DevHooks.cs" />
+    <Compile Include="HarmonyHooks\_Human\FemaleHooks.cs" />
+    <Compile Include="HarmonyHooks\_H\HMembersHooks.cs" />
+    <Compile Include="HarmonyHooks\_H\HSceneHooks.cs" />
+    <Compile Include="HarmonyHooks\_H\_HState\HStateExitHooks.cs" />
+    <Compile Include="HarmonyHooks\_H\_HState\HStateInsertedWaitHooks.cs" />
+    <Compile Include="HarmonyHooks\_H\_HState\HStateLoopHooks.cs" />
+    <Compile Include="HarmonyHooks\_H\_HState\HStatePreInsertWaitHooks.cs" />
+    <Compile Include="HarmonyHooks\_H\_HState\HStatePreTouchWaitHooks.cs" />
+    <Compile Include="HarmonyHooks\_H\_HState\HStateStartHooks.cs" />
+    <Compile Include="HarmonyHooks\_Menus\ConfigMenuHooks.cs" />
+    <Compile Include="HarmonyHooks\_Menus\PauseMenueHooks.cs" />
+    <Compile Include="HarmonyHooks\_Scene\IllusionCameraHooks.cs" />
+    <Compile Include="HarmonyHooks\_Scene\SceneControlHooks.cs" />
+    <Compile Include="HarmonyHooks\_Wearables\AccessoriesHooks.cs" />
+    <Compile Include="HarmonyHooks\_Wearables\WearsHooks.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="GlobalUtils\SceneUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+    <None Include="TODO.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\BepInEx.Analyzers.1.0.8\analyzers\dotnet\cs\BepInEx.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\BepInEx.Analyzers.1.0.8\analyzers\dotnet\cs\BepInEx.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.Unity.Analyzers.1.25.0\analyzers\dotnet\cs\Microsoft.Unity.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\Features\ItemsCoordinator\UI\" />
+    <Folder Include="Core\Features\ItemsVisibilityControls\UI\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\immersive_ui_fonts" />
+    <EmbeddedResource Include="Resources\immersive_ui_shaders" />
+    <EmbeddedResource Include="Resources\immersive_ui_icons" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Core\Features\ImmersiveUI\Shaders\FrostedGlass.shader" />
+    <Content Include="Core\Features\ImmersiveUI\Shaders\SeparableBlur.shader" />
+    <EmbeddedResource Include="Resources\immersive_ui_thumbnails" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\IllusionLibs.BepInEx.MonoMod.22.1.29.1\build\IllusionLibs.BepInEx.MonoMod.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\IllusionLibs.BepInEx.MonoMod.22.1.29.1\build\IllusionLibs.BepInEx.MonoMod.targets'))" />
+    <Error Condition="!Exists('..\packages\IllusionLibs.PlayHome.Assembly-CSharp.2018.3.11.4\build\IllusionLibs.PlayHome.Assembly-CSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\IllusionLibs.PlayHome.Assembly-CSharp.2018.3.11.4\build\IllusionLibs.PlayHome.Assembly-CSharp.targets'))" />
+    <Error Condition="!Exists('..\packages\IllusionLibs.PlayHome.Assembly-CSharp-firstpass.2018.3.11.4\build\IllusionLibs.PlayHome.Assembly-CSharp-firstpass.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\IllusionLibs.PlayHome.Assembly-CSharp-firstpass.2018.3.11.4\build\IllusionLibs.PlayHome.Assembly-CSharp-firstpass.targets'))" />
+    <Error Condition="!Exists('..\packages\IllusionLibs.BepInEx.Harmony.2.9.0\build\IllusionLibs.BepInEx.Harmony.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\IllusionLibs.BepInEx.Harmony.2.9.0\build\IllusionLibs.BepInEx.Harmony.targets'))" />
+    <Error Condition="!Exists('..\packages\IllusionLibs.PlayHome.UnityEngine.5.5.5.4\build\IllusionLibs.PlayHome.UnityEngine.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\IllusionLibs.PlayHome.UnityEngine.5.5.5.4\build\IllusionLibs.PlayHome.UnityEngine.targets'))" />
+    <Error Condition="!Exists('..\packages\IllusionLibs.PlayHome.UnityEngine.UI.5.5.5.4\build\IllusionLibs.PlayHome.UnityEngine.UI.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\IllusionLibs.PlayHome.UnityEngine.UI.5.5.5.4\build\IllusionLibs.PlayHome.UnityEngine.UI.targets'))" />
+    <Error Condition="!Exists('..\packages\IllusionLibs.XUnity.AutoTranslator.Plugin.Core.4.18.0\build\IllusionLibs.XUnity.AutoTranslator.Plugin.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\IllusionLibs.XUnity.AutoTranslator.Plugin.Core.4.18.0\build\IllusionLibs.XUnity.AutoTranslator.Plugin.Core.targets'))" />
+    <Error Condition="!Exists('..\packages\IllusionLibs.XUnity.ResourceRedirector.4.18.0\build\IllusionLibs.XUnity.ResourceRedirector.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\IllusionLibs.XUnity.ResourceRedirector.4.18.0\build\IllusionLibs.XUnity.ResourceRedirector.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.NETFramework.ReferenceAssemblies.net35.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net35.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NETFramework.ReferenceAssemblies.net35.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net35.targets'))" />
+  </Target>
+  <Import Project="..\packages\IllusionLibs.BepInEx.MonoMod.22.1.29.1\build\IllusionLibs.BepInEx.MonoMod.targets" Condition="Exists('..\packages\IllusionLibs.BepInEx.MonoMod.22.1.29.1\build\IllusionLibs.BepInEx.MonoMod.targets')" />
+  <Import Project="..\packages\IllusionLibs.PlayHome.Assembly-CSharp.2018.3.11.4\build\IllusionLibs.PlayHome.Assembly-CSharp.targets" Condition="Exists('..\packages\IllusionLibs.PlayHome.Assembly-CSharp.2018.3.11.4\build\IllusionLibs.PlayHome.Assembly-CSharp.targets')" />
+  <Import Project="..\packages\IllusionLibs.PlayHome.Assembly-CSharp-firstpass.2018.3.11.4\build\IllusionLibs.PlayHome.Assembly-CSharp-firstpass.targets" Condition="Exists('..\packages\IllusionLibs.PlayHome.Assembly-CSharp-firstpass.2018.3.11.4\build\IllusionLibs.PlayHome.Assembly-CSharp-firstpass.targets')" />
+  <Import Project="..\packages\IllusionLibs.BepInEx.Harmony.2.9.0\build\IllusionLibs.BepInEx.Harmony.targets" Condition="Exists('..\packages\IllusionLibs.BepInEx.Harmony.2.9.0\build\IllusionLibs.BepInEx.Harmony.targets')" />
+  <Import Project="..\packages\IllusionLibs.PlayHome.UnityEngine.5.5.5.4\build\IllusionLibs.PlayHome.UnityEngine.targets" Condition="Exists('..\packages\IllusionLibs.PlayHome.UnityEngine.5.5.5.4\build\IllusionLibs.PlayHome.UnityEngine.targets')" />
+  <Import Project="..\packages\IllusionLibs.PlayHome.UnityEngine.UI.5.5.5.4\build\IllusionLibs.PlayHome.UnityEngine.UI.targets" Condition="Exists('..\packages\IllusionLibs.PlayHome.UnityEngine.UI.5.5.5.4\build\IllusionLibs.PlayHome.UnityEngine.UI.targets')" />
+  <Import Project="..\packages\IllusionLibs.XUnity.AutoTranslator.Plugin.Core.4.18.0\build\IllusionLibs.XUnity.AutoTranslator.Plugin.Core.targets" Condition="Exists('..\packages\IllusionLibs.XUnity.AutoTranslator.Plugin.Core.4.18.0\build\IllusionLibs.XUnity.AutoTranslator.Plugin.Core.targets')" />
+  <Import Project="..\packages\IllusionLibs.XUnity.ResourceRedirector.4.18.0\build\IllusionLibs.XUnity.ResourceRedirector.targets" Condition="Exists('..\packages\IllusionLibs.XUnity.ResourceRedirector.4.18.0\build\IllusionLibs.XUnity.ResourceRedirector.targets')" />
+  <Import Project="..\packages\Microsoft.NETFramework.ReferenceAssemblies.net35.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net35.targets" Condition="Exists('..\packages\Microsoft.NETFramework.ReferenceAssemblies.net35.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net35.targets')" />
+</Project>
