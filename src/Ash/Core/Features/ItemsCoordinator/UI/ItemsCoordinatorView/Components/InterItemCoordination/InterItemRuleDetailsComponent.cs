@@ -1,26 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Ash.Core.Features.Common.Misc;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
-using Ash.Core.UI;
 using Ash.GlobalUtils;
 using Character;
 using OneOf;
 using UnityEngine;
-using static Ash.GlobalUtils.GuiPrimitivesLib;
+using static Ash.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
 using static Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State.InterItemRuleForm;
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.InterItemCoordination
 {
-    public static class InterItemRuleDetailsComponent
+    internal static class InterItemRuleDetailsComponent
     {
-        public const string MasterItemStateFormDataKey = "MasterItemState";
-        public const string SlaveItemFormDataKey = "SlaveItemData";
-        public const string SlaveItemStateFormDataKey = "SlaveItemState";
-        public const string GenerateReverseRulesFormDataKey = "GenerateReverseRules";
-        public const string ReverseRulesStateFormDataKey = "GenerateReverseRulesState";
+        internal const string MasterItemStateFormDataKey = "MasterItemState";
+        internal const string SlaveItemFormDataKey = "SlaveItemData";
+        internal const string SlaveItemStateFormDataKey = "SlaveItemState";
+        internal const string GenerateReverseRulesFormDataKey = "GenerateReverseRules";
+        internal const string ReverseRulesStateFormDataKey = "GenerateReverseRulesState";
 
         private static readonly Dictionary<GenerateReverseRulesEnum.GenerateReverseRules, string> GenerateReverseRulesLabels =
             new Dictionary<GenerateReverseRulesEnum.GenerateReverseRules, string> {
@@ -34,7 +34,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
         private const string GenerateReverseRulesSubtitle = "Automatically create rules for other Master states:";
         private const string ReverseRulesStateSubtitle = "In other Master states set Slave to:";
 
-        public static void DrawInterItemRuleDetailsView(InterItemRuleForm form) {
+        internal static void DrawInterItemRuleDetailsView(InterItemRuleForm form) {
             var formData = form.FormData;
 
             Button("Back", formData.Clear);
@@ -42,14 +42,14 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             if (!MasterItemSelectionComponent.IsMasterItemSelected(form))
                 return;
 
-            formData.TryGetValue(FemaleFormDataKey, out var femaleFormData);
-            var activeFemale = femaleFormData.AsT4;
-            if (activeFemale == null) {
+            if (!formData.TryGetValue(FemaleFormDataKey, out var femaleFormData)) {
                 Ash.Logger.LogWarning("Female is null.");
                 Ash.Logger.LogWarning(Environment.StackTrace);
                 formData.Clear();
                 return;
             }
+
+            var activeFemale = femaleFormData.AsT4;
 
             // OneOf is never nullish
             if (!formData.TryGetValue(MasterItemSelectionComponent.MasterItemFormDataKey, out var masterItemFormDataRaw)) {
@@ -127,7 +127,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             Title(AutoTranslatorIntegration.Translate(wearDataForMasterItem.name));
             Title(
                 WearShowTypeLabels.GetValueOrDefaultValue(masterItemFormDataWear.Type, ErrorLabel),
-                new GUIStyle(AshUI.TitleStyle) { fontSize = 13 }
+                new GUIStyle(CommonImGuiStyles.TitleStyle) { fontSize = 13 }
             );
         }
 
@@ -153,7 +153,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                         .slot[masterItemFormDataAccessory.SlotNo % AccessoryCustom.SLOT_NUM].type,
                     ErrorLabel
                 ),
-                new GUIStyle(AshUI.TitleStyle) { fontSize = 13 }
+                new GUIStyle(CommonImGuiStyles.TitleStyle) { fontSize = 13 }
             );
         }
 
@@ -196,7 +196,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
 
         private static void SlaveItemWearSelection(InterItemRuleForm form, Female activeFemale, OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData) {
             var formData = form.FormData;
-            var slaveItemWearsModelFiltered = SceneUtils.GetActiveWearShowTypes(activeFemale)
+            var slaveItemWearsModelFiltered = SceneUtils.GetWearShowTypesOfEquippedItems(activeFemale)
                 .Where(type => {
                     if (masterItemFormData.IsT1)
                         return true;
@@ -219,8 +219,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                         if (formData.ContainsKey(SlaveItemFormDataKey) && formData[SlaveItemFormDataKey].IsT3)
                             formData.Remove(SlaveItemStateFormDataKey);
 
-                        formData[SlaveItemFormDataKey] = new ItemWearFormData
-                            { Type = itemPart, WearData = slaveWearData };
+                        formData[SlaveItemFormDataKey] = new ItemWearFormData(itemPart, slaveWearData);
                     }
                 );
             });
@@ -251,10 +250,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                             formData.Remove(SlaveItemStateFormDataKey);
 
                         formData[SlaveItemFormDataKey] =
-                            new ItemAccessoryFormData {
-                                SlotNo = accessoryObj.slot, AccessoryParameter = accessoryObj.acceParam,
-                                AccessoryData = accessoryData
-                            };
+                            new ItemAccessoryFormData(accessoryObj.slot, accessoryObj.acceParam,accessoryData);
                     }
                 );
             }, 3);
@@ -294,10 +290,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                             formData.Remove(SlaveItemStateFormDataKey);
 
                         formData[SlaveItemFormDataKey] =
-                            new ItemAccessoryFormData {
-                                SlotNo = accessoryObj.slot, AccessoryParameter = accessoryObj.acceParam,
-                                AccessoryData = accessoryData
-                            };
+                            new ItemAccessoryFormData(accessoryObj.slot, accessoryObj.acceParam, accessoryData);
                     }
                 );
             }, 3);
@@ -306,7 +299,10 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
         private static void SlaveItemStateSelection(InterItemRuleForm form) {
             var formData = form.FormData;
             Subtitle(SlaveItemStateSelectionSubtitle);
-            formData.TryGetValue(SlaveItemFormDataKey, out var slaveItemFromData);
+
+            if (!formData.TryGetValue(SlaveItemFormDataKey, out var slaveItemFromData))
+                return;
+
             switch (slaveItemFromData.Value) {
                 case ItemWearFormData _:
                     ItemWearStateSelection(form, SlaveItemStateFormDataKey);
@@ -331,7 +327,8 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 formData[GenerateReverseRulesFormDataKey] = GenerateReverseRulesEnum.GenerateReverseRules.Ignore;
 
             Flow(
-                Enum.GetValues(typeof(GenerateReverseRulesEnum.GenerateReverseRules)).Cast<GenerateReverseRulesEnum.GenerateReverseRules>().ToArray(),
+                Enum.GetValues(typeof(GenerateReverseRulesEnum.GenerateReverseRules))
+                    .Cast<GenerateReverseRulesEnum.GenerateReverseRules>().ToArray(),
                 (state, idx) => RadioButton(
                     GenerateReverseRulesLabels.GetValueOrDefaultValue(state, ErrorLabel),
                     formData.ContainsKey(GenerateReverseRulesFormDataKey)
@@ -347,11 +344,14 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 || !formData.ContainsKey(SlaveItemStateFormDataKey)
                 || !formData.ContainsKey(GenerateReverseRulesFormDataKey)
                 || (GenerateReverseRulesEnum.GenerateReverseRules)formData[GenerateReverseRulesFormDataKey].Value
-                   != GenerateReverseRulesEnum.GenerateReverseRules.Generate)
+                != GenerateReverseRulesEnum.GenerateReverseRules.Generate)
                 return;
 
             Subtitle(ReverseRulesStateSubtitle);
-            formData.TryGetValue(SlaveItemFormDataKey, out var slaveItemFormData);
+
+            if (!formData.TryGetValue(SlaveItemFormDataKey, out var slaveItemFormData))
+                return;
+
             switch (slaveItemFormData.Value) {
                 case ItemWearFormData _:
                 {
@@ -374,7 +374,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 case ItemAccessoryFormData _:
                 {
                     Flow(
-                        new[] {false, true},
+                        new[] { false, true },
                         (state, idx) => RadioButton(
                             AccessoryShowLabels.GetValueOrDefaultValue(state, ErrorLabel),
                             formData.ContainsKey(ReverseRulesStateFormDataKey)

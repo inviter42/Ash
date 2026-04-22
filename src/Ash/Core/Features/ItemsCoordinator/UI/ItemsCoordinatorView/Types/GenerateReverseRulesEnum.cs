@@ -1,8 +1,8 @@
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types
 {
-    public static class GenerateReverseRulesEnum
+    internal static class GenerateReverseRulesEnum
     {
-        public enum GenerateReverseRules
+        internal enum GenerateReverseRules
         {
             Generate,
             Ignore

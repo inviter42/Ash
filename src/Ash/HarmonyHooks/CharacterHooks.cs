@@ -10,7 +10,7 @@ namespace Ash.HarmonyHooks
     {
         // Female instance is ready
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(Female), nameof(Female.Awake), new Type[] { })]
+        [HarmonyPatch(typeof(Female), nameof(Female.Awake))]
         // ReSharper disable once InconsistentNaming
         public static void FemaleAwakePostfix(Female __instance) {
             // add special component to track Female destruction
@@ -20,7 +20,7 @@ namespace Ash.HarmonyHooks
 
         // Female instance is ready
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(Female), nameof(Female.Start), new Type[] { })]
+        [HarmonyPatch(typeof(Female), nameof(Female.Start))]
         // ReSharper disable once InconsistentNaming
         public static void FemaleStartPostfix(Female __instance) {
             ItemsCoordinator.ApplyRules(__instance, RulesManager.RuleSets);

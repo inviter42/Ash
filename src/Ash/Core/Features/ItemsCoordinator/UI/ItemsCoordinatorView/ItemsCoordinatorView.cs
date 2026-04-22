@@ -5,17 +5,17 @@ using UnityEngine;
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView
 {
-    public class ItemsCoordinatorView
+    internal class ItemsCoordinatorView
     {
         // Tab Label
-        public const string ItemsVisibilityCoordinatorTabLabel = "Items Visibility Coordinator";
-        public static string SelectedRuleType = HPosRuleItemSelectionComponent.HPosRuleTypeStateKey;
+        internal const string ItemsVisibilityCoordinatorTabLabel = "Item Rules";
+        internal static string SelectedRuleType = HPosRuleItemSelectionComponent.HPosRuleTypeStateKey;
 
-        public HPosRuleForm HPosRuleForm;
-        public InterItemRuleForm InterItemRuleForm;
+        private HPosRuleForm HPosRuleForm;
+        private InterItemRuleForm InterItemRuleForm;
 
         // ReSharper disable once MemberCanBeMadeStatic.Global
-        public void DrawView() {
+        internal void DrawView() {
             switch (SelectedRuleType) {
                 case HPosRuleItemSelectionComponent.HPosRuleTypeStateKey:
                     if (HPosRuleForm == null)

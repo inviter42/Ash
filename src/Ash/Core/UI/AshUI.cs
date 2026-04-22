@@ -1,148 +1,63 @@
-using Ash.Core.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper;
+using Ash.Core.Features.ImmersiveUI;
 using Ash.Core.SceneManagement;
-using Ash.Core.UI.Types;
+using Ash.Core.UI.State;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Ash.Core.UI
 {
-    public class AshUI : MonoBehaviour
+    internal class AshUI : MonoBehaviour
     {
-        // Custom font
-        // ReSharper disable once MemberCanBePrivate.Global
-        public static Font DynamicFont;
+        internal readonly AssetBundle ImmersiveUIShadersAssetBundle = GlobalUtils.AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_shaders");
+        internal readonly AssetBundle ImmersiveUIIconsAssetBundle = GlobalUtils.AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_icons");
+        internal readonly AssetBundle ImmersiveUIFontsAssetBundle = GlobalUtils.AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_fonts");
+        internal readonly AssetBundle ImmersiveUIThumbnailsAssetBundle = GlobalUtils.AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_thumbnails");
 
-        // Font styles
-        public static GUIStyle TitleStyle;
-        public static GUIStyle SubtitleStyle;
-        public static GUIStyle InfoStyle;
+        internal IuiMain IuiMain;
 
-        // UI Styles
-        public static GUIStyle ToolbarStyle;
+        private void Awake() {
+            SceneTypeTracker.SceneLoaded += CreateImmersiveUI;
 
-        public MonoBehaviour Window { get; private set; }
-
-        private bool AreStylesInitialized;
-
-        public void Awake() {
-            SceneManager.sceneLoaded += InGameUIObjectManagement.UpdateData;
-            SceneManager.sceneUnloaded += UnloadWindow;
+            SceneTypeTracker.SceneUnloaded += WindowManager.UnloadWindow;
+            SceneTypeTracker.SceneUnloaded += DestroyImmersiveUI;
         }
 
-        public void Update() {
-            if (!HotkeyIsDown())
+        private void Update() {
+            AshUIStateControl.UpdateState();
+
+            // imgui plugin window
+            WindowManager.UpdateWindowVisibility();
+
+            // immersive ui
+            // ReSharper disable once InvertIf
+            if (IuiMain != null) {
+                IuiMain.StateControl.UpdateState();
+
+                foreach (var enumerator in IuiMain.StateControl.YieldPostStateUpdateRoutineIterators())
+                    StartCoroutine(enumerator);
+            }
+        }
+
+        internal void CreateImmersiveUI() {
+            if (!IuiMain.IsLegalScene)
                 return;
 
-            if (!SceneTypeTracker.IsLegalScene()) {
-                Ash.Logger.LogWarning($"Illegal scene {SceneTypeTracker.TypeOfCurrentScene}");
+            if (!Ash.PersistentSettings.IsImmersiveUiEnabled.Value) {
+                Ash.Logger.LogDebug($"Immersive UI is disabled - skip running constructor");
                 return;
             }
 
-            // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-            ToggleWindowVisibility();
-        }
-
-        public void OnGUI() {
-            if (AreStylesInitialized)
+            if (IuiMain != null)
                 return;
 
-            InitializeStyles();
+            IuiMain = new IuiMain();
         }
 
-        private void UnloadWindow(UnityEngine.SceneManagement.Scene scene) {
-            if (Window is MonoBehaviour behaviour)
-                behaviour.enabled = false;
+        internal void DestroyImmersiveUI() {
+            if (IuiMain == null)
+                return;
 
-            Window = null;
-        }
-
-        // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-        public void ToggleWindowVisibility() {
-            if (!Window) CreateWindowComponent();
-
-            if (Window is MonoBehaviour behaviour)
-                behaviour.enabled = !behaviour.enabled;
-        }
-
-        // ReSharper disable Unity.PerformanceAnalysis
-        private void CreateWindowComponent() {
-            // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-            switch (SceneTypeTracker.TypeOfCurrentScene) {
-                case SceneTypeTracker.SceneTypes.H:
-                    Window = Ash.AshGameObj.AddComponent<HSceneWindow>();
-                    break;
-                case SceneTypeTracker.SceneTypes.EditScene:
-                case SceneTypeTracker.SceneTypes.SelectScene:
-                    Window = Ash.AshGameObj.AddComponent<EditSceneWindow>();
-                    break;
-                default:
-                    Ash.Logger.LogError(
-                        $"Unable to create Window component for unregistered scene type {SceneTypeTracker.TypeOfCurrentScene}");
-                    break;
-            }
-        }
-
-        private void InitializeStyles() {
-            if (!DynamicFont) {
-                DynamicFont = Font.CreateDynamicFontFromOSFont(
-                    new[] { "Segeo UI" }, 20
-                );
-                DontDestroyOnLoad(DynamicFont);
-            }
-
-            if (TitleStyle == null) {
-                TitleStyle = new GUIStyle(GUI.skin.label) {
-                    font = DynamicFont,
-                    fontSize = 14,
-                    fontStyle = FontStyle.Bold,
-                    padding = new RectOffset(0, 0, 2, 2),
-                    alignment = TextAnchor.MiddleCenter
-                };
-            }
-
-            if (SubtitleStyle == null) {
-                SubtitleStyle = new GUIStyle(GUI.skin.label) {
-                    font = DynamicFont,
-                    fontSize = 14,
-                    fontStyle = FontStyle.Normal,
-                    padding = new RectOffset(4, 0, 10, 2),
-                    alignment = TextAnchor.MiddleLeft
-                };
-            }
-
-            if (InfoStyle == null) {
-                InfoStyle = new GUIStyle(GUI.skin.label) {
-                    font = DynamicFont,
-                    fontSize = 13,
-                    fontStyle = FontStyle.Normal,
-                    padding = new RectOffset(6, 6, 2, 4),
-                    alignment = TextAnchor.UpperLeft,
-                    wordWrap = true
-                };
-            }
-
-            if (ToolbarStyle == null) {
-                ToolbarStyle = new GUIStyle(GUI.skin.button) {
-                    margin = new RectOffset(0, 0, 0, 10)
-                };
-            }
-
-            AreStylesInitialized =  true;
-        }
-
-        // ReSharper disable once MemberCanBeMadeStatic.Local
-        private bool HotkeyIsDown() {
-            var ev = Event.current;
-            var mainKey = Ash.ConfigEntryToggleWindowHotkey.Value.MainKey;
-
-            if (ev == null || !ev.isKey || ev.type != EventType.KeyDown)
-                return false;
-
-            if (ev.keyCode != mainKey && (ev.keyCode != KeyCode.None || ev.character != (int)mainKey))
-                return false;
-
-            ev.Use();
-            return true;
+            DestroyImmediate(IuiMain.CanvasGameObj);
+            IuiMain = null;
         }
     }
 }

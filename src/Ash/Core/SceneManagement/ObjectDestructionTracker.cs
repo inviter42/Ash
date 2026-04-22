@@ -1,18 +1,22 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Ash.Core.SceneManagement
 {
     internal class ObjectDestroyTracker : MonoBehaviour
     {
-        private Component Target { get; set; }
+        internal readonly List<Action> OnBeforeDestroy = new List<Action>();
 
-        public void Initialize(Component target) {
+        internal Component Target { get; private set; }
+
+        internal void Initialize(Component target) {
             Target = target;
         }
 
-        public void OnDestroy() {
-            Ash.Logger.LogWarning("Target is being destroyed. Unregistering component.");
-            SceneComponentRegistry.UnregisterComponent(Target);
+        private void OnDestroy() {
+            Ash.Logger.LogDebug("Target is being destroyed. Invoking OnBeforeDestroy actions.");
+            OnBeforeDestroy.ForEach(action => action.Invoke());
         }
     }
 }

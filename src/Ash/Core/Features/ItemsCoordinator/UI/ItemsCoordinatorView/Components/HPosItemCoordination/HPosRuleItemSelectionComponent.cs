@@ -4,29 +4,30 @@ using Ash.Core.Features.Common.Components;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.Common;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
+using Ash.Core.UI;
 using Ash.Core.UI.Types;
 using Ash.GlobalUtils;
 using Character;
 using UnityEngine;
-using static Ash.GlobalUtils.GuiPrimitivesLib;
+using static Ash.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
 using static Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State.HPosRuleForm;
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.HPosItemCoordination
 {
-    public static class HPosRuleItemSelectionComponent
+    internal static class HPosRuleItemSelectionComponent
     {
-        public const string HPosRuleTypeStateKey = "HPosRuleType";
-        public const string HPosRuleItemFormDataKey = "HPosRuleItemItemData";
+        internal const string HPosRuleTypeStateKey = "HPosRuleType";
+        internal const string HPosRuleItemFormDataKey = "HPosRuleItemItemData";
 
         private const string NewRuleTitle = "New Rule";
         private const string NewRuleSubtitle1 = "Select item (individual item):";
         private const string NewRuleSubtitle2 = "Select item type (global, all items of the type):";
 
-        public static bool IsHPosItemSelected(HPosRuleForm form) =>
+        internal static bool IsHPosItemSelected(HPosRuleForm form) =>
             form.FormData.ContainsKey(HPosRuleItemFormDataKey);
 
-        public static void DrawHPosRuleItemSelectionComponent(HPosRuleForm form) {
+        internal static void DrawHPosRuleItemSelectionComponent(HPosRuleForm form) {
             var formData = form.FormData;
             Title(NewRuleTitle);
 
@@ -60,7 +61,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
 
         private static void HPosRuleItemSelection(HPosRuleForm form, Female activeFemale) {
             var formData = form.FormData;
-            var model = SceneUtils.GetActiveWearShowTypes(activeFemale);
+            var model = SceneUtils.GetWearShowTypesOfEquippedItems(activeFemale);
             var strippedTypes = new[] {
                 WEAR_SHOW_TYPE.TOPUPPER,
                 WEAR_SHOW_TYPE.TOPLOWER,
@@ -81,7 +82,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
                 () => {
                     var wearData = activeFemale.wears.GetWearData(Wears.ShowToWearType[(int)itemPart]);
-                    formData[HPosRuleItemFormDataKey] = new ItemWearFormData { Type = itemPart, WearData = wearData };
+                    formData[HPosRuleItemFormDataKey] = new ItemWearFormData(itemPart, wearData);
                 })
             );
 
@@ -102,20 +103,20 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
         private static Female GetActiveFemale() {
-            switch (Ash.AshUI.Window) {
+            switch (WindowManager.Window) {
                 case EditSceneWindow editSceneWindow:
                     return editSceneWindow.GetActiveFemale();
                 case HSceneWindow hSceneWindow:
                     return hSceneWindow.GetActiveFemale();
                 default:
-                    Ash.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
+                    Ash.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
                     return null;
             }
         }
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
         private static void SetActiveFemale(Female female) {
-            switch (Ash.AshUI.Window) {
+            switch (WindowManager.Window) {
                 case EditSceneWindow editSceneWindow:
                     editSceneWindow.SetActiveFemale(female);
                     break;
@@ -123,7 +124,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                     hSceneWindow.SetActiveFemale(female);
                     break;
                 default:
-                    Ash.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
+                    Ash.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
                     return;
             }
         }

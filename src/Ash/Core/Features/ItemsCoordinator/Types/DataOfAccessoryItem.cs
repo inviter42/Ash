@@ -32,14 +32,17 @@ namespace Ash.Core.Features.ItemsCoordinator.Types
             NowAttach = nowAttach;
         }
 
-        public override bool Equals(object obj) {
-            return obj is DataOfAccessoryItem item && Equals(item);
+        public bool Equals(DataOfAccessoryItem other) {
+            if (other is null)
+                return false;
+
+            return Equals(SlotNo, other.SlotNo)
+                   && Equals(Type, other.Type)
+                   && Equals(NowAttach, other.NowAttach);
         }
 
-        public bool Equals(DataOfAccessoryItem other) {
-            return Equals(SlotNo, other?.SlotNo)
-                   && Equals(Type, other?.Type)
-                   && Equals(NowAttach, other?.NowAttach);
+        public override bool Equals(object obj) {
+            return obj is DataOfAccessoryItem item && Equals(item);
         }
 
         public override int GetHashCode() {

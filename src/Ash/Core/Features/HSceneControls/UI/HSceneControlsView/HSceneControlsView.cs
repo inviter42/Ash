@@ -1,163 +1,307 @@
 ﻿using System;
-using System.Collections.Generic;
 using Ash.Core.Features.Common.Components;
 using Ash.Core.SceneManagement;
+using Ash.Core.UI;
 using Ash.Core.UI.Types;
 using Ash.GlobalUtils;
 using UnityEngine;
-using static Ash.GlobalUtils.GuiPrimitivesLib;
+using static Ash.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
 
 namespace Ash.Core.Features.HSceneControls.UI.HSceneControlsView
 {
     internal class HSceneControlsView
     {
-        public const string HSceneControlsViewTabLabel = "H-Scene Controls";
+        internal const string HSceneControlsViewTabLabel = "H-Scene Controls";
+
+        private const string NeckAndEyesControlsTitle = "Neck and Eyes controls";
+        private const string FluidsControlsTitle = "Fluids controls";
 
         private const string FluidsControlsSubtitle = "Fluids Controls";
         private const string RemoveSpermButtonLabel = "Remove sperm";
         private const string ToggleVirginBloodButtonLabel = "Toggle blood";
-        private const string MuteBackgroundFemaleSubtitle = "Mute background female:";
         private const string FemaleNeckTargetLabel = "Female neck follows:";
         private const string FemaleLookTargetLabel = "Female eyes follow:";
 
-        private static readonly Dictionary<bool, string> MuteBackgroundFemaleLabels = new Dictionary<bool, string> {
-            [true] = "On",
-            [false] = "Off"
-        };
+        private Vector2 ScrollPosition;
 
         // ReSharper disable once MemberCanBeMadeStatic.Global
-        public void DrawView() {
-            var activeFemale = GetActiveFemale();
-            if (activeFemale == null) {
+        internal void DrawView() {
+            var female = GetActiveFemale();
+            if (female == null) {
                 Ash.Logger.LogWarning("Female is null");
                 Ash.Logger.LogWarning(Environment.StackTrace);
                 return;
             }
 
-            using (new GUILayout.VerticalScope("box")) {
-                FemaleSelectionComponent.Component(activeFemale, SetActiveFemale);
+            ScrollPosition = GUILayout.BeginScrollView(ScrollPosition, GUILayout.ExpandWidth(true),
+                GUILayout.ExpandHeight(true));
 
-                GUILayout.Space(12);
+            using (new GUILayout.VerticalScope("box", GUILayout.ExpandWidth(true))) {
+                FemaleSelectionComponent.Component(female, SetActiveFemale);
 
-                Subtitle(FluidsControlsSubtitle);
-                using (new GUILayout.HorizontalScope()) {
-                    Button(RemoveSpermButtonLabel, () => {
-                        var heroineIds = SceneUtils.GetHeroineIDsInSceneAsStrings();
-                        if (heroineIds.Length == 0)
-                            return;
-
-                        var femaleComponent = SceneUtils.GetFemaleComponentByHeroineIDString(activeFemale.heroineID.ToString());
-                        if (femaleComponent != null)
-                            femaleComponent.ClearSpermMaterials();
-                    });
-
-                    Button(ToggleVirginBloodButtonLabel,
-                        () => activeFemale.SetVirginBlood(!activeFemale.ShowVirginBlood)
-                    );
-                }
-
-                GUILayout.Space(12);
-
-                Subtitle(MuteBackgroundFemaleSubtitle);
-                Flow(
-                    new[] { true, false },
-                    (state, idx) => RadioButton(MuteBackgroundFemaleLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                        Ash.Settings.ShouldMuteBackgroundFemale.Value == state,
-                        () => {
-                            Ash.Settings.ShouldMuteBackgroundFemale.Value = state;
-                            foreach (var female in SceneComponentRegistry.GetComponentsOfType<Female>()) {
-                                female.UpdateVoiceVolume();
-                            }
-                        })
-                );
-
-                GUILayout.Space(12);
-
-                Subtitle(FemaleNeckTargetLabel);
-                Flow(
-                    new[] { LookAtRotator.TYPE.NO, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD },
-                    (type, idx) => RadioButton(LookRotatorTypeLabels.GetValueOrDefaultValue(type, ErrorLabel),
-                        activeFemale.neckLookType == type,
-                        () => {
-                            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-                            switch (type) {
-                                case LookAtRotator.TYPE.NO:
-                                case LookAtRotator.TYPE.HOLD:
-                                {
-                                    activeFemale.ChangeNeckLook(type, null, false);
-                                    break;
-                                }
-
-                                case LookAtRotator.TYPE.TARGET:
-                                {
-                                    activeFemale.ChangeNeckLook(type, GetCameraTransform(), false);
-                                    break;
-                                }
-                            }
-                        })
-                );
-
-                GUILayout.Space(12);
-
-                Subtitle(FemaleLookTargetLabel);
-                Flow(
-                    new[] { LookAtRotator.TYPE.FORWARD, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD },
-                    (type, idx) => RadioButton(LookRotatorTypeLabels.GetValueOrDefaultValue(type, ErrorLabel),
-                        activeFemale.eyeLookType == type,
-                        () => {
-                            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-                            switch (type) {
-                                case LookAtRotator.TYPE.FORWARD:
-                                case LookAtRotator.TYPE.HOLD:
-                                {
-                                    activeFemale.ChangeEyeLook(type, null, false);
-                                    break;
-                                }
-
-                                case LookAtRotator.TYPE.TARGET:
-                                {
-                                    activeFemale.ChangeEyeLook(type, GetCameraTransform(), false);
-                                    break;
-                                }
-                            }
-                        })
-                );
+                DrawFluidsControlsSection(female);
+                DrawNeckAndEyesControlsSection(female);
             }
+
+            GUILayout.EndScrollView();
         }
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
         private Female GetActiveFemale() {
-            switch (Ash.AshUI.Window) {
+            switch (WindowManager.Window) {
                 case HSceneWindow hSceneWindow:
                     return hSceneWindow.GetActiveFemale();
                 default:
-                    Ash.Logger.LogError($"View HSceneControlsView is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
+                    Ash.Logger.LogError($"View HSceneControlsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
                     return null;
             }
         }
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
         private void SetActiveFemale(Female female) {
-            switch (Ash.AshUI.Window) {
+            switch (WindowManager.Window) {
                 case HSceneWindow hSceneWindow:
                     hSceneWindow.SetActiveFemale(female);
                     break;
                 default:
-                    Ash.Logger.LogError($"View HSceneControlsView is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
+                    Ash.Logger.LogError($"View HSceneControlsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
                     return;
             }
         }
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
         private Transform GetCameraTransform() {
-            switch (SceneTypeTracker.CurrentScene) {
-                case SelectScene selectScene:
-                    return selectScene.cam.transform;
-                case H_Scene hScene:
-                    return hScene.camera.transform;
+            // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+            switch (SceneTypeTracker.TypeOfCurrentScene) {
+                case SceneTypeTracker.SceneTypes.SelectScene:
+                case SceneTypeTracker.SceneTypes.H:
+                    var illusionCamera = UnityEngine.Object.FindObjectOfType<IllusionCamera>();
+                    // ReSharper disable once InvertIf
+                    if (illusionCamera == null) {
+                        Ash.Logger.LogWarning(
+                            $"Unable to find IllusionCamera in the scene {SceneTypeTracker.TypeOfCurrentScene}");
+
+                        return null;
+                    }
+
+                    return illusionCamera.transform;
+
                 default:
                     return null;
+            }
+        }
+
+        private void DrawFluidsControlsSection(Female female) {
+            GUILayout.Space(20);
+
+            Title(FluidsControlsTitle);
+
+            DrawFluidsControl(female);
+        }
+
+        private void DrawNeckAndEyesControlsSection(Female female) {
+            GUILayout.Space(20);
+
+            Title(NeckAndEyesControlsTitle);
+
+            DrawNeckLookTarget(female);
+
+            GUILayout.Space(12);
+
+            DrawEyeLookTarget(female);
+
+            GUILayout.Space(22);
+        }
+
+
+        private void DrawFluidsControl(Female female) {
+            Subtitle(FluidsControlsSubtitle);
+            using (new GUILayout.HorizontalScope()) {
+                Button(RemoveSpermButtonLabel, () => {
+                    var heroineIds = SceneUtils.GetHeroineIDsInSceneAsStrings();
+                    if (heroineIds.Length == 0)
+                        return;
+
+                    var femaleComponent = SceneUtils.GetFemaleComponentByHeroineIDString(female.heroineID.ToString());
+                    if (femaleComponent != null)
+                        femaleComponent.ClearSpermMaterials();
+                });
+
+                Button(ToggleVirginBloodButtonLabel,
+                    () => female.SetVirginBlood(!female.ShowVirginBlood)
+                );
+            }
+        }
+
+        private void DrawNeckLookTarget(Female female) {
+            Subtitle(FemaleNeckTargetLabel);
+
+            // ReSharper disable once ConvertToLocalFunction
+            Func<LookAtRotator.TYPE, int, bool> isActiveCheck = (type, idx) => {
+                // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+                switch (type) {
+                    case LookAtRotator.TYPE.NO:
+                    case LookAtRotator.TYPE.HOLD:
+                        return female.neckLookType == type;
+                    case LookAtRotator.TYPE.TARGET:
+                        return female.neckLookType == type
+                               && (idx == 0 && female.neckLookTarget == GetVisitorDefaultLookTarget(female)
+                                   || idx > 0 && female.neckLookTarget == GetCameraTransform());
+                    default:
+                        return false;
+                }
+            };
+
+            // ReSharper disable once ConvertToLocalFunction
+            Action<LookAtRotator.TYPE, int> callback = (type, idx) => {
+                // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+                switch (type) {
+                    case LookAtRotator.TYPE.NO:
+                    case LookAtRotator.TYPE.HOLD:
+                    {
+                        female.ChangeNeckLook(type, null, false);
+                        break;
+                    }
+
+                    case LookAtRotator.TYPE.TARGET:
+                    {
+                        var target = idx == 0
+                            ? GetVisitorDefaultLookTarget(female)
+                            : GetCameraTransform();
+
+                        female.ChangeNeckLook(type, target, false);
+                        break;
+                    }
+                }
+            };
+
+            var model = IsMainFemale(female)
+                ? new[] { LookAtRotator.TYPE.NO, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD }
+                : new[] {
+                    LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.NO, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD
+                };
+
+            Flow(
+                model,
+                (type, idx) => RadioButton(
+                    GetLookAtRotatorLabel(type, idx),
+                    isActiveCheck(type, idx),
+                    () => callback(type, idx)
+                )
+            );
+        }
+
+        private void DrawEyeLookTarget(Female female) {
+            Subtitle(FemaleLookTargetLabel);
+
+            // ReSharper disable once ConvertToLocalFunction
+            Func<LookAtRotator.TYPE, int, bool> isActiveCheck = (type, idx) => {
+                // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+                switch (type) {
+                    case LookAtRotator.TYPE.NO:
+                        // default look for main is eyeLookType = TARGET, and eyeLookTarget = null
+                        return female.eyeLookType == LookAtRotator.TYPE.TARGET
+                               && female.eyeLookTarget == null;
+                    case LookAtRotator.TYPE.FORWARD:
+                    case LookAtRotator.TYPE.HOLD:
+                        return female.eyeLookType == type;
+                    case LookAtRotator.TYPE.TARGET:
+                        return female.eyeLookType == type
+                               && (idx == 0 && female.eyeLookTarget == GetVisitorDefaultLookTarget(female)
+                                   || idx > 0 && female.eyeLookTarget == GetCameraTransform());
+                    default:
+                        return false;
+                }
+            };
+
+            // ReSharper disable once ConvertToLocalFunction
+            Action<LookAtRotator.TYPE, int> callback = (type, idx) => {
+                // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+                switch (type) {
+                    case LookAtRotator.TYPE.NO:
+                    {
+                        // default look for main is eyeLookType = TARGET, and eyeLookTarget = null
+                        female.ChangeEyeLook(LookAtRotator.TYPE.TARGET, null, false);
+                        break;
+                    }
+                    case LookAtRotator.TYPE.FORWARD:
+                    case LookAtRotator.TYPE.HOLD:
+                    {
+                        female.ChangeEyeLook(type, null, false);
+                        break;
+                    }
+
+                    case LookAtRotator.TYPE.TARGET:
+                    {
+                        var target = idx == 0
+                            ? GetVisitorDefaultLookTarget(female)
+                            : GetCameraTransform();
+
+                        female.ChangeEyeLook(type, target, false);
+                        break;
+                    }
+                }
+            };
+
+            var model = IsMainFemale(female)
+                ? new[] { LookAtRotator.TYPE.NO, LookAtRotator.TYPE.FORWARD, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD }
+                : new[] {
+                    LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.FORWARD, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD
+                };
+
+            Flow(
+                model,
+                (type, idx) => RadioButton(
+                    GetLookAtRotatorLabel(type, idx),
+                    isActiveCheck(type, idx),
+                    () => callback(type, idx)
+                )
+            );
+        }
+
+        private Transform GetVisitorDefaultLookTarget(Female female) {
+            var hScene = SceneTypeTracker.Scene as H_Scene;
+            if (hScene == null) {
+                Ash.Logger.LogError($"Expected H_Scene is null.");
+                return null;
+            }
+
+            if (hScene.visitor?.GetFemale() == female)
+                return hScene.mainMembers.CaclVisitorLookPos();
+
+            return null;
+        }
+
+        private bool IsMainFemale(Female female) {
+            var hScene = SceneTypeTracker.Scene as H_Scene;
+            if (hScene == null) {
+                Ash.Logger.LogError($"Expected H_Scene is null.");
+                return false;
+            }
+
+            return hScene.mainMembers.GetFemale(0) == female;
+        }
+
+        private string GetLookAtRotatorLabel(LookAtRotator.TYPE type, int index) {
+            // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+            switch (type) {
+                case LookAtRotator.TYPE.NO:
+                case LookAtRotator.TYPE.HOLD:
+                case LookAtRotator.TYPE.FORWARD:
+                    return LookAtRotatorTypeLabels.GetValueOrDefaultValue(type, ErrorLabel);
+                case LookAtRotator.TYPE.TARGET:
+                    return string.Join(
+                        " ",
+                        new [] {
+                            LookAtRotatorTypeLabels.GetValueOrDefaultValue(type, ErrorLabel),
+                            index == 0
+                                ? LookAtRotatorSpecifierDefault
+                                : LookAtRotatorSpecifierCamera
+                        }
+                    );
+                default:
+                    return ErrorLabel;
             }
         }
     }

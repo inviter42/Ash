@@ -1,16 +1,16 @@
 using Ash.GlobalUtils;
 using Character;
 using UnityEngine;
-using static Ash.GlobalUtils.GuiPrimitivesLib;
+using static Ash.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
 
 namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView.Components
 {
-    public static class AllClothingVisibilitySelectionComponent
+    internal static class AllClothingVisibilitySelectionComponent
     {
         private const string AllClothingSubtitle = "All Clothes";
 
-        public static void Component(Female activeFemale) {
+        internal static void Component(Female activeFemale) {
             Subtitle(AllClothingSubtitle);
             using (new GUILayout.HorizontalScope("box")) {
                 Button(

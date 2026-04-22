@@ -14,10 +14,10 @@ namespace Ash.Core.Features.ItemsCoordinator
     internal static class RulesManager
     {
         // RuleSets are stored here
-        public static List<InterItemRuleSet> InterItemRuleSets { get; } = IO.Load<List<InterItemRuleSet>>(IO.InterItemRulesFileName);
-        public static List<HPosRuleSet> HPosRuleSets { get; } =  IO.Load<List<HPosRuleSet>>(IO.HPosRulesFileName);
+        internal static List<InterItemRuleSet> InterItemRuleSets { get; } = IO.Load<List<InterItemRuleSet>>(IO.InterItemRulesFileName);
+        internal static List<HPosRuleSet> HPosRuleSets { get; } =  IO.Load<List<HPosRuleSet>>(IO.HPosRulesFileName);
 
-        public static void AddRule(
+        internal static void AddRule(
             Female female,
             OneOf<ItemWearFormData, ItemAccessoryFormData> masterItemFormData,
             OneOf<WEAR_SHOW, bool> masterItemStateFormData,
@@ -48,10 +48,10 @@ namespace Ash.Core.Features.ItemsCoordinator
                     Ash.Logger.LogWarning("Failed to add new SlaveItem to HashSet - already exists?");
             }
             else {
-                InterItemRuleSets.Add(new InterItemRuleSet {
-                    MasterItem = masterItem,
-                    SlaveItems = new HashSet<SlaveItem> { slaveItem }
-                });
+                InterItemRuleSets.Add(new InterItemRuleSet(
+                    masterItem,
+                    new HashSet<SlaveItem> { slaveItem }
+                ));
             }
 
             // Write DB to disk after new rule is added
@@ -86,7 +86,7 @@ namespace Ash.Core.Features.ItemsCoordinator
                 );
         }
 
-        public static void AddRule(
+        internal static void AddRule(
             Female female,
             OneOf<ItemWearFormData, WEAR_SHOW_TYPE> hPosItemFormData,
             OneOf<H_StyleData.TYPE, HStyleDetail> hPosStyleFormData
@@ -105,14 +105,15 @@ namespace Ash.Core.Features.ItemsCoordinator
             IO.Save(HPosRuleSets, IO.HPosRulesFileName);
         }
 
-        public static void RemoveRule(InterItemRuleData data) {
-            var idx = InterItemRuleSets.FindIndex(rule => rule.MasterItem == data.MasterItem);
+        internal static void RemoveRule(BaseItem masterItem, SlaveItem slaveItem) {
+
+            var idx = InterItemRuleSets.FindIndex(rule => rule.MasterItem == masterItem);
             if (idx == -1) {
                 Ash.Logger.LogWarning("Unable to remove the rule for this MasterItem.");
                 return;
             }
 
-            if (!InterItemRuleSets[idx].SlaveItems.Remove(data.SlaveItem)) {
+            if (!InterItemRuleSets[idx].SlaveItems.Remove(slaveItem)) {
                 Ash.Logger.LogWarning("Unable to remove the rule - SlaveItem was not found in the HashSet<SlaveItems>");
                 return;
             }
@@ -125,8 +126,8 @@ namespace Ash.Core.Features.ItemsCoordinator
             IO.Save(InterItemRuleSets, IO.InterItemRulesFileName);
         }
 
-        public static void RemoveRule(HPosRuleData data) {
-            var idx = HPosRuleSets.FindIndex(rule => rule.HPosItem.Equals(data.HPosItem)
+        internal static void RemoveRule(HPosRuleSet ruleset) {
+            var idx = HPosRuleSets.FindIndex(rs => rs.HPosItem.Equals(ruleset.HPosItem)
             );
             if (idx == -1) {
                 Ash.Logger.LogWarning("Unable to remove the rule for this HPosItem.");

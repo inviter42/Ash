@@ -49,23 +49,19 @@ namespace Ash.GlobalUtils
                 VersionFromFile = versionFromFile;
             }
 
-            public override Type BindToType(string assemblyName, string typeName)
-            {
+            public override Type BindToType(string assemblyName, string typeName) {
                 var currentVersion = VersionFromFile;
-                bool migrationsFound;
+                MigrationData migrationData;
 
                 do {
-                    migrationsFound = false;
-
                     // find migration entry where 'FromVersion' matches the current version
-                    var migrationData = DataMigrationMap.FirstOrDefault(e => e.VersionData.FromVersion == currentVersion);
-                    if (migrationData.VersionData.FromVersion == null)
+                    migrationData = DataMigrationMap.FirstOrDefault(e => e.VersionData.FromVersion == currentVersion);
+                    if (migrationData?.VersionData.FromVersion == null)
                         continue;
 
                     // check if entry contains migrations for our file
                     var fileMigration = migrationData.Files.Find(f => f.FileName == FileName);
-                    if (fileMigration.FileName != null)
-                    {
+                    if (fileMigration?.FileName != null) {
                         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
                         foreach (var typeMap in fileMigration.TypeMigrations) {
                             if (typeName.Contains(typeMap.FromType)) {
@@ -75,15 +71,13 @@ namespace Ash.GlobalUtils
                     }
 
                     currentVersion = migrationData.VersionData.ToVersion;
-                    migrationsFound = true;
-
-                } while (migrationsFound);
+                } while (migrationData != null);
 
                 return base.BindToType(assemblyName, typeName);
             }
         }
 
-        private struct MigrationData
+        private class MigrationData
         {
             public readonly MigrationVersions VersionData;
             public readonly List<MigrationFile> Files;
@@ -94,7 +88,7 @@ namespace Ash.GlobalUtils
             }
         }
 
-        private struct FileNameMigrationData
+        private class FileNameMigrationData
         {
             // ReSharper disable once NotAccessedField.Local
             public readonly MigrationVersions VersionData;
@@ -107,7 +101,7 @@ namespace Ash.GlobalUtils
         }
 
         // ReSharper disable once StructCanBeMadeReadOnly
-        private struct MigrationVersions : IEquatable<MigrationVersions>
+        private class MigrationVersions : IEquatable<MigrationVersions>
         {
             public readonly string FromVersion;
             public readonly string ToVersion;
@@ -118,7 +112,7 @@ namespace Ash.GlobalUtils
             }
 
             public bool Equals(MigrationVersions other) {
-                return FromVersion == other.FromVersion && ToVersion == other.ToVersion;
+                return other != null && FromVersion == other.FromVersion && ToVersion == other.ToVersion;
             }
 
             public override bool Equals(object obj) {
@@ -127,12 +121,13 @@ namespace Ash.GlobalUtils
 
             public override int GetHashCode() {
                 unchecked {
-                    return ((FromVersion != null ? FromVersion.GetHashCode() : 0) * 397) ^ (ToVersion != null ? ToVersion.GetHashCode() : 0);
+                    return ((FromVersion != null ? FromVersion.GetHashCode() : 0) * 397) ^
+                           (ToVersion != null ? ToVersion.GetHashCode() : 0);
                 }
             }
         }
 
-        private struct MigrationFile
+        private class MigrationFile
         {
             public readonly string FileName;
             public readonly List<TypeMigration> TypeMigrations;
@@ -143,7 +138,7 @@ namespace Ash.GlobalUtils
             }
         }
 
-        private struct TypeMigration
+        private class TypeMigration
         {
             public readonly string FromType;
             public readonly string ToType;
@@ -154,7 +149,7 @@ namespace Ash.GlobalUtils
             }
         }
 
-        private struct FileNameMigration
+        private class FileNameMigration
         {
             public readonly string FromFileName;
             public readonly string ToFileName;
@@ -174,15 +169,16 @@ namespace Ash.GlobalUtils
             for (var i = FilesMigrationMap.Count - 1; i >= 0; i--) {
                 var entry = FilesMigrationMap[i];
                 var migrationData = entry.FileNameMigrations.Find(e => e.ToFileName == currentFileName);
+                if (migrationData == null) {
+                    // FileNameMigrationData exists, but it doesn't contain data for this file - continue
+                    continue;
+                }
 
                 currentFileName = migrationData.FromFileName;
-                if (currentFileName == null)
-                    continue;
 
                 var path = Path.Combine(Paths.ConfigPath, currentFileName);
-                if (File.Exists(path)) {
+                if (File.Exists(path))
                     return new KeyValuePair<string, string>(path, currentFileName);
-                }
             }
 
             return new KeyValuePair<string, string>("", "");

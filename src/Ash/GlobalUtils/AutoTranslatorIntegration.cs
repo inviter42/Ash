@@ -4,7 +4,7 @@ namespace Ash.GlobalUtils
 {
     internal static class AutoTranslatorIntegration
     {
-        public static string Translate(string text) {
+        internal static string Translate(string text) {
             var translated = text;
 
             AutoTranslator.Default.TranslateAsync(text, result => {

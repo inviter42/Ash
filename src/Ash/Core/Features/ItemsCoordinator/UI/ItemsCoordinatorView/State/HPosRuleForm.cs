@@ -15,14 +15,14 @@ using InputsValues = OneOf.OneOf<
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State
 {
-    public class HPosRuleForm
+    internal class HPosRuleForm
     {
 
-        public const string FemaleFormDataKey = "FemaleFormData";
+        internal const string FemaleFormDataKey = "FemaleFormData";
 
-        public readonly Dictionary<string, InputsValues> FormData = new Dictionary<string, InputsValues>();
+        internal readonly Dictionary<string, InputsValues> FormData = new Dictionary<string, InputsValues>();
 
-        public void SubmitForm() {
+        internal void SubmitForm() {
             if (!ValidateInputs())
                 return;
 

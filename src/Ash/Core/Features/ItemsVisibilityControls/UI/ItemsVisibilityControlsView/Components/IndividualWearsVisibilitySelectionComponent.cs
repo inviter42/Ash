@@ -1,19 +1,19 @@
 using Ash.GlobalUtils;
-using static Ash.GlobalUtils.GuiPrimitivesLib;
+using static Ash.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
 
 namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView.Components
 {
-    public static class IndividualWearsVisibilitySelectionComponent
+    internal static class IndividualWearsVisibilitySelectionComponent
     {
         private const string IndividualClothingSubtitle = "Individual Clothing";
 
-        public static void Component(Female activeFemale) {
+        internal static void Component(Female activeFemale) {
             Subtitle(IndividualClothingSubtitle);
-            var wearsModel = SceneUtils.GetActiveWearShowTypes(activeFemale);
+            var wearsModel = SceneUtils.GetWearShowTypesOfEquippedItems(activeFemale);
             Flow(wearsModel, (item, idx) => Button(
                 WearShowTypeLabels.GetValueOrDefaultValue(item, ErrorLabel),
-                () => SceneUtils.CycleStateOfClothingItem(activeFemale, item))
+                () => SceneUtils.CycleStateOfWearItem(activeFemale, item))
             );
         }
     }

@@ -3,6 +3,7 @@ using Character;
 
 namespace Ash.Core.Features.ItemsCoordinator.Types
 {
+    // must be public, part of JSON serialization
     public class DataOfWearItem: IEquatable<DataOfWearItem>
     {
         public WEAR_SHOW_TYPE ItemPart { get; }
@@ -16,12 +17,15 @@ namespace Ash.Core.Features.ItemsCoordinator.Types
             ItemPart = itemPart;
         }
 
-        public override bool Equals(object obj) {
-            return obj is DataOfWearItem item && Equals(item);
+        public bool Equals(DataOfWearItem other) {
+            if (other is null)
+                return false;
+
+            return Equals(ItemPart, other.ItemPart);
         }
 
-        public bool Equals(DataOfWearItem other) {
-            return Equals(ItemPart, other?.ItemPart);
+        public override bool Equals(object obj) {
+            return obj is DataOfWearItem item && Equals(item);
         }
 
         public override int GetHashCode() {

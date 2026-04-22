@@ -1,15 +1,15 @@
 using Ash.GlobalUtils;
 using UnityEngine;
-using static Ash.GlobalUtils.GuiPrimitivesLib;
+using static Ash.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
 
 namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView.Components
 {
-    public static class AllAccessoriesVisibilitySelectionComponent
+    internal static class AllAccessoriesVisibilitySelectionComponent
     {
         private const string AllAccessoriesSubtitle = "All Accessories";
 
-        public static void Component(Female activeFemale) {
+        internal static void Component(Female activeFemale) {
             Subtitle(AllAccessoriesSubtitle);
             using (new GUILayout.HorizontalScope("box")) {
                 Button(

@@ -27,16 +27,18 @@ namespace Ash.Core.Features.ItemsCoordinator.Types
             ItemData = data;
         }
 
-        public override bool Equals(object obj) {
-            return obj is BaseItem item && Equals(item);
-        }
-
         public bool Equals(BaseItem other) {
-            return other != null
-                   && Id == other.Id
+            if (other is null)
+                return false;
+
+            return Id == other.Id
                    && Equals(AssetbundleName, other.AssetbundleName)
                    && Equals(Prefab, other.Prefab)
                    && Equals(ItemData, other.ItemData);
+        }
+
+        public override bool Equals(object obj) {
+            return obj is BaseItem item && Equals(item);
         }
 
         public override int GetHashCode() {

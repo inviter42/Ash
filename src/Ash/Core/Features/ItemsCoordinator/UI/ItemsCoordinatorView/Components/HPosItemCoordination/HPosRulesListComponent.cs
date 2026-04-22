@@ -4,11 +4,11 @@ using Ash.Core.Features.ItemsCoordinator.Types;
 using Ash.GlobalUtils;
 using UnityEngine;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
-using static Ash.GlobalUtils.GuiPrimitivesLib;
+using static Ash.GlobalUtils.ImGuiPrimitivesLib;
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.HPosItemCoordination
 {
-    public static class HPosRulesListComponent
+    internal static class HPosRulesListComponent
     {
         private const string ActiveRulesTitle = "Active Rules";
         private const string NoActiveRulesLabel = "No active H-Pos rules";
@@ -17,7 +17,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
 
         private static Vector2 RulesScrollPosition;
 
-        public static void DrawHPosRulesList() {
+        internal static void DrawHPosRulesList() {
             Title(ActiveRulesTitle);
 
             GUILayout.Space(4);
@@ -27,12 +27,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
 
             using (new GUILayout.VerticalScope("box", GUILayout.ExpandHeight(true))) {
                 foreach (var ruleSet in RulesManager.HPosRuleSets) {
-                    CreateRuleGuiElement(
-                        new HPosRuleData {
-                            HPosItem = ruleSet.HPosItem,
-                            HPosStyle = ruleSet.HPosStyle
-                        }
-                    );
+                    CreateRuleGuiElement(ruleSet);
                 }
 
                 foreach (var action in ListOfRuleChanges)
@@ -56,18 +51,18 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             GUILayout.EndScrollView();
         }
 
-        private static void CreateRuleGuiElement(HPosRuleData data) {
-            var hPosItemName = data.HPosItem.IsT0
-                ? AutoTranslatorIntegration.Translate(data.HPosItem.AsT0.Name)
-                : WearShowTypeLabels.GetValueOrDefaultValue(data.HPosItem.AsT1, ErrorLabel);
+        private static void CreateRuleGuiElement(HPosRuleSet ruleset) {
+            var hPosItemName = ruleset.HPosItem.IsT0
+                ? AutoTranslatorIntegration.Translate(ruleset.HPosItem.AsT0.Name)
+                : WearShowTypeLabels.GetValueOrDefaultValue(ruleset.HPosItem.AsT1, ErrorLabel);
 
-            var hPosItemType = data.HPosItem.IsT0
-                ? $" ({WearShowTypeLabels.GetValueOrDefaultValue(data.HPosItem.AsT0.ItemData.AsT0.ItemPart, ErrorLabel)})"
+            var hPosItemType = ruleset.HPosItem.IsT0
+                ? $" ({WearShowTypeLabels.GetValueOrDefaultValue(ruleset.HPosItem.AsT0.ItemData.AsT0.ItemPart, ErrorLabel)})"
                 : "";
 
-            var hPosStyle = data.HPosStyle.IsT0
-                ? HStylesLabels.GetValueOrDefaultValue(data.HPosStyle.AsT0, ErrorLabel)
-                : HStylesExtendedLabels.GetValueOrDefaultValue(data.HPosStyle.AsT1, ErrorLabel);
+            var hPosStyle = ruleset.HPosStyle.IsT0
+                ? HStylesLabels.GetValueOrDefaultValue(ruleset.HPosStyle.AsT0, ErrorLabel)
+                : HStylesExtendedLabels.GetValueOrDefaultValue(ruleset.HPosStyle.AsT1, ErrorLabel);
 
             var labelText =
                 "[DONT STRIP]\n" +
@@ -81,7 +76,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 GUILayout.Label(labelText, GUILayout.ExpandWidth(true));
                 Button(
                     "x",
-                    () => ListOfRuleChanges.Add(() => RulesManager.RemoveRule(data)
+                    () => ListOfRuleChanges.Add(() => RulesManager.RemoveRule(ruleset)
                     ),
                     GUILayout.Width(30),
                     GUILayout.Height(30));

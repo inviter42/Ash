@@ -1,18 +1,19 @@
 ﻿using System;
 using Ash.Core.Features.Common.Components;
 using Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView.Components;
+using Ash.Core.UI;
 using Ash.Core.UI.Types;
 using UnityEngine;
-using static Ash.GlobalUtils.GuiPrimitivesLib;
+using static Ash.GlobalUtils.ImGuiPrimitivesLib;
 
 namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView
 {
     internal class ItemsVisibilityControlsView
     {
         // Tab Label
-        public const string ItemsVisibilityControlsTabLabel = "Items Visibility Controls";
+        internal const string ItemsVisibilityControlsTabLabel = "Item Visibility";
 
-        public void DrawView() {
+        internal void DrawView() {
             var activeFemale = GetActiveFemale();
             if (activeFemale == null) {
                 Ash.Logger.LogWarning("Female is null");
@@ -39,20 +40,20 @@ namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsVi
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
         private Female GetActiveFemale() {
-            switch (Ash.AshUI.Window) {
+            switch (WindowManager.Window) {
                 case EditSceneWindow editSceneWindow:
                     return editSceneWindow.GetActiveFemale();
                 case HSceneWindow hSceneWindow:
                     return hSceneWindow.GetActiveFemale();
                 default:
-                    Ash.Logger.LogError($"View ItemsVisibilityControlsView is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
+                    Ash.Logger.LogError($"View ItemsVisibilityControlsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
                     return null;
             }
         }
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
         private void SetActiveFemale(Female female) {
-            switch (Ash.AshUI.Window) {
+            switch (WindowManager.Window) {
                 case EditSceneWindow editSceneWindow:
                     editSceneWindow.SetActiveFemale(female);
                     break;
@@ -60,7 +61,7 @@ namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsVi
                     hSceneWindow.SetActiveFemale(female);
                     break;
                 default:
-                    Ash.Logger.LogError($"Component FemaleSelectionComponent is used inside of an unsupported window type {Ash.AshUI.Window.GetType().Name}.");
+                    Ash.Logger.LogError($"Component FemaleSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
                     return;
             }
         }

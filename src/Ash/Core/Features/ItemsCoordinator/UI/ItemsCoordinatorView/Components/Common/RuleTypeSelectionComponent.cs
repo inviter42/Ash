@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.HPosItemCoordination;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.InterItemCoordination;
 using Ash.GlobalUtils;
-using static Ash.GlobalUtils.GuiPrimitivesLib;
+using static Ash.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.Common
 {
-    public static class RuleTypeSelectionComponent
+    internal static class RuleTypeSelectionComponent
     {
         private const string ChooseRuleTypeSubtitle = "Choose rule type:";
 
@@ -17,7 +17,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             { MasterItemSelectionComponent.InterItemRuleTypeStateKey, "Inter Item Rule" },
         };
 
-        public static void DrawRuleTypeSelection() {
+        internal static void DrawRuleTypeSelection() {
             Subtitle(ChooseRuleTypeSubtitle);
             Flow(
                 new[] { HPosRuleItemSelectionComponent.HPosRuleTypeStateKey, MasterItemSelectionComponent.InterItemRuleTypeStateKey },

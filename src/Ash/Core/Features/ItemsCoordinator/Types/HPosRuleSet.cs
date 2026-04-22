@@ -6,22 +6,25 @@ using OneOf;
 
 namespace Ash.Core.Features.ItemsCoordinator.Types
 {
-    public struct HPosRuleSet : IEquatable<HPosRuleSet>
+    internal class HPosRuleSet : IEquatable<HPosRuleSet>
     {
         [JsonProperty("HPosItem")]
-        public OneOf<BaseItem, WEAR_SHOW_TYPE> HPosItem;
+        internal readonly OneOf<BaseItem, WEAR_SHOW_TYPE> HPosItem;
 
         [JsonProperty("HPosStyle")]
-        public OneOf<H_StyleData.TYPE, HStyleDetail> HPosStyle;
+        internal readonly OneOf<H_StyleData.TYPE, HStyleDetail> HPosStyle;
 
         [JsonConstructor]
-        public HPosRuleSet(OneOf<BaseItem, WEAR_SHOW_TYPE> hPosItem,
+        internal HPosRuleSet(OneOf<BaseItem, WEAR_SHOW_TYPE> hPosItem,
             OneOf<H_StyleData.TYPE, HStyleDetail> hPosStyle) {
             HPosItem = hPosItem;
             HPosStyle = hPosStyle;
         }
 
         public bool Equals(HPosRuleSet other) {
+            if (other is null)
+                return false;
+
             return HPosItem.Equals(other.HPosItem) && HPosStyle.Equals(other.HPosStyle);
         }
 
@@ -36,11 +39,14 @@ namespace Ash.Core.Features.ItemsCoordinator.Types
         }
 
         public static bool operator ==(HPosRuleSet left, HPosRuleSet right) {
+            if (left is null)
+                return right is null;
+
             return left.Equals(right);
         }
 
         public static bool operator !=(HPosRuleSet left, HPosRuleSet right) {
-            return !left.Equals(right);
+            return !(left == right);
         }
     }
 }

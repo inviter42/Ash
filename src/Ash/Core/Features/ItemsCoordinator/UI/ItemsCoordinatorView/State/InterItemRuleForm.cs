@@ -14,14 +14,14 @@ using InputsValues = OneOf.OneOf<
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State
 {
-    public class InterItemRuleForm
+    internal class InterItemRuleForm
     {
         // Common keys
-        public const string FemaleFormDataKey = "FemaleFormData";
+        internal const string FemaleFormDataKey = "FemaleFormData";
 
-        public readonly Dictionary<string, InputsValues> FormData = new Dictionary<string, InputsValues>();
+        internal readonly Dictionary<string, InputsValues> FormData = new Dictionary<string, InputsValues>();
 
-        public void SubmitForm() {
+        internal void SubmitForm() {
             if (!ValidateInputs())
                 return;
 

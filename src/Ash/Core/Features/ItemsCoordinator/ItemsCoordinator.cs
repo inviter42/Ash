@@ -10,9 +10,9 @@ namespace Ash.Core.Features.ItemsCoordinator
 {
     internal static class ItemsCoordinator
     {
-        public static bool SkipRulesApplication { get; set; }
+        internal static bool SkipRulesApplication { get; set; }
 
-        public static void ApplyRules(Female female, List<InterItemRuleSet> ruleset) {
+        internal static void ApplyRules(Female female, List<InterItemRuleSet> ruleset) {
             if (SkipRulesApplication) {
                 Ash.Logger.LogDebug("Not applying rules, because skip flag was set.");
                 return;
@@ -63,7 +63,7 @@ namespace Ash.Core.Features.ItemsCoordinator
             }
         }
 
-        public static void ApplyRuleset(
+        internal static void ApplyRuleset(
             Female female,
             WEAR_SHOW_TYPE itemPart
         ) {
@@ -92,7 +92,7 @@ namespace Ash.Core.Features.ItemsCoordinator
             ApplyRules(female, rulesets);
         }
 
-        public static void ApplyRuleset(
+        internal static void ApplyRuleset(
             Female female,
             int slotNo
         ) {

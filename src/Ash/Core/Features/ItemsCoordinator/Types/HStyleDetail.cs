@@ -1,14 +1,30 @@
 using System;
 using H;
+using Newtonsoft.Json;
 
 namespace Ash.Core.Features.ItemsCoordinator.Types
 {
-    public struct HStyleDetail : IEquatable<HStyleDetail>
+    internal class HStyleDetail : IEquatable<HStyleDetail>
     {
-        public H_StyleData.TYPE Type;
-        public H_StyleData.DETAIL Detail;
+        [JsonProperty("Type")]
+        internal readonly H_StyleData.TYPE Type;
+
+        [JsonProperty("Detail")]
+        internal readonly H_StyleData.DETAIL Detail;
+
+        [JsonConstructor]
+        internal HStyleDetail(H_StyleData.TYPE type, H_StyleData.DETAIL detail) {
+            Type = type;
+            Detail = detail;
+        }
 
         public bool Equals(HStyleDetail other) {
+            if (other is null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
             return Type == other.Type && Detail == other.Detail;
         }
 
@@ -23,11 +39,14 @@ namespace Ash.Core.Features.ItemsCoordinator.Types
         }
 
         public static bool operator ==(HStyleDetail left, HStyleDetail right) {
+            if (left is null)
+                return right is null;
+
             return left.Equals(right);
         }
 
         public static bool operator !=(HStyleDetail left, HStyleDetail right) {
-            return !left.Equals(right);
+            return !(left == right);
         }
     }
 }

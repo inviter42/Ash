@@ -1,66 +1,89 @@
-using static Ash.Core.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper.InGameUIObjectManagement;
+using System.Collections.Generic;
+using Ash.Core.SceneManagement;
+using UnityEngine;
+using UnityEngine.UI;
 using static Ash.Core.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper.InGameUIAdjustments;
 using static Ash.Core.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper.InGameUIResets;
 
 namespace Ash.Core.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper
 {
-    public static class InGameUIManagementHelper
+    internal static class InGameUIManagementHelper
     {
+        private static readonly List<string> LeftMiddleMenuWhitelist = new List<string> {
+            "MaleShow",
+            "Map",
+            "Move",
+            "Light",
+            "Customs"
+        };
+
         // UI MODES
-        public static void ImmersiveUIMode() {
-            string[] namesOfGameObjectsToDeactivate = {
-                InGameUIStrings.ConfigGameObjName,
-                InGameUIStrings.EndSceneGameObjName,
-                InGameUIStrings.MaleGameObjName,
-                InGameUIStrings.MapGameObjName,
-                InGameUIStrings.LightingGameObjName,
-                InGameUIStrings.EditCharGameObjName,
-                InGameUIStrings.BadgesGameObjName
-            };
+        internal static void SwitchToImmersiveUIMode() {
+            var hScene = SceneTypeTracker.Scene as H_Scene;
+            if (hScene == null)
+                return;
 
-            foreach (var gameObjName in namesOfGameObjectsToDeactivate) {
-                var gameObj = TargetGameObjects.Find(o => o != null && o.name == gameObjName);
-
-                if (gameObj == null) {
-                    Ash.Logger.LogWarning($"Cannot deactivate <GameObject> '{gameObjName}' - reference is not found.");
+            // left middle toggles
+            // scene.middleLeftCanvas.gameObject.SetActive(false); // todo: replace loop below with this when all ui's are done
+            var leftMiddleTogglesTransform = hScene.middleLeftCanvas.transform.Find("LeftMiddleToggles");
+            foreach (Transform child in leftMiddleTogglesTransform) {
+                if (LeftMiddleMenuWhitelist.Contains(child.gameObject.name))
                     continue;
-                }
 
-                if (!InactiveGameObjects.Contains(gameObj))
-                    InactiveGameObjects.Add(gameObj);
-
-
-                gameObj.SetActive(false);
+                child.gameObject.SetActive(false);
             }
 
-            if (TalkImage != null) TalkImage.enabled = false;
+            leftMiddleTogglesTransform.gameObject.SetActive(false);
 
-            AdjustGages();
-            AdjustXtcLocks();
-            AdjustPad();
-            AdjustActButtons();
-            AdjustMiddleButtonsAlignment();
-            AdjustMiddleButtonsSize();
-            AdjustMiddleButtonsHideablePos();
-            AdjustSwapButton();
+            hScene.uiCanvas.transform.Find("Badges").gameObject.SetActive(false);
+            hScene.uiCanvas.transform.Find("Swap").gameObject.SetActive(false);
+            hScene.uiCanvas.transform.Find("Talk").transform.GetComponent<Image>().enabled = false;
+
+            // left down buttons
+            var leftDownButtonsGameObj = hScene.uiCanvas.transform.Find("LeftDownButtons");
+            leftDownButtonsGameObj.transform.Find("Button_Config").gameObject.SetActive(false);
+            leftDownButtonsGameObj.transform.Find("Button_End").gameObject.SetActive(false);
+
+            AdjustGages(hScene.uiCanvas);
+            AdjustXtcLocks(hScene.uiCanvas);
+            AdjustPad(hScene.uiCanvas);
+            AdjustActButtons(hScene.uiCanvas);
+
+            AdjustLeftMiddleToggles(leftMiddleTogglesTransform.gameObject);
         }
 
-        public static void DefaultUIMode() {
-            while (InactiveGameObjects.Count > 0) {
-                InactiveGameObjects[0].SetActive(true);
-                InactiveGameObjects.RemoveAt(0);
+        internal static void SwitchToDefaultUIMode() {
+            var hScene = SceneTypeTracker.Scene as H_Scene;
+            if (hScene == null)
+                return;
+
+            // left middle toggles
+            // scene.middleLeftCanvas.gameObject.SetActive(true); // todo: replace loop below with this when all ui's are done
+            var leftMiddleTogglesTransform = hScene.middleLeftCanvas.transform.Find("LeftMiddleToggles");
+            foreach (Transform child in leftMiddleTogglesTransform) {
+                if (child.gameObject.name == "Sperm")
+                    continue;
+
+                child.gameObject.SetActive(true);
             }
 
-            if (TalkImage != null) TalkImage.enabled = true;
+            leftMiddleTogglesTransform.gameObject.SetActive(true);
 
-            ResetGages();
-            ResetXtcLocks();
-            ResetPad();
-            ResetActButtons();
-            ResetMiddleButtonsAlignment();
-            ResetMiddleButtonsSize();
-            ResetMiddleButtonsHideablePos();
-            ResetSwapButton();
+            hScene.uiCanvas.transform.Find("Badges").gameObject.SetActive(true);
+            hScene.uiCanvas.transform.Find("Swap").gameObject.SetActive(true);
+            hScene.uiCanvas.transform.Find("Talk").transform.GetComponent<Image>().enabled = true;
+
+            // left down buttons
+            var leftDownButtonsGameObj = hScene.uiCanvas.transform.Find("LeftDownButtons");
+            leftDownButtonsGameObj.transform.Find("Button_Config").gameObject.SetActive(true);
+            leftDownButtonsGameObj.transform.Find("Button_End").gameObject.SetActive(true);
+
+            ResetGages(hScene.uiCanvas);
+            ResetXtcLocks(hScene.uiCanvas);
+            ResetPad(hScene.uiCanvas);
+            ResetActButtons(hScene.uiCanvas);
+
+            ResetLeftMiddleToggles(leftMiddleTogglesTransform.gameObject);
         }
     }
 }

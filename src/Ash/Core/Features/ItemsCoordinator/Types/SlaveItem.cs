@@ -29,22 +29,19 @@ namespace Ash.Core.Features.ItemsCoordinator.Types
             SlaveItemState = slaveItemState;
         }
 
-        public override bool Equals(object obj) {
-            return Equals(obj as SlaveItem);
-        }
-
         public bool Equals(SlaveItem other) {
-            if (ReferenceEquals(other, null))
+            if (other is null)
                 return false;
-
-            if (ReferenceEquals(this, other))
-                return true;
 
             if (!base.Equals(other))
                 return false;
 
             return MasterItemState.Equals(other.MasterItemState)
                    && SlaveItemState.Equals(other.SlaveItemState);
+        }
+
+        public override bool Equals(object obj) {
+            return obj is SlaveItem item && Equals(item);
         }
 
         public override int GetHashCode() {

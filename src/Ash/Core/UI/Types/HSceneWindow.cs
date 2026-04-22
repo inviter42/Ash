@@ -3,54 +3,59 @@ using System.Collections.Generic;
 using System.Linq;
 using Ash.Core.Features.GameUIControls.UI.GameUIControlsView;
 using Ash.Core.Features.HSceneControls.UI.HSceneControlsView;
+using Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView;
 using Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView;
 using Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView;
 using Ash.Core.SceneManagement;
 
 namespace Ash.Core.UI.Types
 {
-    public class HSceneWindow : AshWindow<HSceneWindow>
+    internal class HSceneWindow : AshWindow<HSceneWindow>
     {
         private GameUIControlsView GameUIControlsViewInstance;
         private HSceneControlsView HSceneControlsViewInstance;
+        private HSceneSettingsView HSceneSettingsViewInstance;
         private ItemsVisibilityControlsView ItemsVisibilityControlsViewInstance;
         private ItemsCoordinatorView ItemsCoordinatorViewInstance;
 
         private Female ActiveFemale { get; set; }
 
-        public void Awake() {
+        private void Awake() {
             GameUIControlsViewInstance = new GameUIControlsView();
             ItemsVisibilityControlsViewInstance = new ItemsVisibilityControlsView();
             ItemsCoordinatorViewInstance = new ItemsCoordinatorView();
             HSceneControlsViewInstance = new HSceneControlsView();
+            HSceneSettingsViewInstance = new HSceneSettingsView();
         }
 
         protected override string[] SetTabsModel() {
             return new[] {
                 GameUIControlsView.UIControlsLabel,
-                ItemsVisibilityControlsView.ItemsVisibilityControlsTabLabel,
                 ItemsCoordinatorView.ItemsVisibilityCoordinatorTabLabel,
-                HSceneControlsView.HSceneControlsViewTabLabel
+                ItemsVisibilityControlsView.ItemsVisibilityControlsTabLabel,
+                HSceneControlsView.HSceneControlsViewTabLabel,
+                HSceneSettingsView.HSceneSettingsViewTabLabel,
             };
         }
 
         protected override List<Action> SetTabViewsModel() {
             return new List<Action> {
                 GameUIControlsViewInstance.DrawView,
-                ItemsVisibilityControlsViewInstance.DrawView,
                 ItemsCoordinatorViewInstance.DrawView,
-                () => HSceneControlsViewInstance.DrawView()
+                ItemsVisibilityControlsViewInstance.DrawView,
+                HSceneControlsViewInstance.DrawView,
+                HSceneSettingsViewInstance.DrawView,
             };
         }
 
-        public Female GetActiveFemale() {
+        internal Female GetActiveFemale() {
             if (ActiveFemale == null)
                 InitializeActiveFemale();
 
             return ActiveFemale;
         }
 
-        public void SetActiveFemale(Female female) {
+        internal void SetActiveFemale(Female female) {
             ActiveFemale = female;
         }
 

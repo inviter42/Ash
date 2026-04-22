@@ -7,14 +7,14 @@ using Ash.Core.SceneManagement;
 
 namespace Ash.Core.UI.Types
 {
-    public class EditSceneWindow : AshWindow<EditSceneWindow>
+    internal class EditSceneWindow : AshWindow<EditSceneWindow>
     {
         private ItemsVisibilityControlsView ItemsVisibilityControlsViewInstance;
         private ItemsCoordinatorView ItemsCoordinatorViewInstance;
 
         private Female ActiveFemale { get; set; }
 
-        public void Awake() {
+        private void Awake() {
             ItemsVisibilityControlsViewInstance = new ItemsVisibilityControlsView();
             ItemsCoordinatorViewInstance = new ItemsCoordinatorView();
         }
@@ -33,14 +33,14 @@ namespace Ash.Core.UI.Types
             };
         }
 
-        public Female GetActiveFemale() {
+        internal Female GetActiveFemale() {
             if (ActiveFemale == null)
                 InitializeActiveFemale();
 
             return ActiveFemale;
         }
 
-        public void SetActiveFemale(Female female) {
+        internal void SetActiveFemale(Female female) {
             ActiveFemale = female;
         }
 

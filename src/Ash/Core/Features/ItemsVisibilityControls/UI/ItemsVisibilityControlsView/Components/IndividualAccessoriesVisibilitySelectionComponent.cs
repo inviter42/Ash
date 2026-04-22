@@ -1,14 +1,14 @@
 using System.Linq;
 using Ash.GlobalUtils;
-using static Ash.GlobalUtils.GuiPrimitivesLib;
+using static Ash.GlobalUtils.ImGuiPrimitivesLib;
 
 namespace Ash.Core.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView.Components
 {
-    public static class IndividualAccessoriesVisibilitySelectionComponent
+    internal static class IndividualAccessoriesVisibilitySelectionComponent
     {
         private const string IndividualAccessoriesSubtitle = "Individual Accessories";
 
-        public static void Component(Female activeFemale) {
+        internal static void Component(Female activeFemale) {
             Subtitle(IndividualAccessoriesSubtitle);
 
             var accessoriesModel = activeFemale.accessories.acceObjs

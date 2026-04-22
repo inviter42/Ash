@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,7 +6,7 @@ namespace Ash.Core.SceneManagement
 {
     internal class SceneTypeTracker : MonoBehaviour
     {
-        public enum SceneTypes
+        internal enum SceneTypes
         {
             Unknown,
             StartUpScene,
@@ -19,35 +18,40 @@ namespace Ash.Core.SceneManagement
             EditScene
         }
 
-        public static SceneTypes TypeOfCurrentScene = SceneTypes.Unknown;
-        public static Scene CurrentScene;
+        internal static SceneTypes TypeOfCurrentScene = SceneTypes.Unknown;
 
-        public static bool IsLegalScene() => LegalScenes.Contains(TypeOfCurrentScene);
+        internal static Scene Scene;
 
-        private static readonly SceneTypes[] LegalScenes =
-            { SceneTypes.H, SceneTypes.EditScene, SceneTypes.SelectScene };
+        internal static event Action SceneTypeUpdated;
+        internal static event Action SceneLoaded;
+        internal static event Action SceneUnloaded;
 
-        public void Awake() {
-            SceneManager.sceneLoaded += UpdateSceneData;
+        private void Awake() {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
 
-        private static void UpdateSceneData(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode) {
+        private static void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, LoadSceneMode mode) {
+            UpdateSceneData(scene);
+            SceneLoaded?.Invoke();
+        }
+
+        private static void OnSceneUnloaded(UnityEngine.SceneManagement.Scene scene) {
+            UpdateSceneData(scene);
+            SceneUnloaded?.Invoke();
+        }
+
+        private static void UpdateSceneData(UnityEngine.SceneManagement.Scene scene) {
             foreach (SceneTypes type in Enum.GetValues(typeof(SceneTypes))) {
                 if (scene.name != type.ToString())
                     continue;
 
                 TypeOfCurrentScene = type;
+
+                SceneTypeUpdated?.Invoke();
+
                 break;
             }
-
-            var gc = (GameControl)FindObjectOfType(typeof(GameControl));
-            if (gc == null) {
-
-                Ash.Logger.LogWarning("GameControl not found");
-                return;
-            }
-
-            CurrentScene = gc.sceneCtrl.nowScene;
         }
     }
 }

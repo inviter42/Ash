@@ -8,16 +8,16 @@ using H;
 using OneOf;
 using UnityEngine;
 using static Ash.Core.Features.Common.Misc.CommonLabels;
-using static Ash.GlobalUtils.GuiPrimitivesLib;
+using static Ash.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State.HPosRuleForm;
 
 namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.HPosItemCoordination
 {
-    public static class HPosRuleDetailsComponent
+    internal static class HPosRuleDetailsComponent
     {
-        public const string HPosStyleFormDataKey = "HPosStyle";
+        internal const string HPosStyleFormDataKey = "HPosStyle";
 
-        public static void DrawHPosRuleDetailsView(HPosRuleForm form) {
+        internal static void DrawHPosRuleDetailsView(HPosRuleForm form) {
             var formData = form.FormData;
 
             Button("Back", formData.Clear);
@@ -25,17 +25,18 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
             if (!HPosRuleItemSelectionComponent.IsHPosItemSelected(form))
                 return;
 
-            formData.TryGetValue(FemaleFormDataKey, out var femaleFormData);
-            var activeFemale = femaleFormData.AsT1;
-            if (activeFemale == null) {
-                Ash.Logger.LogWarning("Female is null.");
+            if (!formData.TryGetValue(FemaleFormDataKey, out var femaleFormData)) {
+                Ash.Logger.LogWarning("Female form data doesn't contain a value.");
                 Ash.Logger.LogWarning(Environment.StackTrace);
                 formData.Clear();
                 return;
             }
 
+            var activeFemale = femaleFormData.AsT1;
+
             if (!formData.TryGetValue(HPosRuleItemSelectionComponent.HPosRuleItemFormDataKey, out var hPosRuleItemFormDataRaw)) {
-                Ash.Logger.LogWarning("MasterItem form data doesn't exist.");
+                Ash.Logger.LogWarning("MasterItem form data contain a value.");
+                formData.Clear();
                 return;
             }
 
@@ -83,7 +84,7 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                 case WEAR_SHOW_TYPE.SWIMUPPER:
                     // show3
                     hStyleDetailModel = new [] {
-                        new HStyleDetail { Type = H_StyleData.TYPE.SERVICE, Detail = H_StyleData.DETAIL.TITTY_FUCK }
+                        new HStyleDetail(H_StyleData.TYPE.SERVICE, H_StyleData.DETAIL.TITTY_FUCK)
                     };
                     break;
                 case WEAR_SHOW_TYPE.TOPLOWER:
@@ -93,9 +94,9 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                     // show2
                     hStylesModel = new[] { H_StyleData.TYPE.SERVICE };
                     hStyleDetailModel = new [] {
-                        new HStyleDetail { Type = H_StyleData.TYPE.PETTING, Detail = H_StyleData.DETAIL.VAGINA },
-                        new HStyleDetail { Type = H_StyleData.TYPE.PETTING, Detail = H_StyleData.DETAIL.ANAL },
-                        new HStyleDetail { Type = (H_StyleData.TYPE)(-2), Detail = (H_StyleData.DETAIL)(-2) }
+                        new HStyleDetail(H_StyleData.TYPE.PETTING, H_StyleData.DETAIL.VAGINA),
+                        new HStyleDetail(H_StyleData.TYPE.PETTING, H_StyleData.DETAIL.ANAL),
+                        new HStyleDetail((H_StyleData.TYPE)(-2), (H_StyleData.DETAIL)(-2))
                     };
                     break;
                 case WEAR_SHOW_TYPE.SHORTS:
@@ -103,19 +104,19 @@ namespace Ash.Core.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.
                     // show4
                     hStylesModel = new[] { H_StyleData.TYPE.INSERT };
                     hStyleDetailModel = new [] {
-                        new HStyleDetail { Type = H_StyleData.TYPE.INSERT, Detail = H_StyleData.DETAIL.ANAL },
-                        new HStyleDetail { Type = H_StyleData.TYPE.PETTING, Detail = H_StyleData.DETAIL.VAGINA },
-                        new HStyleDetail { Type = H_StyleData.TYPE.PETTING, Detail = H_StyleData.DETAIL.ANAL },
-                        new HStyleDetail { Type = (H_StyleData.TYPE)(-2), Detail = (H_StyleData.DETAIL)(-2) }
+                        new HStyleDetail(H_StyleData.TYPE.INSERT, H_StyleData.DETAIL.ANAL),
+                        new HStyleDetail(H_StyleData.TYPE.PETTING, H_StyleData.DETAIL.VAGINA),
+                        new HStyleDetail(H_StyleData.TYPE.PETTING, H_StyleData.DETAIL.ANAL),
+                        new HStyleDetail((H_StyleData.TYPE)(-2), (H_StyleData.DETAIL)(-2))
                     };
                     break;
                 case WEAR_SHOW_TYPE.PANST:
                     // show5
                     hStylesModel = new[] { H_StyleData.TYPE.INSERT };
                     hStyleDetailModel = new [] {
-                        new HStyleDetail { Type = H_StyleData.TYPE.PETTING, Detail = H_StyleData.DETAIL.VAGINA },
-                        new HStyleDetail { Type = H_StyleData.TYPE.PETTING, Detail = H_StyleData.DETAIL.ANAL },
-                        new HStyleDetail { Type = (H_StyleData.TYPE)(-2), Detail = (H_StyleData.DETAIL)(-2) }
+                        new HStyleDetail(H_StyleData.TYPE.PETTING, H_StyleData.DETAIL.VAGINA),
+                        new HStyleDetail(H_StyleData.TYPE.PETTING, H_StyleData.DETAIL.ANAL),
+                        new HStyleDetail((H_StyleData.TYPE)(-2), (H_StyleData.DETAIL)(-2))
                     };
                     break;
                 default:
