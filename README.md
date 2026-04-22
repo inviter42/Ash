@@ -8,8 +8,8 @@ This feature allows to create rules for clothing and accessories to automaticall
 ### Visibility Controls
 The plugin has a separate tab that provides visibility controls for all the items both in the editor and in h-scene.
 
-### Immersive UI
-This is a beta feature that allows to hide some of the less used buttons and UI elements, and scales down the others to provide more immersive h-scene experience.
+### Immersive UI™
+Complete re-imagining of the h-scene UI, designed and implemented from completely scratch to provide you with the most immersive h-scene experience.
 
 ### Scene Controls
 Just a few QoL things to control during H-Scene.
@@ -23,7 +23,7 @@ Download and install:
 1. Download the [latest release](https://github.com/inviter42/Ash/releases), unzip the archive, drag and drop the contents into the game directory.
 
 ## How to Use
-The main plugin window is bound by default to a backquote `` ` `` key. In a non-English keyboard layouts, this key might have a different charcode associated with it. The hotkey can be changed in the BepInEx plugin/mod settings menu.
+The main plugin window is bound by default to a backquote `` ` `` key. In a non-English keyboard layouts, this key might have a different charcode associated with it. The hotkey can be changed in the BepInEx `Plugin/mod settings` menu (`F1` > `Plugin Settings` tab).
 
 ### Adding a new Inter Item rule
 The Inter Item rules are controlling the visibility of the dependent items based on the state of their parent items. Any combinations of Clothing and Accessory items are supported.
@@ -48,6 +48,14 @@ The H-Pose rules are controlling the auto-stripping behavior, when the pose is s
 1. Select pose type (only applicable poses are displayed)
 1. Click `Create rule`
 1. Newly created rule will appear in the list of `Active Rules` 
+
+### Enabling Immersive UI™
+1. Go to the `UI Settings` tab
+1. _(Optional)_ If you are a Better Repack user, you have an option to turn on `Remove background from thumbnails` feature, that will remove the background from Clothing and Accessory item icons. Note, that this will only work if the thumbnail background is a one single solid color 
+1. In the `Immersive UI` category turn on `Immersive UI` mode (expect a small lag upon pressing the button, while UI is being generated)
+
+### QoL and Bug Fixes
+`H-Scene Settings` tab provides a variety of QoL features and bug fixes. Feel free to experiment to create your best Play Home experience!
 
 ### Persistence
 - The Inter Item rules are stored in `PlayHome/BepInEx/config/Ash.InterItemRules.json`[^1].
