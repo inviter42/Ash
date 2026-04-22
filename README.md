@@ -1,21 +1,21 @@
 # Another Scene Helper (Ash)
-A plugin for Play Home for coordinating visibility of clothing and accessory items, and other miscellaneous functionality.
+A plugin for Illusion Play Home that brings a variety of features, such as coordinating visibility of clothing and accessory items, Immersive UI™ and more.
 
 ## Features
 ### Visibility Rules
 This feature allows to create rules for clothing and accessories to automatically change the visibility of the dependent item, when the parent item has changed its state. The feature works for clothing and accessories in any combination and supports extended slots from MoreAccessories plugin.
 
-### Visibility Controls
+### Item Visibility
 The plugin has a separate tab that provides visibility controls for all the items both in the editor and in h-scene.
 
 ### Immersive UI™
-Complete re-imagining of the h-scene UI, designed and implemented from completely scratch to provide you with the most immersive h-scene experience.
+Complete re-imagining of the h-scene UI, designed and implemented completely from scratch to provide you with the most immersive h-scene experience.
 
-### Scene Controls
-Just a few QoL things to control during H-Scene.
-- Toggles for bodily fluids
-- Toggle to automatically mute inactive girl
-- Follow target selection for eyes and neck
+### H-Scene Controls
+Controls for bodily fluids, as well as neck and eyes targets.
+
+### H-Scene Settings
+Quality of life features and bug fixes.
 
 ## Installation
 Download and install: 
