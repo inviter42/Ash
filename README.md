@@ -53,6 +53,11 @@ The H-Pose rules are controlling the auto-stripping behavior, when the pose is s
 1. Go to the `UI Settings` tab
 1. _(Optional)_ If you are a Better Repack user, you have an option to turn on `Remove background from thumbnails` feature, that will remove the background from Clothing and Accessory item icons. Note, that this will only work if the thumbnail background is a one single solid color 
 1. In the `Immersive UI` category turn on `Immersive UI` mode (expect a small lag upon pressing the button, while UI is being generated)
+1. While in H-Scene press and hold `Middle mouse button` (`Mouse wheel`) to summon the Radial Menu. Hotkey can be changed in the BepInEx `Plugin/mod settings` menu
+1. Move the mouse to select the desired option and release `Middle mouse button` to confirm your selection
+1. Opened menu can be closed via `Escape` or by pressing the x-close button
+
+_Note that a half-ring in the Clothing and Accessories menu is in fact interactive and can be dragged to rotate it. If your character has a lot of accessories, which do not fit on the screen, you can rotate the half-ring to bring them into the view. There is a teoretical upper limit on how many accessories can physically fit on the full ring, but I doubt anyone would reasonably have that many._
 
 ### QoL and Bug Fixes
 `H-Scene Settings` tab provides a variety of QoL features and bug fixes. Feel free to experiment to create your best Play Home experience!
