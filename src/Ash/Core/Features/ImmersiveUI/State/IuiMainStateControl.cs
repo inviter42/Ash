@@ -34,8 +34,8 @@ namespace Ash.Core.Features.ImmersiveUI.State
             PostStateUpdateRoutines.Add(routine);
         }
 
-        internal void AddStateUpdateRequest(Action action) {
-            StateUpdateRequests.Add(action);
+        internal void AddStateUpdateRequest(Action request) {
+            StateUpdateRequests.Add(request);
         }
 
         private void HideAnyVisibleSubmenuOnEscapePressed() {

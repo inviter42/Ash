@@ -10,7 +10,7 @@ namespace Ash.Core.UI
     {
         internal static MonoBehaviour Window { get; private set; }
 
-        private static bool IsLegalScene() => LegalScenes.Contains(SceneTypeTracker.TypeOfCurrentScene);
+        private static bool IsLegalScene => LegalScenes.Contains(SceneTypeTracker.TypeOfCurrentScene);
 
         private static readonly SceneTypeTracker.SceneTypes[] LegalScenes =
             { SceneTypeTracker.SceneTypes.H, SceneTypeTracker.SceneTypes.EditScene, SceneTypeTracker.SceneTypes.SelectScene };
@@ -19,7 +19,7 @@ namespace Ash.Core.UI
             if (!HotkeyUtils.HotkeyIsDown(Ash.ConfigEntryToggleWindowHotkey.Value.MainKey))
                 return;
 
-            if (!IsLegalScene()) {
+            if (!IsLegalScene) {
                 Ash.Logger.LogWarning($"Illegal scene {SceneTypeTracker.TypeOfCurrentScene}");
                 return;
             }

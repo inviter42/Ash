@@ -30,6 +30,7 @@ $exitCode = 0
 
 try {
     Write-Host "Running Build command (Debug)" -ForegroundColor Cyan
+    dotnet clean
     dotnet build --configuration $BuildConfiguration
     if ($LASTEXITCODE -ne 0) {
         $exitCode = $LASTEXITCODE

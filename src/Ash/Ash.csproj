@@ -129,6 +129,8 @@
   <ItemGroup>
     <Compile Include="Ash.cs" />
     <Compile Include="Core\AssetBundleManagement\AssetBundleManager.cs" />
+    <Compile Include="Core\Features\Actions\ActionsManager.cs" />
+    <Compile Include="Core\Features\Actions\DirtyTalkAction.cs" />
     <Compile Include="Core\Features\Common\Components\FemaleSelectionComponent.cs" />
     <Compile Include="Core\Features\Common\Misc\CommonLabels.cs" />
     <Compile Include="Core\Features\Common\Misc\CommonImGuiStyles.cs" />
@@ -253,7 +255,9 @@
     <Compile Include="HarmonyHooks\_H\HMembersHooks.cs" />
     <Compile Include="HarmonyHooks\_H\HSceneHooks.cs" />
     <Compile Include="HarmonyHooks\_H\_HState\HStateExitHooks.cs" />
+    <Compile Include="HarmonyHooks\_H\_HState\HStateExtractHooks.cs" />
     <Compile Include="HarmonyHooks\_H\_HState\HStateInsertedWaitHooks.cs" />
+    <Compile Include="HarmonyHooks\_H\_HState\HStateInXtcAfterBase.cs" />
     <Compile Include="HarmonyHooks\_H\_HState\HStateLoopHooks.cs" />
     <Compile Include="HarmonyHooks\_H\_HState\HStatePreInsertWaitHooks.cs" />
     <Compile Include="HarmonyHooks\_H\_HState\HStatePreTouchWaitHooks.cs" />
@@ -262,6 +266,7 @@
     <Compile Include="HarmonyHooks\_Menus\PauseMenueHooks.cs" />
     <Compile Include="HarmonyHooks\_Scene\IllusionCameraHooks.cs" />
     <Compile Include="HarmonyHooks\_Scene\SceneControlHooks.cs" />
+    <Compile Include="HarmonyHooks\_Scene\SceneLoadingHooks.cs" />
     <Compile Include="HarmonyHooks\_Wearables\AccessoriesHooks.cs" />
     <Compile Include="HarmonyHooks\_Wearables\WearsHooks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

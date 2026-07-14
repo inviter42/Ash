@@ -1,4 +1,5 @@
-﻿using Ash.Core.SceneManagement;
+﻿using Ash.Core.Features.Actions;
+using Ash.Core.SceneManagement;
 using Ash.Core.Settings;
 using Ash.Core.UI;
 using Ash.GlobalUtils;
@@ -28,12 +29,14 @@ namespace Ash
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.anotherscenehelper";
-        public const string Version = "1.3.0";
+        public const string Version = "1.3.1";
 
         internal new static ManualLogSource Logger;
 
         internal static ConfigEntry<KeyboardShortcut> ConfigEntryToggleWindowHotkey { get; private set; }
         internal static ConfigEntry<KeyboardShortcut> ConfigEntryToggleImmersiveUIHotkey { get; private set; }
+        internal static ConfigEntry<KeyboardShortcut> ConfigEntryTriggerDirtyTalk { get; private set; }
+        internal static ConfigEntry<bool> ConfigEntrySkipToTitleSceneEnabled { get; private set; }
 
         internal static PersistentSettings PersistentSettings { get; private set; }
 
@@ -70,6 +73,19 @@ namespace Ash
                 new KeyboardShortcut(KeyCode.Mouse2)
             );
 
+            ConfigEntryTriggerDirtyTalk = Config.Bind(
+                "Shortcuts",
+                "Trigger dirty talk",
+                new KeyboardShortcut(KeyCode.T)
+            );
+
+            ConfigEntrySkipToTitleSceneEnabled = Config.Bind(
+                "Global Settings",
+                "Enable intro skip",
+                false
+            );
+
+
             // Register hooks
 #if DEBUG
             Harmony.PatchAll(typeof(DevHooks));
@@ -87,8 +103,11 @@ namespace Ash
             Harmony.PatchAll(typeof(HStateInsertedWaitHooks));
             Harmony.PatchAll(typeof(HStateStartHooks));
             Harmony.PatchAll(typeof(HStateExitHooks));
+            Harmony.PatchAll(typeof(HStateExtractHooks));
+            Harmony.PatchAll(typeof(HStateInXtcAfterBase));
             Harmony.PatchAll(typeof(HSceneHooks));
             Harmony.PatchAll(typeof(ConfigMenuHooks));
+            Harmony.PatchAll(typeof(SceneLoadingHooks));
 
             // Initialize UI
             InitPluginUI();
@@ -99,7 +118,7 @@ namespace Ash
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
         private void InitPluginUI() {
-            AshGameObj = new GameObject("Ash", typeof(AshUI), typeof(SceneTypeTracker));
+            AshGameObj = new GameObject("Ash", typeof(AshUI), typeof(SceneTypeTracker), typeof(ActionsManager));
             AshUI = AshGameObj.GetComponent<AshUI>();
             DontDestroyOnLoad(AshGameObj);
         }

@@ -13,8 +13,9 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
         internal const string HSceneSettingsViewTabLabel = "H-Scene Settings";
 
         private const string BugFixesTitle = "Bug Fixes";
-        private const string AnimationControlsTitle = "Animation controls";
-        private const string VoiceControlsTitle = "Voice controls";
+        private const string AnimationControlsTitle = "Animation settings";
+        private const string VoiceControlsTitle = "Voice settings";
+        private const string DirtyTalkTriggerSettingsTitle = "Dirty Talk settings";
 
         private const string MuteBackgroundFemaleSubtitle = "Mute background female:";
         private const string DisableFemaleAutoEjaculationSubtitle = "Disable female automatic ejaculation:";
@@ -23,6 +24,8 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
         private const string DisableFemaleInactionBarkSubtitle = "Disable female voice lines after inactivity period:";
         private const string DisableFemaleVoiceBarkAtSceneStartSubtitle = "Disable female voice lines at H-Scene start:";
         private const string DisableFemaleVoiceBarkAtSceneEndSubtitle = "Disable female voice lines at H-Scene end:";
+        private const string DisableFemaleVoiceBarkAfterEjaInSubtitle = "Disable female voice lines after ejaculation inside:";
+        private const string DisableFemaleVoiceBarkAfterExtractSubtitle = "Disable female voice lines after extraction:";
         private const string InterruptVoiceClipImmediatelyUponGagChangeSubtitle = "Update female voice clip immediately upon gag change:";
         private const string FixIncorrectShowMouthLiquidStateSubtitle = "Fix ShowMouthLiquid animation:";
 
@@ -37,6 +40,7 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
                 DrawAnimationControlsSection();
                 DrawVoiceControlsSection();
                 DrawBugFixesSection();
+                DrawDirtyTalkSettingsSection();
             }
 
             GUILayout.EndScrollView();
@@ -61,7 +65,9 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
                 DrawDisableFemaleHVoiceBark,
                 DrawDisableFemaleInactionBark,
                 DrawDisableFemaleVoiceBarkAtSceneStart,
-                DrawDisableFemaleVoiceBarkAtSceneEnd
+                DrawDisableFemaleVoiceBarkAtSceneEnd,
+                DrawDisableFemaleVoiceBarkAfterEjaIn,
+                DrawDisableFemaleVoiceBarkAfterExtract
             };
 
             drawCalls.ForEach(dc => {
@@ -80,6 +86,14 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
             GUILayout.Space(12);
 
             DrawFixIncorrectShowMouthLiquidState();
+        }
+
+        private void DrawDirtyTalkSettingsSection() {
+            GUILayout.Space(20);
+
+            Title(DirtyTalkTriggerSettingsTitle);
+
+            DrawDirtyTalkSettings();
         }
 
 
@@ -158,6 +172,26 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
             );
         }
 
+        private void DrawDisableFemaleVoiceBarkAfterEjaIn() {
+            Subtitle(DisableFemaleVoiceBarkAfterEjaInSubtitle);
+            Flow(
+                new[] { true, false },
+                (state, idx) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
+                    Ash.PersistentSettings.DisableFemaleVoiceBarkAfterEjaIn.Value == state,
+                    () => Ash.PersistentSettings.DisableFemaleVoiceBarkAfterEjaIn.Value = state)
+            );
+        }
+
+        private void DrawDisableFemaleVoiceBarkAfterExtract() {
+            Subtitle(DisableFemaleVoiceBarkAfterExtractSubtitle);
+            Flow(
+                new[] { true, false },
+                (state, idx) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
+                    Ash.PersistentSettings.DisableFemaleVoiceBarkAfterExtract.Value == state,
+                    () => Ash.PersistentSettings.DisableFemaleVoiceBarkAfterExtract.Value = state)
+            );
+        }
+
         private void DrawInterruptVoiceClipImmediatelyUponGagChange() {
             Subtitle(InterruptVoiceClipImmediatelyUponGagChangeSubtitle);
             Flow(
@@ -176,6 +210,39 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
                     Ash.PersistentSettings.FixIncorrectShowMouthLiquidState.Value == state,
                     () => Ash.PersistentSettings.FixIncorrectShowMouthLiquidState.Value = state)
             );
+        }
+
+        private void DrawDirtyTalkSettings() {
+            var minDelayInt = Ash.PersistentSettings.DirtyTalkMinValue.Value;
+            var maxDelayInt = Ash.PersistentSettings.DirtyTalkMaxValue.Value;
+
+            var subtitle = minDelayInt == maxDelayInt
+                ? minDelayInt == 0
+                    ? "Dirty Talk auto-trigger is disabled"
+                    : $"Dirty Talk will auto-trigger every {minDelayInt} seconds"
+                : $"Dirty Talk will trigger randomly every {minDelayInt} - {maxDelayInt} seconds";
+            Subtitle(subtitle);
+
+            GUILayout.Space(12);
+
+            GUILayout.Label($"Min delay {minDelayInt} seconds");
+
+            var minVal = GUILayout.HorizontalSlider(minDelayInt, 0, 360);
+            minDelayInt = Mathf.RoundToInt(minVal);
+
+            maxDelayInt = Math.Max(minDelayInt, maxDelayInt);
+
+            GUILayout.Space(12);
+
+            GUILayout.Label($"Max delay {maxDelayInt} seconds");
+
+            var maxVal = GUILayout.HorizontalSlider(maxDelayInt, 0, 360);
+            maxDelayInt = Mathf.RoundToInt(maxVal);
+
+            minDelayInt = Math.Min(minDelayInt, maxDelayInt);
+
+            Ash.PersistentSettings.DirtyTalkMinValue.Value = minDelayInt;
+            Ash.PersistentSettings.DirtyTalkMaxValue.Value = maxDelayInt;
         }
     }
 }

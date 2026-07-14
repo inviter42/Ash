@@ -27,6 +27,12 @@ namespace Ash.Core.Settings
         internal Setting<bool> DisableFemaleVoiceBarkAtSceneEnd = new Setting<bool>(false);
 
         [JsonProperty]
+        internal Setting<bool> DisableFemaleVoiceBarkAfterExtract = new Setting<bool>(false);
+
+        [JsonProperty]
+        internal Setting<bool> DisableFemaleVoiceBarkAfterEjaIn = new Setting<bool>(false);
+
+        [JsonProperty]
         internal Setting<bool> InterruptVoiceClipImmediatelyUponGagChange = new Setting<bool>(false);
 
         [JsonProperty]
@@ -40,6 +46,12 @@ namespace Ash.Core.Settings
 
         [JsonProperty]
         internal Setting<bool> ThumbnailBackgroundRemovalEnabled = new Setting<bool>(false);
+
+        [JsonProperty]
+        internal Setting<int> DirtyTalkMinValue = new Setting<int>(0);
+
+        [JsonProperty]
+        internal Setting<int> DirtyTalkMaxValue = new Setting<int>(0);
     }
 
     internal class Setting<T> {

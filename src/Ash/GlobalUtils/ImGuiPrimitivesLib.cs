@@ -9,6 +9,7 @@ namespace Ash.GlobalUtils
     internal static class ImGuiPrimitivesLib
     {
         private static readonly Color MatrixGreen = new Color(0.0f, 0.7f, 0.05f);
+
         private static readonly GUIStyle ButtonStyle = new GUIStyle(GUI.skin.button) {
             padding = new RectOffset(12, 12, 4, 4)
         };
@@ -54,7 +55,8 @@ namespace Ash.GlobalUtils
                 callback.Invoke();
         }
 
-        internal static void RadioButton(string label, bool isActive, Action callback, params GUILayoutOption[] options) {
+        internal static void RadioButton(string label, bool isActive, Action callback,
+            params GUILayoutOption[] options) {
             var oldContentColor = GUI.contentColor;
 
             if (isActive)
