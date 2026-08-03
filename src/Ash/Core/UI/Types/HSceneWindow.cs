@@ -67,7 +67,7 @@ namespace Ash.Core.UI.Types
                 return;
             }
 
-            ActiveFemale = SceneComponentRegistry.GetComponentsOfType<Female>().ToArray()[0];
+            ActiveFemale = registeredFemales[0];
         }
     }
 }

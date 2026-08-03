@@ -33,6 +33,9 @@ namespace Ash.Core.Settings
         internal Setting<bool> DisableFemaleVoiceBarkAfterEjaIn = new Setting<bool>(false);
 
         [JsonProperty]
+        internal Setting<bool> DisableFemaleSpermDripAfterExtract = new Setting<bool>(false);
+
+        [JsonProperty]
         internal Setting<bool> InterruptVoiceClipImmediatelyUponGagChange = new Setting<bool>(false);
 
         [JsonProperty]
@@ -52,6 +55,27 @@ namespace Ash.Core.Settings
 
         [JsonProperty]
         internal Setting<int> DirtyTalkMaxValue = new Setting<int>(0);
+
+        [JsonProperty]
+        internal Setting<float> ParticleSystemStartDelayMinValue = new Setting<float>(1);
+
+        [JsonProperty]
+        internal Setting<float> ParticleSystemStartDelayMaxValue = new Setting<float>(2);
+
+        [JsonProperty]
+        internal Setting<float> ParticleSystemGravityModifierValue = new Setting<float>(0.4f);
+
+        [JsonProperty]
+        internal Setting<float> ParticleSystemStartSizeMultiplierValue = new Setting<float>(0.003f);
+
+        [JsonProperty]
+        internal Setting<float> ParticleSystemRateOverTimeMultiplierMinValue = new Setting<float>(1);
+
+        [JsonProperty]
+        internal Setting<float> ParticleSystemRateOverTimeMultiplierMaxValue = new Setting<float>(7);
+
+        [JsonProperty]
+        internal Setting<int> ParticleSystemCollisionQuality = new Setting<int>(0);
     }
 
     internal class Setting<T> {
@@ -64,6 +88,9 @@ namespace Ash.Core.Settings
         public T Value {
             get => _value;
             set {
+                if (_value.Equals(value))
+                    return;
+
                 _value = value;
                 IO.Save(Ash.PersistentSettings, IO.SettingsFileName);
             }

@@ -1,5 +1,8 @@
 using System;
+using Ash.Core.Features.Common.Components;
 using Ash.Core.SceneManagement;
+using Ash.Core.UI;
+using Ash.Core.UI.Types;
 using Ash.GlobalUtils;
 using UnityEngine;
 using Valve.VR.InteractionSystem;
@@ -14,6 +17,7 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
 
         private const string BugFixesTitle = "Bug Fixes";
         private const string AnimationControlsTitle = "Animation settings";
+        private const string ParticleSystemsControlsTitle = "Particle systems settings";
         private const string VoiceControlsTitle = "Voice settings";
         private const string DirtyTalkTriggerSettingsTitle = "Dirty Talk settings";
 
@@ -26,6 +30,7 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
         private const string DisableFemaleVoiceBarkAtSceneEndSubtitle = "Disable female voice lines at H-Scene end:";
         private const string DisableFemaleVoiceBarkAfterEjaInSubtitle = "Disable female voice lines after ejaculation inside:";
         private const string DisableFemaleVoiceBarkAfterExtractSubtitle = "Disable female voice lines after extraction:";
+        private const string DisableFemaleSpermDripAfterExtractSubtitle = "Disable female sperm drip after extraction:";
         private const string InterruptVoiceClipImmediatelyUponGagChangeSubtitle = "Update female voice clip immediately upon gag change:";
         private const string FixIncorrectShowMouthLiquidStateSubtitle = "Fix ShowMouthLiquid animation:";
 
@@ -38,6 +43,7 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
 
             using (new GUILayout.VerticalScope("box", GUILayout.ExpandWidth(true))) {
                 DrawAnimationControlsSection();
+                DrawParticleSystemsSection();
                 DrawVoiceControlsSection();
                 DrawBugFixesSection();
                 DrawDirtyTalkSettingsSection();
@@ -52,6 +58,18 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
             Title(AnimationControlsTitle);
 
             DrawSkipSpurtState();
+        }
+
+        private void DrawParticleSystemsSection() {
+            GUILayout.Space(20);
+
+            Title(ParticleSystemsControlsTitle);
+
+            DrawDisableFemaleSpermDripAfterExtract();
+
+            GUILayout.Space(12);
+
+            DrawFemaleSpermDripPsSettings();
         }
 
         private void DrawVoiceControlsSection() {
@@ -243,6 +261,108 @@ namespace Ash.Core.Features.HSceneSettings.UI.HSceneSettingsView
 
             Ash.PersistentSettings.DirtyTalkMinValue.Value = minDelayInt;
             Ash.PersistentSettings.DirtyTalkMaxValue.Value = maxDelayInt;
+        }
+
+        private void DrawDisableFemaleSpermDripAfterExtract() {
+            Subtitle(DisableFemaleSpermDripAfterExtractSubtitle);
+            Flow(
+                new[] { true, false },
+                (state, idx) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
+                    Ash.PersistentSettings.DisableFemaleSpermDripAfterExtract.Value == state,
+                    () => Ash.PersistentSettings.DisableFemaleSpermDripAfterExtract.Value = state)
+            );
+        }
+
+        private void DrawFemaleSpermDripPsSettings() {
+            var particleSystemStartDelayMinValue = Ash.PersistentSettings.ParticleSystemStartDelayMinValue.Value;
+            var particleSystemStartDelayMaxValue = Ash.PersistentSettings.ParticleSystemStartDelayMaxValue.Value;
+            var particleSystemGravityModifierValue = Ash.PersistentSettings.ParticleSystemGravityModifierValue.Value;
+            var particleSystemStartSizeMultiplierValue = Ash.PersistentSettings.ParticleSystemStartSizeMultiplierValue.Value;
+            var particleSystemRateOverTimeMultiplierMinValue = Ash.PersistentSettings.ParticleSystemRateOverTimeMultiplierMinValue.Value;
+            var particleSystemRateOverTimeMultiplierMaxValue = Ash.PersistentSettings.ParticleSystemRateOverTimeMultiplierMaxValue.Value;
+
+            GUILayout.Label($"Particle spawn min start delay {particleSystemStartDelayMinValue:F2} seconds");
+            particleSystemStartDelayMinValue = GUILayout.HorizontalSlider(particleSystemStartDelayMinValue, 0, 20);
+            particleSystemStartDelayMaxValue = Mathf.Max(particleSystemStartDelayMinValue, particleSystemStartDelayMaxValue);
+
+            GUILayout.Space(12);
+            GUILayout.Label($"Particle spawn max start delay {particleSystemStartDelayMaxValue:F2} seconds");
+            particleSystemStartDelayMaxValue = GUILayout.HorizontalSlider(particleSystemStartDelayMaxValue, 0, 20);
+            particleSystemStartDelayMinValue = Mathf.Min(particleSystemStartDelayMinValue, particleSystemStartDelayMaxValue);
+
+            GUILayout.Space(12);
+            GUILayout.Label($"Particle gravity modifier {particleSystemGravityModifierValue:F2}");
+            particleSystemGravityModifierValue = GUILayout.HorizontalSlider(particleSystemGravityModifierValue, 0, 5);
+
+            GUILayout.Space(12);
+            GUILayout.Label($"Particle start size multiplier {particleSystemStartSizeMultiplierValue:F4}");
+            particleSystemStartSizeMultiplierValue = GUILayout.HorizontalSlider(particleSystemStartSizeMultiplierValue, 0, 1);
+
+            GUILayout.Space(12);
+            GUILayout.Label($"Particle min spawn rate multiplier {particleSystemRateOverTimeMultiplierMinValue:F1}");
+            particleSystemRateOverTimeMultiplierMinValue = GUILayout.HorizontalSlider(particleSystemRateOverTimeMultiplierMinValue, 1, 50);
+            particleSystemRateOverTimeMultiplierMaxValue = Mathf.Max(particleSystemRateOverTimeMultiplierMinValue, particleSystemRateOverTimeMultiplierMaxValue);
+
+            GUILayout.Space(12);
+            GUILayout.Label($"Particle min spawn rate multiplier {particleSystemRateOverTimeMultiplierMaxValue:F1}");
+            particleSystemRateOverTimeMultiplierMaxValue = GUILayout.HorizontalSlider(particleSystemRateOverTimeMultiplierMaxValue, 1, 50);
+            particleSystemRateOverTimeMultiplierMinValue = Mathf.Min(particleSystemRateOverTimeMultiplierMinValue, particleSystemRateOverTimeMultiplierMaxValue);
+
+            GUILayout.Space(12);
+            GUILayout.Label("Collision simulation quality");
+            Flow(
+                (ParticleSystemCollisionQuality[])Enum.GetValues(typeof(ParticleSystemCollisionQuality)),
+                (state, idx) => RadioButton(state.ToString(),
+                    Ash.PersistentSettings.ParticleSystemCollisionQuality.Value == (int)state,
+                    () => Ash.PersistentSettings.ParticleSystemCollisionQuality.Value = (int)state)
+            );
+
+            Ash.PersistentSettings.ParticleSystemStartDelayMinValue.Value = particleSystemStartDelayMinValue;
+            Ash.PersistentSettings.ParticleSystemStartDelayMaxValue.Value = particleSystemStartDelayMaxValue;
+            Ash.PersistentSettings.ParticleSystemGravityModifierValue.Value = particleSystemGravityModifierValue;
+            Ash.PersistentSettings.ParticleSystemStartSizeMultiplierValue.Value = particleSystemStartSizeMultiplierValue;
+            Ash.PersistentSettings.ParticleSystemRateOverTimeMultiplierMinValue.Value = particleSystemRateOverTimeMultiplierMinValue;
+            Ash.PersistentSettings.ParticleSystemRateOverTimeMultiplierMaxValue.Value = particleSystemRateOverTimeMultiplierMaxValue;
+
+            var female = GetActiveFemale();
+            if (female == null) {
+                Ash.Logger.LogWarning("Female is null");
+                Ash.Logger.LogWarning(Environment.StackTrace);
+                return;
+            }
+
+            FemaleSelectionComponent.Component(female, SetActiveFemale);
+
+            GUILayout.Space(12);
+            Button(
+                "Spawn particles",
+                () => {
+                    female.dripParticleVagina.Clear();
+                    ParticleSystemsUtils.AdjustFemaleSpermDripParticleSystemSettings(female.dripParticleVagina);
+                    female.dripParticleVagina.Play();
+                }
+            );
+        }
+
+        private Female GetActiveFemale() {
+            switch (WindowManager.Window) {
+                case HSceneWindow hSceneWindow:
+                    return hSceneWindow.GetActiveFemale();
+                default:
+                    Ash.Logger.LogError($"View HSceneSettingsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
+                    return null;
+            }
+        }
+
+        private void SetActiveFemale(Female female) {
+            switch (WindowManager.Window) {
+                case HSceneWindow hSceneWindow:
+                    hSceneWindow.SetActiveFemale(female);
+                    break;
+                default:
+                    Ash.Logger.LogError($"View HSceneSettingsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
+                    return;
+            }
         }
     }
 }

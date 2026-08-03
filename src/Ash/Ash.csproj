@@ -249,6 +249,7 @@
     <Compile Include="GlobalUtils\DictionaryUtils.cs" />
     <Compile Include="GlobalUtils\EnumUtils.cs" />
     <Compile Include="GlobalUtils\ImGuiPrimitivesLib.cs" />
+    <Compile Include="GlobalUtils\ParticleSystemsUtils.cs" />
     <Compile Include="GlobalUtils\TransformUtils.cs" />
     <Compile Include="HarmonyHooks\DevHooks.cs" />
     <Compile Include="HarmonyHooks\_Human\FemaleHooks.cs" />

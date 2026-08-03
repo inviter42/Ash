@@ -1,5 +1,8 @@
+using Ash.GlobalUtils;
 using H;
 using HarmonyLib;
+using UnityEngine;
+using UnityEngine.SocialPlatforms;
 
 namespace Ash.HarmonyHooks._H._HState
 {
@@ -26,12 +29,18 @@ namespace Ash.HarmonyHooks._H._HState
             for (var index = 0; index < females.Count; ++index) {
                 if (females[index].personality.spermInCntV > 0 && flag1) {
                     females[index].personality.spermInCntV = 0;
-                    females[index].dripParticleVagina.Play();
+                    if (!Ash.PersistentSettings.DisableFemaleSpermDripAfterExtract.Value) {
+                        ParticleSystemsUtils.AdjustFemaleSpermDripParticleSystemSettings(females[index].dripParticleVagina);
+                        females[index].dripParticleVagina.Play();
+                    }
                 }
 
                 if (females[index].personality.spermInCntA > 0 && flag2) {
                     females[index].personality.spermInCntA = 0;
-                    females[index].dripParticleAnus.Play();
+                    if (!Ash.PersistentSettings.DisableFemaleSpermDripAfterExtract.Value) {
+                        ParticleSystemsUtils.AdjustFemaleSpermDripParticleSystemSettings(females[index].dripParticleAnus);
+                        females[index].dripParticleAnus.Play();
+                    }
                 }
             }
 
