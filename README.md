@@ -11,6 +11,9 @@ The plugin has a separate tab that provides visibility controls for all the item
 ### Immersive UI™
 Complete re-imagining of the h-scene UI, designed and implemented completely from scratch to provide you with the most immersive h-scene experience.
 
+### Better Tattoos
+Improved tattoos for both main game and studio. Now tattoos can be scaled, moved and even stacked on top of each other, with ten tattoo layers available for both face and body.
+
 ### H-Scene Controls
 Controls for bodily fluids, as well as neck and eyes targets.
 
