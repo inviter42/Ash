@@ -1,5 +1,6 @@
-using Ash.Core.SceneManagement;
-using Ash.GlobalUtils;
+using Ash.Core.Tooling.SceneManagement;
+using Ash.Logging;
+using Ash.Utility.GlobalUtils;
 using H;
 using UnityEngine;
 
@@ -9,12 +10,14 @@ namespace Ash.Core.Features.Actions
     {
         private float Timer;
 
+        private static readonly AshLogger Logger = new AshLogger(LoggingSettings.LoggingModules.Actions);
+
         internal void QueryInput() {
             if (!HotkeyUtils.HotkeyIsDown(Ash.ConfigEntryTriggerDirtyTalk.Value.MainKey))
                 return;
 
             if (SceneTypeTracker.TypeOfCurrentScene != SceneTypeTracker.SceneTypes.H) {
-                Ash.Logger.LogWarning($"Illegal scene {SceneTypeTracker.TypeOfCurrentScene}");
+                Logger.LogWarning($"Illegal scene {SceneTypeTracker.TypeOfCurrentScene}");
                 return;
             }
 

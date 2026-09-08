@@ -2,7 +2,7 @@ using Ash.Core.Features.ImmersiveUI.Extras.Helpers.Interactive;
 using Ash.Core.Features.ImmersiveUI.Extras.Helpers.UiPositioning;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Config;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Textures;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 using UnityEngine.UI;
 

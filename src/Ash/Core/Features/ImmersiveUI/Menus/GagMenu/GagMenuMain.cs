@@ -7,8 +7,8 @@ using Ash.Core.Features.ImmersiveUI.Menus.GagMenu.Components;
 using Ash.Core.Features.ImmersiveUI.Menus.GagMenu.Config;
 using Ash.Core.Features.ImmersiveUI.Menus.GagMenu.State;
 using Ash.Core.Features.ImmersiveUI.Menus.GagMenu.Textures;
-using Ash.Core.SceneManagement;
-using Ash.GlobalUtils;
+using Ash.Core.Tooling.SceneManagement;
+using Ash.Utility.GlobalUtils;
 using Character;
 using Illusion.Extensions;
 using UnityEngine;
@@ -33,6 +33,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu
         private static readonly int FrostTex = Shader.PropertyToID("_FrostTex");
         private static readonly int FrostIntensity = Shader.PropertyToID("_FrostIntensity");
 
+        // ReSharper disable once UnusedParameter.Local
         internal GagMenuMain(IuiMain iuiMain, GameObject canvasGameObj) {
             var hScene = SceneTypeTracker.Scene as H_Scene;
             if (hScene == null) {
@@ -103,17 +104,15 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu
         }
 
         private GameObject CreateFrostedGlass(GameObject root) {
-            var frostedGlassShader =
-                Ash.AshUI.ImmersiveUIShadersAssetBundle.LoadAsset<Shader>(
-                    "assets/frostedglass/shaders/frostedglass.shader");
+            var frostedGlassShader = GlobalPluginData.ShaderCache.GetValueOrDefaultValue(GlobalPluginData.ShaderName.FrostedGlass, null);
 
             if (frostedGlassShader == null) {
-                Ash.Logger.LogError($"{nameof(frostedGlassShader)} is null");
+                IuiMain.Logger.LogError($"{nameof(frostedGlassShader)} is null");
                 return null;
             }
 
             if (Textures.FrostedGlassAtlasMask == null) {
-                Ash.Logger.LogError($"{nameof(Textures.FrostedGlassAtlasMask)} is null");
+                IuiMain.Logger.LogError($"{nameof(Textures.FrostedGlassAtlasMask)} is null");
                 return null;
             }
 

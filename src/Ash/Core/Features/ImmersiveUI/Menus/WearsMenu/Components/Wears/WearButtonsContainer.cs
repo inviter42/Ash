@@ -2,7 +2,7 @@ using System;
 using Ash.Core.Features.ImmersiveUI.Extras.Helpers.UiPositioning;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Config;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Textures;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using Character;
 using Illusion.Extensions;
 using UnityEngine;
@@ -28,7 +28,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.Wears
             var model = SceneUtils.GetWearShowTypesOfEquippedItems(female);
 
             if (model.Length == 0) {
-                Ash.Logger.LogDebug($"Female {female.heroineID} has no equipped wears, skip wear item buttons creation.");
+                IuiMain.Logger.LogDebug($"Female {female.heroineID} has no equipped wears, skip wear item buttons creation.");
                 return;
             }
 

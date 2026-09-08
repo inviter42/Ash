@@ -8,7 +8,7 @@ using Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.State;
 using Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.Textures;
 using Ash.Core.Features.ImmersiveUI.Menus.StylesMenu;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using Illusion.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
@@ -112,17 +112,15 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu
         }
 
         private GameObject CreateFrostedGlass(GameObject root) {
-            var frostedGlassShader =
-                Ash.AshUI.ImmersiveUIShadersAssetBundle.LoadAsset<Shader>(
-                    "assets/frostedglass/shaders/frostedglass.shader");
+            var frostedGlassShader = GlobalPluginData.ShaderCache.GetValueOrDefaultValue(GlobalPluginData.ShaderName.FrostedGlass, null);
 
             if (frostedGlassShader == null) {
-                Ash.Logger.LogError($"{nameof(frostedGlassShader)} is null");
+                IuiMain.Logger.LogError($"{nameof(frostedGlassShader)} is null");
                 return null;
             }
 
             if (Textures.FrostedGlassMask == null) {
-                Ash.Logger.LogError($"{nameof(Textures.FrostedGlassMask)} is null");
+                IuiMain.Logger.LogError($"{nameof(Textures.FrostedGlassMask)} is null");
                 return null;
             }
 

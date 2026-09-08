@@ -1,6 +1,6 @@
 using Ash.Core.Features.ImmersiveUI.Extras.Helpers.Textures;
 using Ash.Core.Features.ImmersiveUI.Menus.GagMenu.Config;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 
 namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu.Textures

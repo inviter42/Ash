@@ -1,5 +1,5 @@
 using System;
-using Ash.Core.SceneManagement;
+using Ash.Core.Tooling.SceneManagement;
 
 namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.State
 {
@@ -41,12 +41,12 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.State
             }
 
             if (!Ash.AshUI.IuiMain.CanvasGameObj) {
-                Ash.Logger.LogError("Unable to toggle Wears Menu visibility - CanvasGameObj not found.");
+                IuiMain.Logger.LogError("Unable to toggle Wears Menu visibility - CanvasGameObj not found.");
                 return;
             }
 
             if (!Menu.WearsMenuRoot) {
-                Ash.Logger.LogError("Unable to toggle Wears Menu visibility - WearsMenuRoot not found.");
+                IuiMain.Logger.LogError("Unable to toggle Wears Menu visibility - WearsMenuRoot not found.");
                 return;
             }
 
@@ -58,12 +58,12 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.State
 
         private void HideUI() {
             if (!Ash.AshUI.IuiMain.CanvasGameObj) {
-                Ash.Logger.LogError("Unable to toggle Wears Menu visibility - Canvas not found.");
+                IuiMain.Logger.LogError("Unable to toggle Wears Menu visibility - Canvas not found.");
                 return;
             }
 
             if (!Menu.WearsMenuRoot) {
-                Ash.Logger.LogError("Unable to toggle Wears Menu visibility - WearsMenuRootGameObj not found.");
+                IuiMain.Logger.LogError("Unable to toggle Wears Menu visibility - WearsMenuRootGameObj not found.");
                 return;
             }
 

@@ -29,7 +29,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.Accessories
                 return alpha >= AlphaHitTestMinimumThreshold;
             }
             catch {
-                Ash.Logger.LogError($"Unable to read the texture.");
+                IuiMain.Logger.LogError($"Unable to read the texture.");
                 return true;
             }
         }

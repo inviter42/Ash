@@ -10,7 +10,7 @@ using Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.Config;
 using Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.Data;
 using Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.State;
 using Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.Textures;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using H;
 using UnityEngine;
 using UnityEngine.UI;
@@ -128,17 +128,15 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu
         }
 
         private GameObject CreateFrostedGlass(GameObject root) {
-            var frostedGlassShader =
-                Ash.AshUI.ImmersiveUIShadersAssetBundle.LoadAsset<Shader>(
-                    "assets/frostedglass/shaders/frostedglass.shader");
+            var frostedGlassShader = GlobalPluginData.ShaderCache.GetValueOrDefaultValue(GlobalPluginData.ShaderName.FrostedGlass, null);
 
             if (frostedGlassShader == null) {
-                Ash.Logger.LogError($"{nameof(frostedGlassShader)} is null");
+                IuiMain.Logger.LogError($"{nameof(frostedGlassShader)} is null");
                 return null;
             }
 
             if (Textures.FrostedGlassAtlasMask == null) {
-                Ash.Logger.LogError($"{nameof(Textures.FrostedGlassAtlasMask)} is null");
+                IuiMain.Logger.LogError($"{nameof(Textures.FrostedGlassAtlasMask)} is null");
                 return null;
             }
 
@@ -338,7 +336,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu
 
             // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
             foreach (var hStyleData in StylesData.ValidStyles) {
-                // Ash.Logger.LogDebug($"name: {hStyleData.name}, id: {hStyleData.id}");
+                // IuiMain.Logger.LogDebug($"name: {hStyleData.name}, id: {hStyleData.id}");
 
                 // ReSharper disable once MoveLocalFunctionAfterJumpStatement
                 var buttonGameObj = StylesScrollViewButton.CreateScrollListButton(

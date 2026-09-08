@@ -1,3 +1,4 @@
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 
 namespace Ash.Core.Features.ImmersiveUI.InputHandler
@@ -5,7 +6,7 @@ namespace Ash.Core.Features.ImmersiveUI.InputHandler
     internal static class IuiInputHandler
     {
         internal static bool IsEscapeReleased() {
-            return GlobalUtils.HotkeyUtils.HotkeyIsUp(KeyCode.Escape);
+            return HotkeyUtils.HotkeyIsUp(KeyCode.Escape);
         }
     }
 }

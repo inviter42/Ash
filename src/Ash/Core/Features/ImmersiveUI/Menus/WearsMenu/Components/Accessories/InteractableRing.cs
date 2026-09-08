@@ -4,13 +4,13 @@ using Ash.Core.Features.ImmersiveUI.Extras.Helpers.Interactive;
 using Ash.Core.Features.ImmersiveUI.Extras.Helpers.UiPositioning;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Config;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Textures;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using Character;
 using Illusion.Extensions;
 using MoreAccessoriesPH;
 using UnityEngine;
 using UnityEngine.UI;
-using static Ash.Core.Features.Common.Misc.CommonLabels;
+using static Ash.Core.Features.AshPlugin.Common.Misc.CommonLabels;
 using Object = UnityEngine.Object;
 using g_Accessories = Accessories;
 
@@ -70,7 +70,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.Accessories
             var extModel = SceneUtils.GetEquippedExtendedAccessoryData(female);
 
             if (mainModel.Count == 0 && extModel.Count == 0) {
-                Ash.Logger.LogDebug($"Female {female.heroineID} has no equipped accessories, skip accessory item buttons creation.");
+                IuiMain.Logger.LogDebug($"Female {female.heroineID} has no equipped accessories, skip accessory item buttons creation.");
                 return null;
             }
 

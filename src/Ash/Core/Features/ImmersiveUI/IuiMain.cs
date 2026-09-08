@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Ash.Core.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper;
+using Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper;
 using Ash.Core.Features.ImmersiveUI.Components.Config;
 using Ash.Core.Features.ImmersiveUI.Components.Generic;
 using Ash.Core.Features.ImmersiveUI.Components.Textures;
@@ -15,7 +15,8 @@ using Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.Data;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Config;
 using Ash.Core.Features.ImmersiveUI.State;
-using Ash.Core.SceneManagement;
+using Ash.Core.Tooling.SceneManagement;
+using Ash.Logging;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -23,6 +24,8 @@ namespace Ash.Core.Features.ImmersiveUI
 {
     internal class IuiMain
     {
+        internal static readonly AshLogger Logger = new AshLogger(LoggingSettings.LoggingModules.ImmersiveUI);
+
         internal GameObject CanvasGameObj;
 
         internal readonly IuiMainStateControl StateControl;
@@ -115,10 +118,10 @@ namespace Ash.Core.Features.ImmersiveUI
                 // todo: in SelectScene backbuffer contents are v-flipped
                 case SceneTypeTracker.SceneTypes.H:
                 {
-                    Ash.Logger.LogDebug($"Instantiating CommandBufferBlur in {SceneTypeTracker.TypeOfCurrentScene}");
+                    Logger.LogDebug($"Instantiating CommandBufferBlur in {SceneTypeTracker.TypeOfCurrentScene}");
                     var illusionCamera = Object.FindObjectOfType<IllusionCamera>();
                     if (illusionCamera == null) {
-                        Ash.Logger.LogWarning(
+                        Logger.LogWarning(
                             $"Unable to find IllusionCamera in the scene {SceneTypeTracker.TypeOfCurrentScene}");
                         return;
                     }

@@ -1,3 +1,4 @@
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -63,7 +64,7 @@ namespace Ash.Core.Features.ImmersiveUI
                 Offsets = Shader.PropertyToID("offsets");
 
             if (!Shader)
-                Shader = Ash.AshUI.ImmersiveUIShadersAssetBundle.LoadAsset<Shader>("assets/frostedglass/shaders/separableblur.shader");
+                Shader = GlobalPluginData.ShaderCache.GetValueOrDefaultValue(GlobalPluginData.ShaderName.SeparableBlur, null);
 
             if (!Material) {
                 Material = new Material(Shader) {

@@ -1,18 +1,14 @@
-﻿using Ash.Core.Features.Actions;
-using Ash.Core.SceneManagement;
-using Ash.Core.Settings;
-using Ash.Core.UI;
-using Ash.GlobalUtils;
-using Ash.HarmonyHooks;
-using Ash.HarmonyHooks._H;
-using Ash.HarmonyHooks._H._HState;
-using Ash.HarmonyHooks._Human;
-using Ash.HarmonyHooks._Menus;
-using Ash.HarmonyHooks._Scene;
-using Ash.HarmonyHooks._Wearables;
+﻿using Ash.Core;
+using Ash.Core.Features.Actions;
+using Ash.Core.Features.AshPlugin.Main;
+using Ash.Core.Features.AshPlugin.Settings;
+using Ash.Core.Features.BetterTattoos;
+using Ash.Core.Features.BetterTattoos.MakerExtensions;
+using Ash.Core.Tooling.SceneManagement;
+using Ash.Logging;
+using Ash.Utility.GlobalUtils;
 using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.Logging;
 using HarmonyLib;
 using KKAPI;
 using UnityEngine;
@@ -26,12 +22,14 @@ namespace Ash
     public class Ash : BaseUnityPlugin
     {
         public const string PluginName = "Ash";
+
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.anotherscenehelper";
-        public const string Version = "1.3.2";
+        public const string Version = "1.4.0";
 
-        internal new static ManualLogSource Logger;
+        internal static Ash Instance { get; private set; }
+        internal new static AshLogger Logger;
 
         internal static ConfigEntry<KeyboardShortcut> ConfigEntryToggleWindowHotkey { get; private set; }
         internal static ConfigEntry<KeyboardShortcut> ConfigEntryToggleImmersiveUIHotkey { get; private set; }
@@ -42,6 +40,8 @@ namespace Ash
 
         internal static GameObject AshGameObj;
         internal static AshUI AshUI;
+        internal static TattooExtensionBody TattooExtensionBody;
+        internal static TattooExtensionHead TattooExtensionHead;
 
         internal static MoreAccessories MoreAccessoriesInstance;
 
@@ -51,11 +51,17 @@ namespace Ash
         private static Harmony Harmony;
 
         private void Awake() {
+            if (Application.productName != "PlayHome") {
+                base.Logger.LogWarning($"Ash plugin is main game only, loading has been interrupted.");
+                return;
+            }
+
             InitializePlugin();
         }
 
         private void InitializePlugin() {
-            Logger = base.Logger;
+            Instance = this;
+            Logger = new AshLogger(LoggingSettings.LoggingModules.Global);
             Harmony = new Harmony($"{GUID}.harmony");
 
             PersistentSettings = IO.Load<PersistentSettings>(IO.SettingsFileName);
@@ -85,29 +91,7 @@ namespace Ash
                 false
             );
 
-
-            // Register hooks
-#if DEBUG
-            Harmony.PatchAll(typeof(DevHooks));
-#endif
-            Harmony.PatchAll(typeof(FemaleHooks));
-            Harmony.PatchAll(typeof(WearsHooks));
-            Harmony.PatchAll(typeof(AccessoriesHooks));
-            Harmony.PatchAll(typeof(HMembersHooks));
-            Harmony.PatchAll(typeof(IllusionCameraHooks));
-            Harmony.PatchAll(typeof(SceneControlHooks));
-            Harmony.PatchAll(typeof(PauseMenueHooks));
-            Harmony.PatchAll(typeof(HStateLoopHooks));
-            Harmony.PatchAll(typeof(HStatePreInsertWaitHooks));
-            Harmony.PatchAll(typeof(HStatePreTouchWaitHooks));
-            Harmony.PatchAll(typeof(HStateInsertedWaitHooks));
-            Harmony.PatchAll(typeof(HStateStartHooks));
-            Harmony.PatchAll(typeof(HStateExitHooks));
-            Harmony.PatchAll(typeof(HStateExtractHooks));
-            Harmony.PatchAll(typeof(HStateInXtcAfterBase));
-            Harmony.PatchAll(typeof(HSceneHooks));
-            Harmony.PatchAll(typeof(ConfigMenuHooks));
-            Harmony.PatchAll(typeof(SceneLoadingHooks));
+            PatchHooks();
 
             // Initialize UI
             InitPluginUI();
@@ -118,9 +102,25 @@ namespace Ash
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
         private void InitPluginUI() {
-            AshGameObj = new GameObject("Ash", typeof(AshUI), typeof(SceneTypeTracker), typeof(ActionsManager));
+            AshGameObj = new GameObject(
+                "Ash",
+                typeof(AshUI),
+                typeof(SceneTypeTracker),
+                typeof(ActionsManager),
+                typeof(TattooDataManager),
+                typeof(TattooExtensionBody),
+                typeof(TattooExtensionHead)
+            );
+
             AshUI = AshGameObj.GetComponent<AshUI>();
+
+            TattooExtensionHead = AshGameObj.GetComponent<TattooExtensionHead>();
+            TattooExtensionBody = AshGameObj.GetComponent<TattooExtensionBody>();
+
             DontDestroyOnLoad(AshGameObj);
+
+            GlobalPluginData.PerformShaderCacheWarmup();
+            SceneTypeTracker.SceneUnloaded += GlobalPluginData.InvalidateTextureCache;
         }
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
@@ -129,6 +129,49 @@ namespace Ash
                 return null;
 
             return pluginInfo.Instance as MoreAccessories;
+        }
+
+        private static void PatchHooks() {
+            // Register hooks
+#if DEBUG
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Main.Hooks.DevHooks));
+#endif
+
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.ItemsCoordinator.Hooks._HMember.HMemberHooks));
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.ItemsCoordinator.Hooks._Female.FemaleHooks));
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.ItemsCoordinator.Hooks._Wearables.WearsHooks));
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.ItemsCoordinator.Hooks._Wearables.AccessoriesHooks));
+
+            Harmony.PatchAll(typeof(Core.Features.Fixes.Hooks._Female.FemaleHooks));
+            Harmony.PatchAll(typeof(Core.Features.Fixes.Hooks._HMember.HMembersHooks));
+
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HMember.HMemberHooks));
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState.HStateExitHooks));
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState.HStateExtractHooks));
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState.HStateInsertedWaitHooks));
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState.HStateInXtcAfterBase));
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState.HStateLoopHooks));
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState.HStatePreInsertWaitHooks));
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState.HStatePreTouchWaitHooks));
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState.HStateStartHooks));
+
+            Harmony.PatchAll(typeof(Core.Features.BetterTattoos.Hooks._Body.BodyHooks));
+            Harmony.PatchAll(typeof(Core.Features.BetterTattoos.Hooks._Head.HeadHooks));
+            Harmony.PatchAll(typeof(Core.Features.BetterTattoos.Hooks._Female.FemaleHooks));
+            Harmony.PatchAll(typeof(Core.Features.BetterTattoos.Hooks._Male.MaleHooks));
+            Harmony.PatchAll(typeof(Core.Features.BetterTattoos.Hooks._CustomEdit.CustomEditHooks));
+            Harmony.PatchAll(typeof(Core.Features.BetterTattoos.Hooks._EditMode.EditModeHooks));
+            Harmony.PatchAll(typeof(Core.Features.BetterTattoos.Hooks._Scenes.EditSceneHooks));
+
+            Harmony.PatchAll(typeof(Core.Features.ImmersiveUI.Hooks._Menus.ConfigMenuHooks));
+            Harmony.PatchAll(typeof(Core.Features.ImmersiveUI.Hooks._Menus.PauseMenueHooks));
+            Harmony.PatchAll(typeof(Core.Features.ImmersiveUI.Hooks._Scenes.HSceneHooks));
+            Harmony.PatchAll(typeof(Core.Features.ImmersiveUI.Hooks._IllusionCamera.IllusionCameraHooks));
+
+            Harmony.PatchAll(typeof(Core.Tooling.SceneManagement.Hooks._SceneControl.SceneControlHooks));
+            Harmony.PatchAll(typeof(Core.Tooling.SceneManagement.Hooks._Female.FemaleHooks));
+
+            Harmony.PatchAll(typeof(Core.Features.AshPlugin.Main.Hooks._Scenes.CautionSceneHooks));
         }
     }
 }

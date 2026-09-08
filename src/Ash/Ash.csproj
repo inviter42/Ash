@@ -20,7 +20,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>embedded</DebugType>
+    <DebugType>portable</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\bin\BepInEx\plugins\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
@@ -128,18 +128,82 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ash.cs" />
-    <Compile Include="Core\AssetBundleManagement\AssetBundleManager.cs" />
     <Compile Include="Core\Features\Actions\ActionsManager.cs" />
     <Compile Include="Core\Features\Actions\DirtyTalkAction.cs" />
-    <Compile Include="Core\Features\Common\Components\FemaleSelectionComponent.cs" />
-    <Compile Include="Core\Features\Common\Misc\CommonLabels.cs" />
-    <Compile Include="Core\Features\Common\Misc\CommonImGuiStyles.cs" />
-    <Compile Include="Core\Features\GameUIControls\UI\GameUIControlsView\GameUIControlsView.cs" />
-    <Compile Include="Core\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIManagementHelper.cs" />
-    <Compile Include="Core\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIAdjustments.cs" />
-    <Compile Include="Core\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIResets.cs" />
-    <Compile Include="Core\Features\HSceneControls\UI\HSceneControlsView\HSceneControlsView.cs" />
-    <Compile Include="Core\Features\HSceneSettings\UI\HSceneSettingsView\HSceneSettingsView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Common\Components\FemaleSelectionComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Common\Misc\CommonImGuiStyles.cs" />
+    <Compile Include="Core\Features\AshPlugin\Common\Misc\CommonLabels.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\GameUIControlsView\GameUIControlsView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIAdjustments.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIManagementHelper.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIResets.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneControls\UI\HSceneControlsView\HSceneControlsView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\Hooks\_HMember\HMemberHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\Hooks\_HState\HStateExitHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\Hooks\_HState\HStateExtractHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\Hooks\_HState\HStateInsertedWaitHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\Hooks\_HState\HStateInXtcAfterBase.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\Hooks\_HState\HStateLoopHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\Hooks\_HState\HStatePreInsertWaitHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\Hooks\_HState\HStatePreTouchWaitHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\Hooks\_HState\HStateStartHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\UI\HSceneSettingsView\HSceneSettingsView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_Female\FemaleHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_HMember\HMemberHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_Wearables\AccessoriesHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_Wearables\WearsHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\ItemsCoordinator.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\RulesManager.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Types\BaseItem.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Types\DataOfAccessoryItem.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Types\DataOfWearItem.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Types\HPosRuleSet.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Types\HStyleDetail.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Types\InterItemRuleSet.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Types\SlaveItem.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\Common\RuleTypeSelectionComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRuleDetailsComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRuleItemSelectionComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRulesListComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\InterItemRuleDetailsComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\InterItemRulesListComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\MasterItemSelectionComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\ItemsCoordinatorView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\State\HPosRuleForm.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\State\InterItemRuleForm.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\GenerateReverseRulesEnum.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\ItemAccessoryFormData.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\ItemWearFormData.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\AllAccessoriesVisibilitySelectionComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\AllClothingVisibilitySelectionComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\IndividualAccessoriesVisibilitySelectionComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\IndividualWearsVisibilitySelectionComponent.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\ItemsVisibilityControlsView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Main\AshUI.cs" />
+    <Compile Include="Core\Features\AshPlugin\Main\Hooks\DevHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Main\Hooks\_Scenes\CautionSceneHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Main\State\AshUIStateControl.cs" />
+    <Compile Include="Core\Features\AshPlugin\Main\Types\AshWindow.cs" />
+    <Compile Include="Core\Features\AshPlugin\Main\Types\EditSceneWindow.cs" />
+    <Compile Include="Core\Features\AshPlugin\Main\Types\HSceneWindow.cs" />
+    <Compile Include="Core\Features\AshPlugin\Main\WindowManager.cs" />
+    <Compile Include="Core\Features\AshPlugin\Settings\PersistentSettings.cs" />
+    <Compile Include="Core\Features\BetterTattoos\Hooks\_Body\BodyHooks.cs" />
+    <Compile Include="Core\Features\BetterTattoos\Hooks\_CustomEdit\CustomEditHooks.cs" />
+    <Compile Include="Core\Features\BetterTattoos\Hooks\_EditMode\EditModeHooks.cs" />
+    <Compile Include="Core\Features\BetterTattoos\Hooks\_Female\FemaleHooks.cs" />
+    <Compile Include="Core\Features\BetterTattoos\Hooks\_Head\HeadHooks.cs" />
+    <Compile Include="Core\Features\BetterTattoos\Hooks\_Male\MaleHooks.cs" />
+    <Compile Include="Core\Features\BetterTattoos\Hooks\_Scenes\EditSceneHooks.cs" />
+    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\ExtendedControls\ExtSelectionToggle.cs" />
+    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\ExtendedLayouts\ExtGridLayout.cs" />
+    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\TattooExtensionBase.cs" />
+    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\TattooExtensionBody.cs" />
+    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\TattooExtensionHead.cs" />
+    <Compile Include="Core\Features\BetterTattoos\TattooDataManager.cs" />
+    <Compile Include="Core\Features\BetterTattoos\Utils\TattooTextureUtils.cs" />
+    <Compile Include="Core\Features\Fixes\Hooks\_Female\FemaleHooks.cs" />
+    <Compile Include="Core\Features\Fixes\Hooks\_HMember\HMembersHooks.cs" />
     <Compile Include="Core\Features\ImmersiveUI\CommandBufferBlur.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Components\Config\GenericComponentsConfig.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Components\Generic\RoundButton.cs" />
@@ -154,6 +218,10 @@
     <Compile Include="Core\Features\ImmersiveUI\Extras\Helpers\Textures\IuiSdfs.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Extras\Helpers\Textures\IuiTextureGen.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Extras\Extensions\IuiToggle.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Hooks\_IllusionCamera\IllusionCameraHooks.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Hooks\_Menus\ConfigMenuHooks.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Hooks\_Menus\PauseMenueHooks.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Hooks\_Scenes\HSceneHooks.cs" />
     <Compile Include="Core\Features\ImmersiveUI\InputHandler\IuiInputHandler.cs" />
     <Compile Include="Core\Features\ImmersiveUI\IuiMain.cs" />
     <Compile Include="Core\Features\ImmersiveUI\IuiSettings.cs" />
@@ -182,6 +250,7 @@
     <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Textures\StylesMenuTextures.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\State\StylesMenuStateControl.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Menus\StylesMenu\Textures\StylesMenuThumbnailCollection.cs" />
+    <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\AssetBundleManager.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\Accessories\ExpandAccessoriesButton.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\Accessories\InteractableRing.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Components\Accessories\AccessoryItemButton.cs" />
@@ -200,78 +269,31 @@
     <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Textures\WearsMenuMaskAtlas.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Textures\WearsMenuTextures.cs" />
     <Compile Include="Core\Features\ImmersiveUI\State\IuiMainStateControl.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\Types\BaseItem.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\Types\DataOfAccessoryItem.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\Types\DataOfWearItem.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\Types\HPosRuleSet.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\Types\HStyleDetail.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\Types\InterItemRuleSet.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\Types\SlaveItem.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\ItemsCoordinator.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\RulesManager.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\Common\RuleTypeSelectionComponent.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRuleDetailsComponent.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRuleItemSelectionComponent.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\HPosItemCoordination\HPosRulesListComponent.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\MasterItemSelectionComponent.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\InterItemRuleDetailsComponent.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Components\InterItemCoordination\InterItemRulesListComponent.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\ItemsCoordinatorView.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\State\InterItemRuleForm.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\State\HPosRuleForm.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\GenerateReverseRulesEnum.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\ItemAccessoryFormData.cs" />
-    <Compile Include="Core\Features\ItemsCoordinator\UI\ItemsCoordinatorView\Types\ItemWearFormData.cs" />
-    <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\AllAccessoriesVisibilitySelectionComponent.cs" />
-    <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\AllClothingVisibilitySelectionComponent.cs" />
-    <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\IndividualAccessoriesVisibilitySelectionComponent.cs" />
-    <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\Components\IndividualWearsVisibilitySelectionComponent.cs" />
-    <Compile Include="Core\Features\ItemsVisibilityControls\UI\ItemsVisibilityControlsView\ItemsVisibilityControlsView.cs" />
-    <Compile Include="Core\SceneManagement\ObjectDestructionTracker.cs" />
-    <Compile Include="Core\SceneManagement\SceneComponentRegistry.cs" />
-    <Compile Include="Core\SceneManagement\SceneDataModifiers.cs" />
-    <Compile Include="Core\SceneManagement\SceneTypeTracker.cs" />
-    <Compile Include="Core\Settings\PersistentSettings.cs" />
-    <Compile Include="Core\UI\AshUI.cs" />
-    <Compile Include="Core\UI\State\AshUIStateControl.cs" />
-    <Compile Include="Core\UI\Types\AshWindow.cs" />
-    <Compile Include="Core\UI\Types\EditSceneWindow.cs" />
-    <Compile Include="Core\UI\Types\HSceneWindow.cs" />
-    <Compile Include="Core\UI\WindowManager.cs" />
-    <Compile Include="GlobalUtils\AssetBundleUtils.cs" />
-    <Compile Include="GlobalUtils\ColorUtils.cs" />
-    <Compile Include="GlobalUtils\FileUtils.cs" />
-    <Compile Include="GlobalUtils\HotkeyUtils.cs" />
-    <Compile Include="GlobalUtils\ImageUtils.cs" />
-    <Compile Include="GlobalUtils\Migrations.cs" />
-    <Compile Include="GlobalUtils\IO.cs" />
-    <Compile Include="GlobalUtils\AutoTranslatorIntegration.cs" />
-    <Compile Include="GlobalUtils\DictionaryUtils.cs" />
-    <Compile Include="GlobalUtils\EnumUtils.cs" />
-    <Compile Include="GlobalUtils\ImGuiPrimitivesLib.cs" />
-    <Compile Include="GlobalUtils\ParticleSystemsUtils.cs" />
-    <Compile Include="GlobalUtils\TransformUtils.cs" />
-    <Compile Include="HarmonyHooks\DevHooks.cs" />
-    <Compile Include="HarmonyHooks\_Human\FemaleHooks.cs" />
-    <Compile Include="HarmonyHooks\_H\HMembersHooks.cs" />
-    <Compile Include="HarmonyHooks\_H\HSceneHooks.cs" />
-    <Compile Include="HarmonyHooks\_H\_HState\HStateExitHooks.cs" />
-    <Compile Include="HarmonyHooks\_H\_HState\HStateExtractHooks.cs" />
-    <Compile Include="HarmonyHooks\_H\_HState\HStateInsertedWaitHooks.cs" />
-    <Compile Include="HarmonyHooks\_H\_HState\HStateInXtcAfterBase.cs" />
-    <Compile Include="HarmonyHooks\_H\_HState\HStateLoopHooks.cs" />
-    <Compile Include="HarmonyHooks\_H\_HState\HStatePreInsertWaitHooks.cs" />
-    <Compile Include="HarmonyHooks\_H\_HState\HStatePreTouchWaitHooks.cs" />
-    <Compile Include="HarmonyHooks\_H\_HState\HStateStartHooks.cs" />
-    <Compile Include="HarmonyHooks\_Menus\ConfigMenuHooks.cs" />
-    <Compile Include="HarmonyHooks\_Menus\PauseMenueHooks.cs" />
-    <Compile Include="HarmonyHooks\_Scene\IllusionCameraHooks.cs" />
-    <Compile Include="HarmonyHooks\_Scene\SceneControlHooks.cs" />
-    <Compile Include="HarmonyHooks\_Scene\SceneLoadingHooks.cs" />
-    <Compile Include="HarmonyHooks\_Wearables\AccessoriesHooks.cs" />
-    <Compile Include="HarmonyHooks\_Wearables\WearsHooks.cs" />
+    <Compile Include="Core\GlobalPluginData.cs" />
+    <Compile Include="Core\Tooling\SceneManagement\Hooks\_Female\FemaleHooks.cs" />
+    <Compile Include="Core\Tooling\SceneManagement\Hooks\_SceneControl\SceneControlHooks.cs" />
+    <Compile Include="Core\Tooling\SceneManagement\ObjectDestructionTracker.cs" />
+    <Compile Include="Core\Tooling\SceneManagement\SceneComponentRegistry.cs" />
+    <Compile Include="Core\Tooling\SceneManagement\SceneDataModifiers.cs" />
+    <Compile Include="Core\Tooling\SceneManagement\SceneTypeTracker.cs" />
+    <Compile Include="Logging\AshLogger.cs" />
+    <Compile Include="Logging\LoggingSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GlobalUtils\SceneUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\AssetBundleUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\AutoTranslatorIntegration.cs" />
+    <Compile Include="Utility\GlobalUtils\ColorUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\DictionaryUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\EnumUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\FileUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\HotkeyUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\ImageUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\ImGuiPrimitivesLib.cs" />
+    <Compile Include="Utility\GlobalUtils\IO.cs" />
+    <Compile Include="Utility\GlobalUtils\Migrations.cs" />
+    <Compile Include="Utility\GlobalUtils\ParticleSystemsUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\SceneUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\TextureUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\TransformUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -284,18 +306,27 @@
     <Analyzer Include="..\packages\Microsoft.Unity.Analyzers.1.25.0\analyzers\dotnet\cs\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Core\Features\ItemsCoordinator\UI\" />
-    <Folder Include="Core\Features\ItemsVisibilityControls\UI\" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\immersive_ui_fonts" />
     <EmbeddedResource Include="Resources\immersive_ui_shaders" />
     <EmbeddedResource Include="Resources\immersive_ui_icons" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Core\Features\BetterTattoos\Shaders\TattooStacking.shader" />
     <Content Include="Core\Features\ImmersiveUI\Shaders\FrostedGlass.shader" />
     <Content Include="Core\Features\ImmersiveUI\Shaders\SeparableBlur.shader" />
+    <EmbeddedResource Include="Resources\multiple_tattoos_shaders" />
     <EmbeddedResource Include="Resources\immersive_ui_thumbnails" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\Features\AshPlugin\Features\" />
+    <Folder Include="Core\Tooling\" />
+    <Folder Include="Utility\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PhExtendedSaveFiles\PhExtendedSaveFiles.csproj">
+      <Project>{3dc5ce48-d9cb-4286-8b19-fc4ea92f5d5e}</Project>
+      <Name>PhExtendedSaveFiles</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
