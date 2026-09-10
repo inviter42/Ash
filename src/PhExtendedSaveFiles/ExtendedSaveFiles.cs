@@ -80,7 +80,6 @@ namespace PhExtendedSaveFiles
                 var sectionName = reader.ReadString();
                 var length = reader.ReadInt32();
 
-                // Logger.LogDebug($"Reading section '{sectionName}' ({length} bytes)");
                 if (sectionName.Length == 0 || length == 0) {
                     Logger.LogDebug($"Reached end of file");
                     return default;

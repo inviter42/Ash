@@ -63,12 +63,7 @@ namespace Ash.Core.Features.BetterTattoos.MakerExtensions
             UnsavedChanges[ActiveTattooLayer].TattooColor = color;
         }
 
-
-        internal static RenderTexture GetCachedRenderTexture(TattooDataManager.Part part) {
-            return TattooTextureCache.GetValueOrDefaultValue(part, null);
-        }
-
-        internal void UpdateGuiControlsState() {
+        protected void UpdateGuiControlsState() {
             var activeLayerHasTattoo = UnsavedChanges[ActiveTattooLayer] != null;
             OffsetXSlider.ControlObject.SetActive(activeLayerHasTattoo);
             OffsetYSlider.ControlObject.SetActive(activeLayerHasTattoo);
@@ -83,6 +78,11 @@ namespace Ash.Core.Features.BetterTattoos.MakerExtensions
             OffsetYSlider.SetValue(data.UserOffset.y, false);
             ScaleXSlider.SetValue(data.UserScale.x, false);
             ScaleYSlider.SetValue(data.UserScale.y, false);
+        }
+
+
+        internal static RenderTexture GetCachedRenderTexture(TattooDataManager.Part part) {
+            return TattooTextureCache.GetValueOrDefaultValue(part, null);
         }
 
 
@@ -152,8 +152,7 @@ namespace Ash.Core.Features.BetterTattoos.MakerExtensions
             ScaleXSlider = new MakerSlider(MakerCategory, "Scale X", 0f, 4f, 1f, Ash.Instance);
             ScaleYSlider = new MakerSlider(MakerCategory, "Scale Y", 0f, 4f, 1f, Ash.Instance);
 
-            var human = MakerAPI.GetMakerBase().human;
-            var tattooData = TattooDataManager.GetTattooDataListCopy(human, Part)[ActiveTattooLayer];
+            var tattooData = UnsavedChanges[ActiveTattooLayer];
             OffsetXSlider.SetValue(tattooData?.UserOffset.x ?? 0);
             OffsetYSlider.SetValue(tattooData?.UserOffset.y ?? 0);
             ScaleXSlider.SetValue(tattooData?.UserScale.x ?? 1);
