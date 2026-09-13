@@ -8,6 +8,7 @@ using HarmonyLib;
 
 namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Hooks._HMember
 {
+    [HarmonyPatch]
     internal class HMemberHooks
     {
         [HarmonyPrefix]

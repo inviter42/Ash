@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState
 {
+    [HarmonyPatch]
     internal class HStateLoopHooks
     {
         [HarmonyPrefix]

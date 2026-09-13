@@ -3,6 +3,7 @@ using HarmonyLib;
 
 namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Hooks._Wearables
 {
+    [HarmonyPatch]
     internal class AccessoriesHooks
     {
         // Change accessories show state hook

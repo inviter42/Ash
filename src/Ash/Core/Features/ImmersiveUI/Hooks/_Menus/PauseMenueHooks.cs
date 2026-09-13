@@ -2,6 +2,7 @@ using HarmonyLib;
 
 namespace Ash.Core.Features.ImmersiveUI.Hooks._Menus
 {
+    [HarmonyPatch]
     public class PauseMenueHooks
     {
         [HarmonyPrefix]

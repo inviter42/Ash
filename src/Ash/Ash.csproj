@@ -196,6 +196,7 @@
     <Compile Include="Core\Features\BetterTattoos\Hooks\_Male\MaleHooks.cs" />
     <Compile Include="Core\Features\BetterTattoos\Hooks\_Scenes\EditSceneHooks.cs" />
     <Compile Include="Core\Features\BetterTattoos\MakerExtensions\ExtendedControls\ExtSelectionToggle.cs" />
+    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\ExtendedControls\TattooSelectionToggle.cs" />
     <Compile Include="Core\Features\BetterTattoos\MakerExtensions\ExtendedLayouts\ExtGridLayout.cs" />
     <Compile Include="Core\Features\BetterTattoos\MakerExtensions\TattooExtensionBase.cs" />
     <Compile Include="Core\Features\BetterTattoos\MakerExtensions\TattooExtensionBody.cs" />

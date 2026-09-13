@@ -10,10 +10,10 @@ namespace Ash.Core.Features.BetterTattoos.MakerExtensions.ExtendedControls
     {
         internal bool Value { get; private set; }
 
-        private Button ButtonOn;
-        private Button ButtonOff;
-        private string GroupName;
-        private int IndexInGroup;
+        protected Button ButtonOn;
+        protected Button ButtonOff;
+        protected string GroupName;
+        protected int IndexInGroup;
 
         private static readonly Dictionary<string, List<ExtSelectionToggle>> RadioGroups = new Dictionary<string, List<ExtSelectionToggle>>();
 

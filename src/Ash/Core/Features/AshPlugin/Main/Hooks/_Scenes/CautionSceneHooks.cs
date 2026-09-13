@@ -2,6 +2,7 @@ using HarmonyLib;
 
 namespace Ash.Core.Features.AshPlugin.Main.Hooks._Scenes
 {
+    [HarmonyPatch]
     internal class CautionSceneHooks
     {
         [HarmonyPrefix]
@@ -13,7 +14,7 @@ namespace Ash.Core.Features.AshPlugin.Main.Hooks._Scenes
 
             __instance.InScene(false); // instantiates GC
             GlobalData.PlayData.Load(GlobalData.GetContinueSaveFile());
-            __instance.GC.ChangeScene("TitleScene", string.Empty, 1f); // todo: remove fade time?
+            __instance.GC.ChangeScene("TitleScene", string.Empty, 0f);
 
             return false;
         }

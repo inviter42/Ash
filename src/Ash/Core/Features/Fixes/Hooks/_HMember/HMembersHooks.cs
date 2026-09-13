@@ -4,6 +4,7 @@ using HarmonyLib;
 
 namespace Ash.Core.Features.Fixes.Hooks._HMember
 {
+    [HarmonyPatch]
     internal class HMembersHooks
     {
         [HarmonyPrefix]

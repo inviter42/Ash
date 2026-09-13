@@ -3,6 +3,7 @@ using HarmonyLib;
 
 namespace Ash.Core.Features.BetterTattoos.Hooks._Male
 {
+    [HarmonyPatch]
     internal class MaleHooks
     {
         internal static event Action<Male> MaleIsBeingApplied;

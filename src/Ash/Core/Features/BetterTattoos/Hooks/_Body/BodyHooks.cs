@@ -9,6 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace Ash.Core.Features.BetterTattoos.Hooks._Body
 {
+    [HarmonyPatch]
     internal class BodyHooks
     {
 

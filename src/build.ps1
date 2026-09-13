@@ -19,7 +19,8 @@ $outputDll = "..\bin\BepInEx\plugins\$OutputName.dll"
 $outputPDB = "..\bin\BepInEx\plugins\$OutputName.pdb"
 $esfDll = "..\bin\BepInEx\plugins\$EsfName.dll"
 $esfPDB = "..\bin\BepInEx\plugins\$EsfName.pdb"
-$targetDir = Join-Path -Path $PlayHomePath -ChildPath "BepInEx\plugins\$ProjectName"
+$pluginDir = Join-Path -Path $PlayHomePath -ChildPath "BepInEx\plugins\"
+$targetDir = Join-Path -Path $pluginDir -ChildPath "$ProjectName"
 $projectPath = ".\$ProjectName\$ProjectName.csproj"
 
 # env
@@ -83,10 +84,10 @@ try {
         try {
             # 2. Perform the copy operations once the file is free
             Copy-Item -Path $outputDll -Destination $targetDir -Force -ErrorAction Stop
-            Copy-Item -Path $esfDll -Destination $targetDir -Force -ErrorAction Stop
+            Copy-Item -Path $esfDll -Destination $pluginDir -Force -ErrorAction Stop
             if ($BuildConfiguration -eq "Debug") {
                 Copy-Item -Path $outputPDB -Destination $targetDir -Force -ErrorAction Stop
-                Copy-Item -Path $esfPDB -Destination $targetDir -Force -ErrorAction Stop
+                Copy-Item -Path $esfPDB -Destination $pluginDir -Force -ErrorAction Stop
             }
             $copySuccess = $true
         } catch {

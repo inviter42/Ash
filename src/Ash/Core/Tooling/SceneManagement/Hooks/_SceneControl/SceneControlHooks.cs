@@ -2,6 +2,7 @@ using HarmonyLib;
 
 namespace Ash.Core.Tooling.SceneManagement.Hooks._SceneControl
 {
+    [HarmonyPatch]
     internal class SceneControlHooks
     {
         [HarmonyPostfix]

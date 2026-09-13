@@ -70,6 +70,10 @@ namespace Ash.Core.Features.BetterTattoos.MakerExtensions
             ScaleXSlider.ControlObject.SetActive(activeLayerHasTattoo);
             ScaleYSlider.ControlObject.SetActive(activeLayerHasTattoo);
 
+            TattooLayerSelectorsGridLayout
+                .ChildControls[ActiveTattooLayer]
+                .GetComponent<TattooSelectionToggle>().IsEmpty = !activeLayerHasTattoo;
+
             if (!activeLayerHasTattoo)
                 return;
 
@@ -149,8 +153,8 @@ namespace Ash.Core.Features.BetterTattoos.MakerExtensions
 
             OffsetXSlider = new MakerSlider(MakerCategory, "Offset X", OffsetMinValue, OffsetMaxValue, 0f, Ash.Instance);
             OffsetYSlider = new MakerSlider(MakerCategory, "Offset Y", OffsetMinValue, OffsetMaxValue, 0f, Ash.Instance);
-            ScaleXSlider = new MakerSlider(MakerCategory, "Scale X", 0f, 4f, 1f, Ash.Instance);
-            ScaleYSlider = new MakerSlider(MakerCategory, "Scale Y", 0f, 4f, 1f, Ash.Instance);
+            ScaleXSlider = new MakerSlider(MakerCategory, "Scale X", 0.01f, 4f, 1f, Ash.Instance);
+            ScaleYSlider = new MakerSlider(MakerCategory, "Scale Y", 0.01f, 4f, 1f, Ash.Instance);
 
             var tattooData = UnsavedChanges[ActiveTattooLayer];
             OffsetXSlider.SetValue(tattooData?.UserOffset.x ?? 0);
@@ -232,6 +236,12 @@ namespace Ash.Core.Features.BetterTattoos.MakerExtensions
             SelectFirstLayerAndUpdateGuiStates();
         }
 
+        private void UpdateTattooTogglesIsEmptyStatus() {
+            for (var i = 0; i < TattooLayerSelectorsGridLayout.ChildControls.Count; i++) {
+                TattooLayerSelectorsGridLayout.ChildControls[i].GetComponent<TattooSelectionToggle>().IsEmpty =
+                    UnsavedChanges[i] == null;
+            }
+        }
 
         private List<GameObject> CreateTattooLayerSelectors() {
             var tattooSelectors = new List<GameObject>();
@@ -248,8 +258,8 @@ namespace Ash.Core.Features.BetterTattoos.MakerExtensions
                 var buttonOn = Instantiate(buttonOnRef, go.transform, false);
                 var buttonOff = Instantiate(buttonOffRef, go.transform, false);
 
-                buttonOn.GetComponent<Button>().onClick.RemoveAllListeners();
-                buttonOff.GetComponent<Button>().onClick.RemoveAllListeners();
+                buttonOn.FindChild("Frame").GetComponent<Image>().enabled = false;
+                buttonOff.FindChild("Frame").GetComponent<Image>().enabled = false;
 
                 var layoutElement = go.AddComponent<LayoutElement>();
                 layoutElement.minWidth = 40;
@@ -257,14 +267,17 @@ namespace Ash.Core.Features.BetterTattoos.MakerExtensions
                 layoutElement.preferredWidth = 40;
                 layoutElement.preferredHeight = 40;
 
-                go.AddComponent<ExtSelectionToggle>()
-                    .Setup(
-                        TattooLayerSelectorsGroupId,
-                        buttonOn.GetComponent<Button>(),
-                        buttonOff.GetComponent<Button>(),
-                        (i + 1).ToString(),
-                        OnTattooLayerButtonPressed
-                    );
+                var toggle = go.AddComponent<TattooSelectionToggle>();
+
+                toggle.Setup(
+                    TattooLayerSelectorsGroupId,
+                    buttonOn.GetComponent<Button>(),
+                    buttonOff.GetComponent<Button>(),
+                    (i + 1).ToString(),
+                    OnTattooLayerButtonPressed
+                );
+
+                toggle.IsEmpty = UnsavedChanges[ActiveTattooLayer] == null;
 
                 tattooSelectors.Add(go);
             }
@@ -273,11 +286,12 @@ namespace Ash.Core.Features.BetterTattoos.MakerExtensions
         }
 
         private void SelectFirstLayerAndUpdateGuiStates() {
-            TattooLayerSelectorsGridLayout.ChildControls[0].GetComponent<ExtSelectionToggle>().ChangeValue(true, true, false);
+            TattooLayerSelectorsGridLayout.ChildControls[0].GetComponent<TattooSelectionToggle>().ChangeValue(true, true, false);
 
             ActiveTattooLayer = 0;
 
             UpdateGuiControlsState();
+            UpdateTattooTogglesIsEmptyStatus();
             UpdateNativeGuiControlsState();
         }
     }

@@ -6,6 +6,7 @@ using UObject = UnityEngine.Object;
 
 namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HMember
 {
+    [HarmonyPatch]
     internal class HMemberHooks
     {
         [HarmonyPrefix]

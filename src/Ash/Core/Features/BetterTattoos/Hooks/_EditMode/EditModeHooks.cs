@@ -2,6 +2,7 @@ using HarmonyLib;
 
 namespace Ash.Core.Features.BetterTattoos.Hooks._EditMode
 {
+    [HarmonyPatch]
     internal static class EditModeHooks
     {
 

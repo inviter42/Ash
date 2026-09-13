@@ -9,6 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace Ash.Core.Features.BetterTattoos.Hooks._Head
 {
+    [HarmonyPatch]
     internal class HeadHooks
     {
         private static readonly int BaseTex = Shader.PropertyToID("_BaseTex");

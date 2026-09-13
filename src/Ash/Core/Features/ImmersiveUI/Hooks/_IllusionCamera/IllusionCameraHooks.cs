@@ -2,6 +2,7 @@ using HarmonyLib;
 
 namespace Ash.Core.Features.ImmersiveUI.Hooks._IllusionCamera
 {
+    [HarmonyPatch]
     internal class IllusionCameraHooks
     {
         // disable default code exec if RadialMenu is visible

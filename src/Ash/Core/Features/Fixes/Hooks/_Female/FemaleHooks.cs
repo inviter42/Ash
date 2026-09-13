@@ -5,6 +5,7 @@ using HarmonyLib;
 
 namespace Ash.Core.Features.Fixes.Hooks._Female
 {
+    [HarmonyPatch]
     internal class FemaleHooks
     {
         // this fixes incorrect original return result for Mariko

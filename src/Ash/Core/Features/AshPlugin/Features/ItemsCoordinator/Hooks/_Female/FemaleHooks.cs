@@ -2,6 +2,7 @@ using HarmonyLib;
 
 namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Hooks._Female
 {
+    [HarmonyPatch]
     internal class FemaleHooks
     {
         // Female instance is ready

@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Ash.Core.Features.BetterTattoos.Hooks._CustomEdit
 {
+    [HarmonyPatch]
     internal class CustomEditHooks
     {
         internal static event Action<CustomSelectSet> BodyTattooChanged;

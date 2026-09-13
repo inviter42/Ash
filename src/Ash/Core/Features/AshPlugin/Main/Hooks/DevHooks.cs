@@ -4,6 +4,9 @@ using Utility;
 
 namespace Ash.Core.Features.AshPlugin.Main.Hooks
 {
+#if DEBUG
+    [HarmonyPatch]
+#endif
     internal class DevHooks
     {
         //////////////////////////////// --- DEBUGGING SECTION -- ////////////////////////////////
@@ -44,7 +47,6 @@ namespace Ash.Core.Features.AshPlugin.Main.Hooks
             __instance.InScene(false); // instantiates GC
             GlobalData.PlayData.Load(GlobalData.GetContinueSaveFile());
             __instance.GC.ChangeScene("H", "Load", 1f);
-            // __instance.GC.ChangeScene("SelectScene", "Load", 1f);
 
             return false;
         }
