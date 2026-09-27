@@ -106,7 +106,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.Components.ScrollView
             var textComp = buttonLabelGameObj.GetComponent<Text>();
             textComp.text = translatedLabel;
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/candara-light.ttf");
             textComp.fontSize = Config.ScrollListButtonLabelFontSize;
             textComp.fontStyle = FontStyle.Normal;

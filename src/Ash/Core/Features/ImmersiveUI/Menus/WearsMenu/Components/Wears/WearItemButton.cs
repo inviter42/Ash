@@ -106,7 +106,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.Wears
             var textComp = textGameObj.GetComponent<Text>();
             textComp.text = WearShowTypeLabels.GetValueOrDefaultValue(showType, ErrorLabel);
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/corbel-regular.ttf");
             textComp.fontSize = 14;
             textComp.fontStyle = FontStyle.Normal;

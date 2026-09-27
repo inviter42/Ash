@@ -8,10 +8,7 @@ namespace Ash.Core.Features.AshPlugin.Main
 {
     internal class AshUI : MonoBehaviour
     {
-        internal readonly AssetBundle ImmersiveUIShadersAssetBundle = AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_shaders");
-        internal readonly AssetBundle ImmersiveUIIconsAssetBundle = AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_icons");
-        internal readonly AssetBundle ImmersiveUIFontsAssetBundle = AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_fonts");
-        internal readonly AssetBundle ImmersiveUIThumbnailsAssetBundle = AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_thumbnails");
+
 
         internal IuiMain IuiMain;
 

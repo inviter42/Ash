@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Ash.Core.Features.BetterTattoos;
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 
 namespace Ash.Core
@@ -9,6 +9,15 @@ namespace Ash.Core
         internal static readonly Dictionary<ShaderName, Shader> ShaderCache = new Dictionary<ShaderName, Shader>();
 
         internal static readonly Dictionary<string, Texture2D> TextureCache = new Dictionary<string, Texture2D>();
+
+
+        internal static readonly AssetBundle ImmersiveUIShadersAssetBundle = AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_shaders");
+        internal static readonly AssetBundle ImmersiveUIIconsAssetBundle = AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_icons");
+        internal static readonly AssetBundle ImmersiveUIFontsAssetBundle = AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_fonts");
+        internal static readonly AssetBundle ImmersiveUIThumbnailsAssetBundle = AssetBundleUtils.LoadBundleFromResource("Ash.Resources.immersive_ui_thumbnails");
+
+        internal static readonly AssetBundle BetterApplicablesShadersAssetBundle = AssetBundleUtils.LoadBundleFromResource("Ash.Resources.better_applicables_shaders");
+
 
         internal static void InvalidateShaderCache() {
             ShaderCache.Clear();
@@ -21,28 +30,28 @@ namespace Ash.Core
         internal static void PerformShaderCacheWarmup() {
             ShaderCache.Add(
                 ShaderName.FrostedGlass,
-                Ash.AshUI.ImmersiveUIShadersAssetBundle.LoadAsset<Shader>("assets/frostedglass/shaders/frostedglass.shader")
+                ImmersiveUIShadersAssetBundle.LoadAsset<Shader>("assets/frostedglass/shaders/frostedglass.shader")
             );
 
             ShaderCache.Add(
                 ShaderName.SeparableBlur,
-                Ash.AshUI.ImmersiveUIShadersAssetBundle.LoadAsset<Shader>("assets/frostedglass/shaders/separableblur.shader")
+                ImmersiveUIShadersAssetBundle.LoadAsset<Shader>("assets/frostedglass/shaders/separableblur.shader")
             );
 
             ShaderCache.Add(
                 ShaderName.CircleMaskSdf,
-                Ash.AshUI.ImmersiveUIShadersAssetBundle.LoadAsset<Shader>("assets/frostedglass/shaders/circlemasksdf.shader")
+                ImmersiveUIShadersAssetBundle.LoadAsset<Shader>("assets/frostedglass/shaders/circlemasksdf.shader")
             );
 
             ShaderCache.Add(
-                ShaderName.TattooStackingShader,
-                TattooDataManager.MultipleTattoosShadersAssetBundle.LoadAsset<Shader>("assets/multipletattoos/shaders/tattoostacking.shader")
+                ShaderName.TextureStackingShader,
+                BetterApplicablesShadersAssetBundle.LoadAsset<Shader>("assets/betterapplicables/shaders/texturestacking.shader")
             );
         }
 
         internal enum ShaderName
         {
-            TattooStackingShader,
+            TextureStackingShader,
             SeparableBlur,
             FrostedGlass,
             CircleMaskSdf

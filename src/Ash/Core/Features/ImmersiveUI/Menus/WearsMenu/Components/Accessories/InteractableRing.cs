@@ -215,7 +215,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.Accessories
             var textComp = textGameObj.GetComponent<Text>();
             textComp.text = AccessoryAttachLabels.GetValueOrDefaultValue(currentAttach, ErrorLabel);
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/corbel-italic.ttf");
             textComp.fontSize = Config.AccessorySectionFontSize;
             textComp.fontStyle = FontStyle.Italic;

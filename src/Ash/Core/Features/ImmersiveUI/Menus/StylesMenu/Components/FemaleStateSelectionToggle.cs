@@ -100,7 +100,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.Components
             var textComp = toggleLabelGameObj.GetComponent<Text>();
             textComp.text = HFemaleStateLabels.GetValueOrDefaultValue(state, ErrorLabel);
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/corbel-regular.ttf");
             textComp.fontSize = Config.FemaleStateToggleLabelFontSize;
             textComp.fontStyle = FontStyle.Normal;

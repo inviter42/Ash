@@ -204,7 +204,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu
             var textComp = textGameObj.GetComponent<Text>();
             textComp.text = HeaderText;
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/corbel-regular.ttf");
             textComp.fontSize = Config.HeaderFontSize;
             textComp.fontStyle = FontStyle.Normal;
@@ -222,7 +222,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu
             var textComp = textGameObj.GetComponent<Text>();
             textComp.text = female.heroineID.ToString().ToLower().ToTitleCase();
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/myriadpro-regular.otf");
             textComp.fontSize = Config.SubtitleFontSize;
             textComp.fontStyle = FontStyle.Normal;

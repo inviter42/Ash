@@ -230,7 +230,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu
             var textComp = textGameObj.GetComponent<Text>();
             textComp.text = HeaderText;
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/tangerine-regular.ttf");
             textComp.fontSize = Config.HeaderFontSize;
             textComp.fontStyle = FontStyle.Normal;

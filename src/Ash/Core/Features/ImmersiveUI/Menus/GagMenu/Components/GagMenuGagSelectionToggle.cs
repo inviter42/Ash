@@ -90,7 +90,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu.Components
             var textComp = toggleLabelGameObj.GetComponent<Text>();
             textComp.text = GagItemLabels.GetValueOrDefaultValue(item, ErrorLabel);
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/corbel-regular.ttf");
             textComp.fontSize = Config.GagToggleLabelFontSize;
             textComp.fontStyle = FontStyle.Normal;

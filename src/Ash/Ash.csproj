@@ -188,21 +188,33 @@
     <Compile Include="Core\Features\AshPlugin\Main\Types\HSceneWindow.cs" />
     <Compile Include="Core\Features\AshPlugin\Main\WindowManager.cs" />
     <Compile Include="Core\Features\AshPlugin\Settings\PersistentSettings.cs" />
-    <Compile Include="Core\Features\BetterTattoos\Hooks\_Body\BodyHooks.cs" />
-    <Compile Include="Core\Features\BetterTattoos\Hooks\_CustomEdit\CustomEditHooks.cs" />
-    <Compile Include="Core\Features\BetterTattoos\Hooks\_EditMode\EditModeHooks.cs" />
-    <Compile Include="Core\Features\BetterTattoos\Hooks\_Female\FemaleHooks.cs" />
-    <Compile Include="Core\Features\BetterTattoos\Hooks\_Head\HeadHooks.cs" />
-    <Compile Include="Core\Features\BetterTattoos\Hooks\_Male\MaleHooks.cs" />
-    <Compile Include="Core\Features\BetterTattoos\Hooks\_Scenes\EditSceneHooks.cs" />
-    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\ExtendedControls\ExtSelectionToggle.cs" />
-    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\ExtendedControls\TattooSelectionToggle.cs" />
-    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\ExtendedLayouts\ExtGridLayout.cs" />
-    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\TattooExtensionBase.cs" />
-    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\TattooExtensionBody.cs" />
-    <Compile Include="Core\Features\BetterTattoos\MakerExtensions\TattooExtensionHead.cs" />
-    <Compile Include="Core\Features\BetterTattoos\TattooDataManager.cs" />
-    <Compile Include="Core\Features\BetterTattoos\Utils\TattooTextureUtils.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BaseComponents\MakerExtensions\CustomUIElements\Spoiler.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BaseComponents\MakerExtensions\ExtendedControls\ExtSelectionToggle.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BaseComponents\MakerExtensions\ExtendedControls\SelectionToggle.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BaseComponents\MakerExtensions\ExtendedLayouts\ExtGridLayout.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BaseComponents\MakerExtensions\ApplicableMakerExtensionBase.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BaseComponents\Managers\ApplicableDataManagerBase.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BaseComponents\Managers\Shared\BetterCategory.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BaseComponents\Managers\Shared\Part.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BaseComponents\Managers\Shared\SerializableTextureData.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BetterCheekShadows\Extensions\BetterCheekShadowMakerExtensionHead.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BetterCheekShadows\Managers\BetterCheekShadowDataManager.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BetterEyeShadows\Extensions\BetterEyeShadowMakerExtensionHead.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BetterEyeShadows\Managers\BetterEyeShadowDataManager.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BetterMoles\Extensions\BetterMoleMakerExtensionHead.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BetterMoles\Managers\BetterMoleDataManager.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BetterTattoos\Extensions\BetterTattooMakerExtensionBody.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BetterTattoos\Extensions\BetterTattooMakerExtensionHead.cs" />
+    <Compile Include="Core\Features\BetterApplicables\BetterTattoos\Managers\BetterTattooDataManager.cs" />
+    <Compile Include="Core\Features\BetterApplicables\SharedComponents\ApplicablesTextureCaches.cs" />
+    <Compile Include="Core\Features\BetterApplicables\SharedHooks\_Body\BodyHooks.cs" />
+    <Compile Include="Core\Features\BetterApplicables\SharedHooks\_CustomEdit\CustomEditHooks.cs" />
+    <Compile Include="Core\Features\BetterApplicables\SharedHooks\_EditMode\EditModeHooks.cs" />
+    <Compile Include="Core\Features\BetterApplicables\SharedHooks\_Female\FemaleHooks.cs" />
+    <Compile Include="Core\Features\BetterApplicables\SharedHooks\_Head\HeadHooks.cs" />
+    <Compile Include="Core\Features\BetterApplicables\SharedHooks\_Male\MaleHooks.cs" />
+    <Compile Include="Core\Features\BetterApplicables\SharedHooks\_Scenes\EditSceneHooks.cs" />
+    <Compile Include="Core\Features\BetterApplicables\SharedUtils\ApplicablesTextureUtils.cs" />
     <Compile Include="Core\Features\Fixes\Hooks\_Female\FemaleHooks.cs" />
     <Compile Include="Core\Features\Fixes\Hooks\_HMember\HMembersHooks.cs" />
     <Compile Include="Core\Features\ImmersiveUI\CommandBufferBlur.cs" />
@@ -312,14 +324,15 @@
     <EmbeddedResource Include="Resources\immersive_ui_icons" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Core\Features\BetterTattoos\Shaders\TattooStacking.shader" />
+    <Content Include="Core\Features\BetterApplicables\SharedShaders\TattooStacking.shader" />
     <Content Include="Core\Features\ImmersiveUI\Shaders\FrostedGlass.shader" />
     <Content Include="Core\Features\ImmersiveUI\Shaders\SeparableBlur.shader" />
-    <EmbeddedResource Include="Resources\multiple_tattoos_shaders" />
+    <EmbeddedResource Include="Resources\better_applicables_shaders" />
     <EmbeddedResource Include="Resources\immersive_ui_thumbnails" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\Features\AshPlugin\Features\" />
+    <Folder Include="Core\Features\BetterApplicables\SharedHooks\" />
     <Folder Include="Core\Tooling\" />
     <Folder Include="Utility\" />
   </ItemGroup>

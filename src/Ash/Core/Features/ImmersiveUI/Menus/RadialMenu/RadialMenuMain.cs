@@ -64,7 +64,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu
 
             IconPathsFromBundle = SortListByReference(
                 IconsSortingOrder,
-                AssetBundleUtils.GetPathsFromBundle(Ash.AshUI.ImmersiveUIIconsAssetBundle, "piemenu-")
+                AssetBundleUtils.GetPathsFromBundle(GlobalPluginData.ImmersiveUIIconsAssetBundle, "piemenu-")
             );
 
             Textures = new RadialMenuTextures(IconPathsFromBundle);
@@ -182,7 +182,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu
         }
 
         private void PopulatePieWithIcons(GameObject parent) {
-            var bundle = Ash.AshUI.ImmersiveUIIconsAssetBundle;
+            var bundle = GlobalPluginData.ImmersiveUIIconsAssetBundle;
             // ReSharper disable once ConvertClosureToMethodGroup
             var model = IconPathsFromBundle
                 .Select(path => bundle.LoadAsset<Texture2D>(path))
@@ -255,7 +255,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu
             var middleActionTextComp = middleActionTextGameObj.GetComponent<Text>();
             middleActionTextComp.text = "";
             middleActionTextComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>("assets/frostedglass/fonts/tangerine-bold.ttf");
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>("assets/frostedglass/fonts/tangerine-bold.ttf");
             middleActionTextComp.fontSize = Config.MiddleTextFontSize;
             middleActionTextComp.fontStyle = FontStyle.Italic;
             middleActionTextComp.alignment = TextAnchor.MiddleCenter;
@@ -286,7 +286,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu
 
             var cancelIcon = cancelIconGameObj.GetComponent<RawImage>();
             cancelIcon.texture =
-                Ash.AshUI.ImmersiveUIIconsAssetBundle.LoadAsset<Texture2D>(
+                GlobalPluginData.ImmersiveUIIconsAssetBundle.LoadAsset<Texture2D>(
                     "assets/frostedglass/icons/mouse-right-2.png");
 
             var cancelIconLayoutElement = cancelIconGameObj.GetComponent<LayoutElement>();
@@ -302,7 +302,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu
             cancelTextComp.color = ColorUtils.Color32Af(219, 207, 227);
             cancelTextComp.alignment = TextAnchor.MiddleCenter;
             cancelTextComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>("assets/frostedglass/fonts/corbel-regular.ttf");
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>("assets/frostedglass/fonts/corbel-regular.ttf");
 
             IuiPositioningHelpers.AnchorsCenterIn(cancelGroupGameObj, Config.CancelGroupPositionOffset);
 

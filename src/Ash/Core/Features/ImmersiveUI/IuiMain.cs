@@ -152,7 +152,7 @@ namespace Ash.Core.Features.ImmersiveUI
 
             // ReSharper disable once ConvertToLocalFunction
             Action expandLeftMiddleToggles = () => { leftMiddleToggles.SetActive(!leftMiddleToggles.activeSelf); };
-            var expandLeftMiddleTogglesButtonIcon = Ash.AshUI.ImmersiveUIIconsAssetBundle.LoadAsset<Texture2D>(
+            var expandLeftMiddleTogglesButtonIcon = GlobalPluginData.ImmersiveUIIconsAssetBundle.LoadAsset<Texture2D>(
                 "assets/frostedglass/icons/small-arrow-right.png");
 
             var expandLeftMiddleTogglesButton = RoundButtonWithIcon.CreateRoundButtonWithIcon(

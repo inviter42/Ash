@@ -19,7 +19,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.SwitchFemale
             var textComp = textGameObj.GetComponent<Text>();
             textComp.text = "";
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/corbel-light.ttf");
             textComp.fontSize = config.FemaleLabelFontSize;
             textComp.fontStyle = FontStyle.Normal;

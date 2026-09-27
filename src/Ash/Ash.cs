@@ -3,8 +3,14 @@ using Ash.Core;
 using Ash.Core.Features.Actions;
 using Ash.Core.Features.AshPlugin.Main;
 using Ash.Core.Features.AshPlugin.Settings;
-using Ash.Core.Features.BetterTattoos;
-using Ash.Core.Features.BetterTattoos.MakerExtensions;
+using Ash.Core.Features.BetterApplicables.BetterCheekShadows.Extensions;
+using Ash.Core.Features.BetterApplicables.BetterCheekShadows.Managers;
+using Ash.Core.Features.BetterApplicables.BetterEyeShadows.Extensions;
+using Ash.Core.Features.BetterApplicables.BetterEyeShadows.Managers;
+using Ash.Core.Features.BetterApplicables.BetterMoles.Extensions;
+using Ash.Core.Features.BetterApplicables.BetterMoles.Managers;
+using Ash.Core.Features.BetterApplicables.BetterTattoos.Extensions;
+using Ash.Core.Features.BetterApplicables.BetterTattoos.Managers;
 using Ash.Core.Tooling.SceneManagement;
 using Ash.Logging;
 using Ash.Utility.GlobalUtils;
@@ -27,7 +33,7 @@ namespace Ash
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.anotherscenehelper";
-        public const string Version = "1.4.2";
+        public const string Version = "1.4.3";
 
         internal static Ash Instance { get; private set; }
         internal new static AshLogger Logger;
@@ -41,8 +47,19 @@ namespace Ash
 
         internal static GameObject AshGameObj;
         internal static AshUI AshUI;
-        internal static TattooExtensionBody TattooExtensionBody;
-        internal static TattooExtensionHead TattooExtensionHead;
+
+        internal static BetterTattooMakerExtensionHead BetterTattooMakerExtensionHead;
+        internal static BetterTattooMakerExtensionBody BetterTattooMakerExtensionBody;
+        internal static BetterTattooDataManager BetterTattooDataManager;
+
+        internal static BetterEyeShadowMakerExtensionHead BetterEyeShadowMakerExtensionHead;
+        internal static BetterEyeShadowDataManager BetterEyeShadowDataManager;
+
+        internal static BetterCheekShadowMakerExtensionHead BetterCheekShadowMakerExtensionHead;
+        internal static BetterCheekShadowDataManager BetterCheekShadowDataManager;
+
+        internal static BetterMoleMakerExtensionHead BetterMoleMakerExtensionHead;
+        internal static BetterMoleDataManager BetterMoleDataManager;
 
         internal static MoreAccessories MoreAccessoriesInstance;
 
@@ -72,32 +89,49 @@ namespace Ash
             // Register hooks
             Harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-            InitPluginUI();
+            GlobalPluginData.PerformShaderCacheWarmup();
+
+            CreateRootObjAndAttachComponents();
 
             // initialize MoreAccessories pointer
             MoreAccessoriesInstance = GetMoreAccessoriesInstance();
         }
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
-        private void InitPluginUI() {
+        private void CreateRootObjAndAttachComponents() {
             AshGameObj = new GameObject(
                 "Ash",
                 typeof(AshUI),
                 typeof(SceneTypeTracker),
                 typeof(ActionsManager),
-                typeof(TattooDataManager),
-                typeof(TattooExtensionBody),
-                typeof(TattooExtensionHead)
+                typeof(BetterTattooMakerExtensionHead),
+                typeof(BetterTattooMakerExtensionBody),
+                typeof(BetterTattooDataManager),
+                typeof(BetterEyeShadowMakerExtensionHead),
+                typeof(BetterEyeShadowDataManager),
+                typeof(BetterCheekShadowMakerExtensionHead),
+                typeof(BetterCheekShadowDataManager),
+                typeof(BetterMoleMakerExtensionHead),
+                typeof(BetterMoleDataManager)
             );
 
             AshUI = AshGameObj.GetComponent<AshUI>();
 
-            TattooExtensionHead = AshGameObj.GetComponent<TattooExtensionHead>();
-            TattooExtensionBody = AshGameObj.GetComponent<TattooExtensionBody>();
+            BetterTattooMakerExtensionHead = AshGameObj.GetComponent<BetterTattooMakerExtensionHead>();
+            BetterTattooMakerExtensionBody = AshGameObj.GetComponent<BetterTattooMakerExtensionBody>();
+            BetterTattooDataManager = AshGameObj.GetComponent<BetterTattooDataManager>();
+
+            BetterEyeShadowMakerExtensionHead = AshGameObj.GetComponent<BetterEyeShadowMakerExtensionHead>();
+            BetterEyeShadowDataManager = AshGameObj.GetComponent<BetterEyeShadowDataManager>();
+
+            BetterCheekShadowMakerExtensionHead = AshGameObj.GetComponent<BetterCheekShadowMakerExtensionHead>();
+            BetterCheekShadowDataManager = AshGameObj.GetComponent<BetterCheekShadowDataManager>();
+
+            BetterMoleMakerExtensionHead = AshGameObj.GetComponent<BetterMoleMakerExtensionHead>();
+            BetterMoleDataManager = AshGameObj.GetComponent<BetterMoleDataManager>();
 
             DontDestroyOnLoad(AshGameObj);
 
-            GlobalPluginData.PerformShaderCacheWarmup();
             SceneTypeTracker.SceneUnloaded += GlobalPluginData.InvalidateTextureCache;
         }
 
