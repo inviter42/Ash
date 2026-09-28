@@ -14,7 +14,7 @@ namespace Ash.Core.Features.BetterApplicables.BetterTattoos.Extensions
     {
         protected override AshLogger Logger { get; } = new AshLogger(LoggingSettings.LoggingModules.ExtDataTattoos);
         protected override MakerCategory MakerCategory => MakerConstants.Face.Tattoo;
-        protected override string UICategoryRootGameObjectPath => "EditMode/Canvas/Face/Mains/Tattoo";
+        protected override string UICategoryRootGameObjectPath => "Canvas/Face/Mains/Tattoo";
         protected override float OffsetMinValue => -2048;
         protected override float OffsetMaxValue => 2048;
         protected override Part Part => Part.Head;

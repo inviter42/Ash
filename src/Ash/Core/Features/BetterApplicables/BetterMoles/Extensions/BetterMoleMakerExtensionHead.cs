@@ -13,7 +13,7 @@ namespace Ash.Core.Features.BetterApplicables.BetterMoles.Extensions
     {
         protected override AshLogger Logger { get; } = new AshLogger(LoggingSettings.LoggingModules.ExtDataMoles);
         protected override MakerCategory MakerCategory => MakerConstants.Face.Makeup;
-        protected override string UICategoryRootGameObjectPath => "EditMode/Canvas/Face/Mains/Mole";
+        protected override string UICategoryRootGameObjectPath => "Canvas/Face/Mains/Mole";
         protected override float OffsetMinValue => -2048;
         protected override float OffsetMaxValue => 2048;
         protected override Part Part => Part.Head;

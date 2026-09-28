@@ -5,6 +5,7 @@ using Ash.Core.Features.BetterApplicables.BaseComponents.MakerExtensions.CustomU
 using Ash.Core.Features.BetterApplicables.BaseComponents.MakerExtensions.ExtendedControls;
 using Ash.Core.Features.BetterApplicables.BaseComponents.MakerExtensions.ExtendedLayouts;
 using Ash.Core.Features.BetterApplicables.BaseComponents.Managers.Shared;
+using Ash.Core.Tooling.SceneManagement;
 using Ash.Logging;
 using Ash.Utility.GlobalUtils;
 using KKAPI.Maker;
@@ -333,7 +334,7 @@ namespace Ash.Core.Features.BetterApplicables.BaseComponents.MakerExtensions
         }
 
         private void CreateSpoilerAndReparentControls(int subCategoryByIndex) {
-            var categoryRoot = GameObject.Find(UICategoryRootGameObjectPath);
+            var categoryRoot = GameObject.Find($"EditMode{(SceneTypeTracker.Scene is H_Scene ? "(Clone)" : "")}/{UICategoryRootGameObjectPath}");
             if (categoryRoot == null)
                 return;
 

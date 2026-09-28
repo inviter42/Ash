@@ -14,7 +14,7 @@ namespace Ash.Core.Features.BetterApplicables.BetterCheekShadows.Extensions
         protected override AshLogger Logger { get; } = new AshLogger(LoggingSettings.LoggingModules.ExtDataCheekShadows);
         protected override MakerCategory MakerCategory => MakerConstants.Face.Makeup;
         protected override int SubCategoryIndex => 1;
-        protected override string UICategoryRootGameObjectPath => "EditMode/Canvas/Face/Mains/Makeup";
+        protected override string UICategoryRootGameObjectPath => "Canvas/Face/Mains/Makeup";
         protected override float OffsetMinValue => -2048;
         protected override float OffsetMaxValue => 2048;
         protected override Part Part => Part.Head;
