@@ -161,7 +161,7 @@ namespace Ash.Core.Features.BetterApplicables.SharedHooks._CustomEdit
 
             MoleColorChanged?.Invoke(color);
 
-            __instance.human.customParam.head.eyeshadowColor = color;
+            __instance.human.customParam.head.moleColor = color;
             __instance.human.head.RendSkinTexture();
 
             return false;
