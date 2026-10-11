@@ -14,6 +14,9 @@ Complete re-imagining of the h-scene UI, designed and implemented completely fro
 ### Better Applicables
 Improved tattoos, moles and makeup for both main game and studio. Now they can be scaled, moved and even stacked on top of each other, with ten tattoo layers available for both face and body.
 
+### Better Penetration
+Replaces penis IK squishing behavior. A flat bone structure offers a little better compatibility with settings/sliders in certain cases, compared to the cascading one of the original.
+
 ### H-Scene Controls
 Controls for bodily fluids, as well as neck and eyes targets.
 
