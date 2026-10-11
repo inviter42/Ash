@@ -14,7 +14,7 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.UI.HSceneSettingsV
 {
     internal class HSceneSettingsView
     {
-        internal const string HSceneSettingsViewTabLabel = "H-Scene Settings";
+        internal const string HSceneSettingsViewTabLabel = "H-Scene Customization";
 
         private static readonly AshLogger Logger = new AshLogger(LoggingSettings.LoggingModules.HSceneSettings);
 
@@ -37,7 +37,14 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.UI.HSceneSettingsV
         private const string InterruptVoiceClipImmediatelyUponGagChangeSubtitle = "Update female voice clip immediately upon gag change:";
         private const string FixIncorrectShowMouthLiquidStateSubtitle = "Fix ShowMouthLiquid animation:";
 
+        private readonly HSceneWindow ParentWindow;
+        private Female ActiveFemale => ParentWindow.ActiveFemale;
+
         private Vector2 ScrollPosition;
+
+        internal HSceneSettingsView(HSceneWindow parentWindow) {
+            ParentWindow = parentWindow;
+        }
 
         // ReSharper disable once MemberCanBeMadeStatic.Global
         internal void DrawView() {
@@ -327,45 +334,23 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.UI.HSceneSettingsV
             Ash.PersistentSettings.ParticleSystemRateOverTimeMultiplierMinValue.Value = particleSystemRateOverTimeMultiplierMinValue;
             Ash.PersistentSettings.ParticleSystemRateOverTimeMultiplierMaxValue.Value = particleSystemRateOverTimeMultiplierMaxValue;
 
-            var female = GetActiveFemale();
-            if (female == null) {
+            if (ActiveFemale == null) {
                 Logger.LogWarning("Female is null");
                 Logger.LogWarning(Environment.StackTrace);
                 return;
             }
 
-            FemaleSelectionComponent.Component(female, SetActiveFemale);
+            FemaleSelectionComponent.Component(ActiveFemale, female => ParentWindow.ActiveFemale = female);
 
             GUILayout.Space(12);
             Button(
                 "Spawn particles",
                 () => {
-                    female.dripParticleVagina.Clear();
-                    ParticleSystemsUtils.AdjustFemaleSpermDripParticleSystemSettings(female.dripParticleVagina);
-                    female.dripParticleVagina.Play();
+                    ActiveFemale.dripParticleVagina.Clear();
+                    ParticleSystemsUtils.AdjustFemaleSpermDripParticleSystemSettings(ActiveFemale.dripParticleVagina);
+                    ActiveFemale.dripParticleVagina.Play();
                 }
             );
-        }
-
-        private Female GetActiveFemale() {
-            switch (WindowManager.Window) {
-                case HSceneWindow hSceneWindow:
-                    return hSceneWindow.GetActiveFemale();
-                default:
-                    Logger.LogError($"View HSceneSettingsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
-                    return null;
-            }
-        }
-
-        private void SetActiveFemale(Female female) {
-            switch (WindowManager.Window) {
-                case HSceneWindow hSceneWindow:
-                    hSceneWindow.SetActiveFemale(female);
-                    break;
-                default:
-                    Logger.LogError($"View HSceneSettingsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
-                    return;
-            }
         }
     }
 }

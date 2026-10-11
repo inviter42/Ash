@@ -17,7 +17,7 @@ namespace Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.GameUIControlsV
 
         private const string SceneUiSubtitle = "Scene UI";
         private const string ConfineCursorSubtitle = "Confine cursor to window (multi-monitor fix)";
-        private const string ThumbnailBgRemovalSubtitle = "Remove background from thumbnails (requires restart)";
+        private const string ThumbnailBgRemovalSubtitle = "[Requires restart] Remove background from thumbnails";
 
         private static readonly Dictionary<bool, string> SceneUILabels = new Dictionary<bool, string> {
             [true] = "Immersive",

@@ -1,15 +1,12 @@
 using Ash.Core.Features.AshPlugin.Main.State;
 using Ash.Core.Features.ImmersiveUI;
 using Ash.Core.Tooling.SceneManagement;
-using Ash.Utility.GlobalUtils;
 using UnityEngine;
 
 namespace Ash.Core.Features.AshPlugin.Main
 {
     internal class AshUI : MonoBehaviour
     {
-
-
         internal IuiMain IuiMain;
 
         private void Awake() {

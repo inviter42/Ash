@@ -45,9 +45,9 @@ namespace Ash.Core.Features.AshPlugin.Features.ItemsVisibilityControls.UI.ItemsV
         private Female GetActiveFemale() {
             switch (WindowManager.Window) {
                 case EditSceneWindow editSceneWindow:
-                    return editSceneWindow.GetActiveFemale();
+                    return editSceneWindow.ActiveFemale;
                 case HSceneWindow hSceneWindow:
-                    return hSceneWindow.GetActiveFemale();
+                    return hSceneWindow.ActiveFemale;
                 default:
                     Logger.LogError($"View ItemsVisibilityControlsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
                     return null;
@@ -58,10 +58,10 @@ namespace Ash.Core.Features.AshPlugin.Features.ItemsVisibilityControls.UI.ItemsV
         private void SetActiveFemale(Female female) {
             switch (WindowManager.Window) {
                 case EditSceneWindow editSceneWindow:
-                    editSceneWindow.SetActiveFemale(female);
+                    editSceneWindow.ActiveFemale = female;
                     break;
                 case HSceneWindow hSceneWindow:
-                    hSceneWindow.SetActiveFemale(female);
+                    hSceneWindow.ActiveFemale = female;
                     break;
                 default:
                     Logger.LogError($"Component FemaleSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");

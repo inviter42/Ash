@@ -125,8 +125,8 @@ namespace Ash.Core.Features.AshPlugin.Common.Misc
                 [LookAtRotator.TYPE.HOLD] = "Fixed"
             };
 
-        internal const string LookAtRotatorSpecifierDefault = "default";
-        internal const string LookAtRotatorSpecifierCamera = "camera";
+        internal const string LookAtRotatorTargetDefaultLabel = "Target default";
+        internal const string LookAtRotatorTargetCameraLabel = "Target camera";
 
         internal static readonly Dictionary<string, string> IconLabels = new Dictionary<string, string> {
             ["piemenu-cog"] = "Settings",

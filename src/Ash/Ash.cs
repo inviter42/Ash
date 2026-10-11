@@ -2,6 +2,7 @@
 using Ash.Core;
 using Ash.Core.Features.Actions;
 using Ash.Core.Features.AshPlugin.Main;
+using Ash.Core.Features.AshPlugin.Main.Hooks;
 using Ash.Core.Features.AshPlugin.Settings;
 using Ash.Core.Features.BetterApplicables.BetterCheekShadows.Extensions;
 using Ash.Core.Features.BetterApplicables.BetterCheekShadows.Managers;
@@ -11,6 +12,7 @@ using Ash.Core.Features.BetterApplicables.BetterMoles.Extensions;
 using Ash.Core.Features.BetterApplicables.BetterMoles.Managers;
 using Ash.Core.Features.BetterApplicables.BetterTattoos.Extensions;
 using Ash.Core.Features.BetterApplicables.BetterTattoos.Managers;
+using Ash.Core.Features.BetterPenetration;
 using Ash.Core.Tooling.SceneManagement;
 using Ash.Logging;
 using Ash.Utility.GlobalUtils;
@@ -33,7 +35,7 @@ namespace Ash
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.anotherscenehelper";
-        public const string Version = "1.4.5";
+        public const string Version = "1.5.0";
 
         internal static Ash Instance { get; private set; }
         internal new static AshLogger Logger;
@@ -60,6 +62,8 @@ namespace Ash
 
         internal static BetterMoleMakerExtensionHead BetterMoleMakerExtensionHead;
         internal static BetterMoleDataManager BetterMoleDataManager;
+
+        internal static BoneInjector BoneInjector;
 
         internal static MoreAccessories MoreAccessoriesInstance;
 
@@ -112,7 +116,11 @@ namespace Ash
                 typeof(BetterCheekShadowMakerExtensionHead),
                 typeof(BetterCheekShadowDataManager),
                 typeof(BetterMoleMakerExtensionHead),
-                typeof(BetterMoleDataManager)
+                typeof(BetterMoleDataManager),
+                typeof(BoneInjector)
+#if DEBUG
+                ,typeof(DevHooks.AnimationBaker)
+#endif
             );
 
             AshUI = AshGameObj.GetComponent<AshUI>();
@@ -129,6 +137,8 @@ namespace Ash
 
             BetterMoleMakerExtensionHead = AshGameObj.GetComponent<BetterMoleMakerExtensionHead>();
             BetterMoleDataManager = AshGameObj.GetComponent<BetterMoleDataManager>();
+
+            BoneInjector = AshGameObj.GetComponent<BoneInjector>();
 
             DontDestroyOnLoad(AshGameObj);
 

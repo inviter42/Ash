@@ -6,10 +6,10 @@ using Character;
 using H;
 using HarmonyLib;
 
-namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Hooks._HMember
+namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Hooks._HMembers
 {
     [HarmonyPatch]
-    internal class HMemberHooks
+    internal class HMembersHooks
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(H_Members), nameof(H_Members.Wear))]

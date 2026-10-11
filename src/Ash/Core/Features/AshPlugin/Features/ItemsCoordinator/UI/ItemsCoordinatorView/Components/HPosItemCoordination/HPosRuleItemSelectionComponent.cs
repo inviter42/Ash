@@ -105,9 +105,9 @@ namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordina
         private static Female GetActiveFemale() {
             switch (WindowManager.Window) {
                 case EditSceneWindow editSceneWindow:
-                    return editSceneWindow.GetActiveFemale();
+                    return editSceneWindow.ActiveFemale;
                 case HSceneWindow hSceneWindow:
-                    return hSceneWindow.GetActiveFemale();
+                    return hSceneWindow.ActiveFemale;
                 default:
                     ItemsCoordinator.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
                     return null;
@@ -118,10 +118,10 @@ namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordina
         private static void SetActiveFemale(Female female) {
             switch (WindowManager.Window) {
                 case EditSceneWindow editSceneWindow:
-                    editSceneWindow.SetActiveFemale(female);
+                    editSceneWindow.ActiveFemale = female;
                     break;
                 case HSceneWindow hSceneWindow:
-                    hSceneWindow.SetActiveFemale(female);
+                    hSceneWindow.ActiveFemale = female;
                     break;
                 default:
                     ItemsCoordinator.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");

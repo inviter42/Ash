@@ -22,6 +22,7 @@ namespace Ash.Logging
             GameUIControls,
             HSceneControls,
             HSceneSettings,
+            AnimationControls,
             ImmersiveUI,
             ItemsVisibilityControls,
             SceneManagement,

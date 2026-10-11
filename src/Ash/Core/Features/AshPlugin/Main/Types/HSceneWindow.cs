@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Ash.Core.Features.AshPlugin.Features.AnimationControls.UI.AnimationControlsView;
+using Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.BetterPenetrationSettingsView;
 using Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.GameUIControlsView;
 using Ash.Core.Features.AshPlugin.Features.HSceneControls.UI.HSceneControlsView;
 using Ash.Core.Features.AshPlugin.Features.HSceneSettings.UI.HSceneSettingsView;
@@ -12,20 +14,41 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
 {
     internal class HSceneWindow : AshWindow<HSceneWindow>
     {
+        internal Female ActiveFemale {
+            get {
+                if (_ActiveFemale == null)
+                    InitializeActiveFemale();
+
+                return _ActiveFemale;
+            }
+            set => _ActiveFemale = value;
+        }
+
+        internal H_Scene HScene => (H_Scene)SceneTypeTracker.Scene;
+
+
         private GameUIControlsView GameUIControlsViewInstance;
         private HSceneControlsView HSceneControlsViewInstance;
         private HSceneSettingsView HSceneSettingsViewInstance;
         private ItemsVisibilityControlsView ItemsVisibilityControlsViewInstance;
         private ItemsCoordinatorView ItemsCoordinatorViewInstance;
+        private BetterPenetrationSettingsView BetterPenetrationSettingsViewInstance;
+#if DEBUG
+        private AnimationControlsView AnimationControlsViewInstance;
+#endif
 
-        private Female ActiveFemale { get; set; }
+        private Female _ActiveFemale;
 
         private void Awake() {
             GameUIControlsViewInstance = new GameUIControlsView();
             ItemsVisibilityControlsViewInstance = new ItemsVisibilityControlsView();
             ItemsCoordinatorViewInstance = new ItemsCoordinatorView();
-            HSceneControlsViewInstance = new HSceneControlsView();
-            HSceneSettingsViewInstance = new HSceneSettingsView();
+            HSceneControlsViewInstance = new HSceneControlsView(this);
+            HSceneSettingsViewInstance = new HSceneSettingsView(this);
+            BetterPenetrationSettingsViewInstance = new BetterPenetrationSettingsView();
+#if DEBUG
+            AnimationControlsViewInstance = new AnimationControlsView();
+#endif
         }
 
         protected override string[] SetTabsModel() {
@@ -35,6 +58,10 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
                 ItemsVisibilityControlsView.ItemsVisibilityControlsTabLabel,
                 HSceneControlsView.HSceneControlsViewTabLabel,
                 HSceneSettingsView.HSceneSettingsViewTabLabel,
+                BetterPenetrationSettingsView.AnimationControlsViewTabLabel,
+#if DEBUG
+                AnimationControlsView.AnimationControlsViewTabLabel,
+#endif
             };
         }
 
@@ -45,18 +72,11 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
                 ItemsVisibilityControlsViewInstance.DrawView,
                 HSceneControlsViewInstance.DrawView,
                 HSceneSettingsViewInstance.DrawView,
+                BetterPenetrationSettingsViewInstance.DrawView,
+#if DEBUG
+                AnimationControlsViewInstance.DrawView,
+#endif
             };
-        }
-
-        internal Female GetActiveFemale() {
-            if (ActiveFemale == null)
-                InitializeActiveFemale();
-
-            return ActiveFemale;
-        }
-
-        internal void SetActiveFemale(Female female) {
-            ActiveFemale = female;
         }
 
         private void InitializeActiveFemale() {

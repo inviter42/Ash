@@ -1,6 +1,5 @@
 ﻿using System;
 using Ash.Core.Features.AshPlugin.Common.Components;
-using Ash.Core.Features.AshPlugin.Main;
 using Ash.Core.Features.AshPlugin.Main.Types;
 using Ash.Core.Tooling.SceneManagement;
 using Ash.Logging;
@@ -13,7 +12,7 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneControls.UI.HSceneControlsV
 {
     internal class HSceneControlsView
     {
-        internal const string HSceneControlsViewTabLabel = "H-Scene Controls";
+        internal const string HSceneControlsViewTabLabel = "Female Controls";
 
         private static readonly AshLogger Logger = new AshLogger(LoggingSettings.LoggingModules.HSceneControls);
 
@@ -26,12 +25,32 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneControls.UI.HSceneControlsV
         private const string FemaleNeckTargetLabel = "Female neck follows:";
         private const string FemaleLookTargetLabel = "Female eyes follow:";
 
+        private Female ActiveFemale => ParentWindow.ActiveFemale;
+        private H_Scene HScene => ParentWindow.HScene;
+
+        private readonly HSceneWindow ParentWindow;
+
+        private readonly LookAtRotator.TYPE[] MainFemaleNeckTargets =
+            { LookAtRotator.TYPE.NO, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD };
+
+        private readonly LookAtRotator.TYPE[] VisitorFemaleNeckTargets =
+            { LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.NO, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD };
+
+        private readonly LookAtRotator.TYPE[] MainFemaleEyesTargets =
+            { LookAtRotator.TYPE.NO, LookAtRotator.TYPE.FORWARD, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD };
+
+        private readonly LookAtRotator.TYPE[] VisitorFemaleEyesTargets =
+            { LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.FORWARD, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD };
+
         private Vector2 ScrollPosition;
+
+        internal HSceneControlsView(HSceneWindow parentWindow) {
+            ParentWindow = parentWindow;
+        }
 
         // ReSharper disable once MemberCanBeMadeStatic.Global
         internal void DrawView() {
-            var female = GetActiveFemale();
-            if (female == null) {
+            if (ActiveFemale == null) {
                 Logger.LogWarning("Female is null");
                 Logger.LogWarning(Environment.StackTrace);
                 return;
@@ -41,36 +60,13 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneControls.UI.HSceneControlsV
                 GUILayout.ExpandHeight(true));
 
             using (new GUILayout.VerticalScope("box", GUILayout.ExpandWidth(true))) {
-                FemaleSelectionComponent.Component(female, SetActiveFemale);
+                FemaleSelectionComponent.Component(ActiveFemale, female => ParentWindow.ActiveFemale = female);
 
-                DrawFluidsControlsSection(female);
-                DrawNeckAndEyesControlsSection(female);
+                DrawFluidsControlsSection(ActiveFemale);
+                DrawNeckAndEyesControlsSection(ActiveFemale);
             }
 
             GUILayout.EndScrollView();
-        }
-
-        // ReSharper disable once MemberCanBeMadeStatic.Local
-        private Female GetActiveFemale() {
-            switch (WindowManager.Window) {
-                case HSceneWindow hSceneWindow:
-                    return hSceneWindow.GetActiveFemale();
-                default:
-                    Logger.LogError($"View HSceneControlsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
-                    return null;
-            }
-        }
-
-        // ReSharper disable once MemberCanBeMadeStatic.Local
-        private void SetActiveFemale(Female female) {
-            switch (WindowManager.Window) {
-                case HSceneWindow hSceneWindow:
-                    hSceneWindow.SetActiveFemale(female);
-                    break;
-                default:
-                    Logger.LogError($"View HSceneControlsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
-                    return;
-            }
         }
 
         // ReSharper disable once MemberCanBeMadeStatic.Local
@@ -180,10 +176,8 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneControls.UI.HSceneControlsV
             };
 
             var model = IsMainFemale(female)
-                ? new[] { LookAtRotator.TYPE.NO, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD }
-                : new[] {
-                    LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.NO, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD
-                };
+                ? MainFemaleNeckTargets
+                : VisitorFemaleNeckTargets;
 
             Flow(
                 model,
@@ -248,10 +242,8 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneControls.UI.HSceneControlsV
             };
 
             var model = IsMainFemale(female)
-                ? new[] { LookAtRotator.TYPE.NO, LookAtRotator.TYPE.FORWARD, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD }
-                : new[] {
-                    LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.FORWARD, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD
-                };
+                ? MainFemaleEyesTargets
+                : VisitorFemaleEyesTargets;
 
             Flow(
                 model,
@@ -264,26 +256,13 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneControls.UI.HSceneControlsV
         }
 
         private Transform GetVisitorDefaultLookTarget(Female female) {
-            var hScene = SceneTypeTracker.Scene as H_Scene;
-            if (hScene == null) {
-                Logger.LogError($"Expected H_Scene is null.");
-                return null;
-            }
-
-            if (hScene.visitor?.GetFemale() == female)
-                return hScene.mainMembers.CaclVisitorLookPos();
-
-            return null;
+            return HScene.visitor?.GetFemale() == female
+                ? HScene.mainMembers.CaclVisitorLookPos()
+                : null;
         }
 
         private bool IsMainFemale(Female female) {
-            var hScene = SceneTypeTracker.Scene as H_Scene;
-            if (hScene == null) {
-                Logger.LogError($"Expected H_Scene is null.");
-                return false;
-            }
-
-            return hScene.mainMembers.GetFemale(0) == female;
+            return HScene.mainMembers.GetFemale(0) == female;
         }
 
         private string GetLookAtRotatorLabel(LookAtRotator.TYPE type, int index) {
@@ -294,15 +273,9 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneControls.UI.HSceneControlsV
                 case LookAtRotator.TYPE.FORWARD:
                     return LookAtRotatorTypeLabels.GetValueOrDefaultValue(type, ErrorLabel);
                 case LookAtRotator.TYPE.TARGET:
-                    return string.Join(
-                        " ",
-                        new [] {
-                            LookAtRotatorTypeLabels.GetValueOrDefaultValue(type, ErrorLabel),
-                            index == 0
-                                ? LookAtRotatorSpecifierDefault
-                                : LookAtRotatorSpecifierCamera
-                        }
-                    );
+                    return index == 0
+                        ? LookAtRotatorTargetDefaultLabel
+                        : LookAtRotatorTargetCameraLabel;
                 default:
                     return ErrorLabel;
             }

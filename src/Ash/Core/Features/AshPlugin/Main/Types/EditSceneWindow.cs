@@ -9,10 +9,20 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
 {
     internal class EditSceneWindow : AshWindow<EditSceneWindow>
     {
+        internal Female ActiveFemale {
+            get {
+                if (_ActiveFemale == null)
+                    InitializeActiveFemale();
+
+                return _ActiveFemale;
+            }
+            set => _ActiveFemale = value;
+        }
+
+
         private ItemsVisibilityControlsView ItemsVisibilityControlsViewInstance;
         private ItemsCoordinatorView ItemsCoordinatorViewInstance;
-
-        private Female ActiveFemale { get; set; }
+        private Female _ActiveFemale;
 
         private void Awake() {
             ItemsVisibilityControlsViewInstance = new ItemsVisibilityControlsView();
@@ -31,17 +41,6 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
                 ItemsVisibilityControlsViewInstance.DrawView,
                 ItemsCoordinatorViewInstance.DrawView
             };
-        }
-
-        internal Female GetActiveFemale() {
-            if (ActiveFemale == null)
-                InitializeActiveFemale();
-
-            return ActiveFemale;
-        }
-
-        internal void SetActiveFemale(Female female) {
-            ActiveFemale = female;
         }
 
         private void InitializeActiveFemale() {

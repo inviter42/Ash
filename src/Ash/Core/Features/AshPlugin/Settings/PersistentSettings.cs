@@ -76,6 +76,30 @@ namespace Ash.Core.Features.AshPlugin.Settings
 
         [JsonProperty]
         internal Setting<int> ParticleSystemCollisionQuality = new Setting<int>(0);
+
+        [JsonProperty]
+        internal Setting<bool> EnableBetterPenetration = new Setting<bool>(false);
+
+        [JsonProperty]
+        internal Setting<bool> RemoveAnimationMinSpeedCapValue = new Setting<bool>(false);
+
+        [JsonProperty]
+        internal Setting<bool> ShowMaleSackValue = new Setting<bool>(true);
+
+        [JsonProperty]
+        internal Setting<float> AnimationWheelSpeedValue = new Setting<float>(0.1f);
+
+        [JsonProperty]
+        internal Setting<int> BoneDensity = new Setting<int>(10);
+
+        [JsonProperty]
+        internal Setting<float> RootBoneLength = new Setting<float>(1f);
+
+        [JsonProperty]
+        internal Setting<float> BoneXyScaleFactor = new Setting<float>(1f);
+
+        [JsonProperty]
+        internal Setting<float> ColliderDistanceOffset = new Setting<float>(0f);
     }
 
     internal class Setting<T> {

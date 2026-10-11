@@ -133,6 +133,8 @@
     <Compile Include="Core\Features\AshPlugin\Common\Components\FemaleSelectionComponent.cs" />
     <Compile Include="Core\Features\AshPlugin\Common\Misc\CommonImGuiStyles.cs" />
     <Compile Include="Core\Features\AshPlugin\Common\Misc\CommonLabels.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AnimationControls\UI\AnimationControlsView\AnimationControlsView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\BetterPenetrationSettings\UI\BetterPenetrationSettingsView\BetterPenetrationSettingsView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\GameUIControlsView\GameUIControlsView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIAdjustments.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIManagementHelper.cs" />
@@ -149,7 +151,7 @@
     <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\Hooks\_HState\HStateStartHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\HSceneSettings\UI\HSceneSettingsView\HSceneSettingsView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_Female\FemaleHooks.cs" />
-    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_HMember\HMemberHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_HMembers\HMembersHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_Wearables\AccessoriesHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_Wearables\WearsHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\ItemsCoordinator.cs" />
@@ -215,6 +217,9 @@
     <Compile Include="Core\Features\BetterApplicables\SharedHooks\_Male\MaleHooks.cs" />
     <Compile Include="Core\Features\BetterApplicables\SharedHooks\_Scenes\EditSceneHooks.cs" />
     <Compile Include="Core\Features\BetterApplicables\SharedUtils\ApplicablesTextureUtils.cs" />
+    <Compile Include="Core\Features\BetterPenetration\BoneInjector.cs" />
+    <Compile Include="Core\Features\BetterPenetration\Hooks\_HMembers\HMembersHooks.cs" />
+    <Compile Include="Core\Features\BetterPenetration\Hooks\_IKControl\IKControlHooks.cs" />
     <Compile Include="Core\Features\Fixes\Hooks\_Female\FemaleHooks.cs" />
     <Compile Include="Core\Features\Fixes\Hooks\_HMember\HMembersHooks.cs" />
     <Compile Include="Core\Features\ImmersiveUI\CommandBufferBlur.cs" />
@@ -284,6 +289,7 @@
     <Compile Include="Core\Features\ImmersiveUI\State\IuiMainStateControl.cs" />
     <Compile Include="Core\GlobalPluginData.cs" />
     <Compile Include="Core\Tooling\SceneManagement\Hooks\_Female\FemaleHooks.cs" />
+    <Compile Include="Core\Tooling\SceneManagement\Hooks\_Male\MaleHooks.cs" />
     <Compile Include="Core\Tooling\SceneManagement\Hooks\_SceneControl\SceneControlHooks.cs" />
     <Compile Include="Core\Tooling\SceneManagement\ObjectDestructionTracker.cs" />
     <Compile Include="Core\Tooling\SceneManagement\SceneComponentRegistry.cs" />
@@ -307,6 +313,7 @@
     <Compile Include="Utility\GlobalUtils\SceneUtils.cs" />
     <Compile Include="Utility\GlobalUtils\TextureUtils.cs" />
     <Compile Include="Utility\GlobalUtils\TransformUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\VectorUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -331,7 +338,6 @@
     <EmbeddedResource Include="Resources\immersive_ui_thumbnails" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Core\Features\AshPlugin\Features\" />
     <Folder Include="Core\Features\BetterApplicables\SharedHooks\" />
     <Folder Include="Core\Tooling\" />
     <Folder Include="Utility\" />
