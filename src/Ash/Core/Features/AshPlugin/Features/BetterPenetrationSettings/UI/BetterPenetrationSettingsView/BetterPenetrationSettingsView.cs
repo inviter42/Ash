@@ -12,13 +12,14 @@ namespace Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.Bett
     {
         internal const string AnimationControlsViewTabLabel = "BetterPenetration settings";
 
-        private static readonly AshLogger Logger = new AshLogger(LoggingSettings.LoggingModules.AnimationControls);
+        private static readonly AshLogger Logger = new AshLogger(LoggingSettings.LoggingModules.BetterPenetration);
 
         private const string MainSettingsTitle = "Main Settings";
         private const string BoneSettingsTitle = "Bone Settings";
-        private const string PlaybackDataTitle = "Bones dynamic data";
+        private const string BonesTelemetryTitle = "Bones Telemetry";
 
         private const string EnableBetterPenetrationSubtitle = "Enable BetterPenetration:";
+        private const string EnableBonesTelemetrySubtitle = "Enable bones telemetry:";
 
         private Vector2 ScrollPosition;
 
@@ -31,10 +32,8 @@ namespace Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.Bett
             using (new GUILayout.VerticalScope("box", GUILayout.ExpandWidth(true))) {
                 DrawMainSettingsSection();
                 DrawBoneSettingsSection();
-#if DEBUG
                 DrawDisplaySack();
-                DrawBonesDataSection();
-#endif
+                DrawBonesTelemetrySection();
             }
 
             GUILayout.EndScrollView();
@@ -52,13 +51,16 @@ namespace Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.Bett
             Title(BoneSettingsTitle);
             DrawColliderDistanceSlider();
             DrawRootBoneLengthSlider();
-            DrawBonesXyScaleFactorSlider();
+            DrawBonesXyInvSqrtScaleFactorSlider();
+            DrawBonesXyLinearScaleFactorSlider();
         }
 
-        private void DrawBonesDataSection() {
+        private void DrawBonesTelemetrySection() {
             GUILayout.Space(20);
-            Title(PlaybackDataTitle);
-            DrawBonesDynamicData();
+            Title(BonesTelemetryTitle);
+
+            DrawBonesTelemetryToggles();
+            DrawBonesTelemetry();
         }
 
 
@@ -68,7 +70,13 @@ namespace Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.Bett
                 new[] { true, false },
                 (state, idx) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
                     Ash.PersistentSettings.EnableBetterPenetration.Value == state,
-                    () => Ash.PersistentSettings.EnableBetterPenetration.Value = state)
+                    () => {
+                        if (!state) {
+                            Ash.BoneInjector.RemoveInjectedBonesAndResetMesh();
+                            Ash.BoneInjector.DestroyAllInjectors();
+                        }
+                        Ash.PersistentSettings.EnableBetterPenetration.Value = state;
+                    })
             );
         }
 
@@ -87,9 +95,14 @@ namespace Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.Bett
             Ash.PersistentSettings.RootBoneLength.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.RootBoneLength.Value, 0.1f, 2f);
         }
 
-        private void DrawBonesXyScaleFactorSlider() {
-            Subtitle($"Bones XY-scale factor ({Ash.PersistentSettings.BoneXyScaleFactor.Value:F3}):");
-            Ash.PersistentSettings.BoneXyScaleFactor.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.BoneXyScaleFactor.Value, 0.1f, 1f);
+        private void DrawBonesXyInvSqrtScaleFactorSlider() {
+            Subtitle($"Bones XY-scale factor (inverse sqrt) ({Ash.PersistentSettings.BoneXyInvSqrtScaleFactor.Value:F3}):");
+            Ash.PersistentSettings.BoneXyInvSqrtScaleFactor.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.BoneXyInvSqrtScaleFactor.Value, 0.1f, 1f);
+        }
+
+        private void DrawBonesXyLinearScaleFactorSlider() {
+            Subtitle($"Bones XY-scale factor (linear) ({Ash.PersistentSettings.BoneXyLinearScaleFactor.Value:F3}):");
+            Ash.PersistentSettings.BoneXyLinearScaleFactor.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.BoneXyLinearScaleFactor.Value, 0.1f, 1f);
         }
 
         private void DrawDisplaySack() {
@@ -110,10 +123,28 @@ namespace Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.Bett
             );
         }
 
-        private void DrawBonesDynamicData() {
-            var injectorIndex = 0;
+        private void DrawBonesTelemetryToggles() {
+            Subtitle(EnableBonesTelemetrySubtitle);
+            Flow(
+                new[] { true, false },
+                (state, idx) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
+                    Ash.PersistentSettings.EnableBonesTelemetry.Value == state,
+                    () => Ash.PersistentSettings.EnableBonesTelemetry.Value = state)
+            );
+        }
+
+        private void DrawBonesTelemetry() {
+            if (!Ash.PersistentSettings.EnableBonesTelemetry.Value)
+                return;
+
+            if (Ash.BoneInjector.ActiveInjectors.Count == 0) {
+                Info("No active injectors found.");
+                return;
+            }
+
+            const int injectorIndex = 0;
             var activeInjector = Ash.BoneInjector.ActiveInjectors[injectorIndex];
-            if (activeInjector.NewBones == null)
+            if (activeInjector?.NewBones == null)
                 return;
 
             if (HScene == null && SceneTypeTracker.Scene is H_Scene hScene)
@@ -122,13 +153,15 @@ namespace Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.Bett
             if (HScene == null)
                 return;
 
-            Subtitle("Injected bones data");
             foreach (var bone in activeInjector.NewBones) {
+                var colliderPosition = activeInjector.Male.ik.tinTarget.position;
+                var dist = VectorUtils.CalculateSignedDistance(bone.position, colliderPosition, bone.forward);
                 Info(
                     $"{bone.name}\n"
-                    + $"LocalScale: Vec3({bone.localScale.x:F4}, {bone.localScale.y:F4}, {bone.localScale.z:F4})\n"
-                    + $"LocalPosition: Vec3({bone.localPosition.x:F4}, {bone.localPosition.y:F4}, {bone.localPosition.z:F4})\n"
-                    + $"DistanceToCollider: float({VectorUtils.CalculateSignedDistance(bone.position, HScene.mainMembers.males[injectorIndex].ik.tinTarget.position, bone.forward):F4})"
+                    + $"LocalScale: ({VectorUtils.Vec(bone.localScale)})\n"
+                    + $"LocalPosition: ({VectorUtils.Vec(bone.localPosition)})\n"
+                    + $"DistanceToCollider: ({dist:F6}), with offset ({dist + Ash.PersistentSettings.ColliderDistanceOffset.Value:F6})\n"
+                    + $"Segment length: ({activeInjector.SegmentLength:F6})"
                 );
             }
         }

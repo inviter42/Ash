@@ -1,6 +1,5 @@
 using System;
 using Ash.Core.Features.AshPlugin.Common.Components;
-using Ash.Core.Features.AshPlugin.Main;
 using Ash.Core.Features.AshPlugin.Main.Types;
 using Ash.Core.Tooling.SceneManagement;
 using Ash.Logging;
@@ -10,9 +9,9 @@ using Valve.VR.InteractionSystem;
 using static Ash.Utility.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.AshPlugin.Common.Misc.CommonLabels;
 
-namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.UI.HSceneSettingsView
+namespace Ash.Core.Features.AshPlugin.Features.HSceneCustomization.UI.HSceneCustomizationView
 {
-    internal class HSceneSettingsView
+    internal class HSceneCustomizationView
     {
         internal const string HSceneSettingsViewTabLabel = "H-Scene Customization";
 
@@ -42,7 +41,7 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.UI.HSceneSettingsV
 
         private Vector2 ScrollPosition;
 
-        internal HSceneSettingsView(HSceneWindow parentWindow) {
+        internal HSceneCustomizationView(HSceneWindow parentWindow) {
             ParentWindow = parentWindow;
         }
 

@@ -1,13 +1,13 @@
 using H;
 using HarmonyLib;
 
-namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState
+namespace Ash.Core.Features.AshPlugin.Features.HSceneCustomization.Hooks._HState
 {
     [HarmonyPatch]
-    internal class HStateInsertedWaitHooks
+    internal class HStatePreInsertWaitHooks
     {
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(H_State_InsertedWait), nameof(H_State_InsertedWait.Main))]
+        [HarmonyPatch(typeof(H_State_PreInsertWait), nameof(H_State_PreInsertWait.Main))]
         // ReSharper disable once InconsistentNaming
         internal static bool MainPrefix(H_State_PreInsertWait __instance) {
             if (!Ash.PersistentSettings.DisableFemaleInactionBark.Value)
@@ -17,7 +17,7 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState
             if (!__instance.endInVoice || __instance.members.h_scene.MixCtrl.mode != MixController.MODE.FULL_AUTO)
                 return false;
 
-            __instance.ChangeState(H_STATE.LOOP);
+            __instance.ChangeState(H_STATE.INSERT);
 
             return false;
         }

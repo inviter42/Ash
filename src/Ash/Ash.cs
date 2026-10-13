@@ -2,6 +2,7 @@
 using Ash.Core;
 using Ash.Core.Features.Actions;
 using Ash.Core.Features.AshPlugin.Main;
+// ReSharper disable once RedundantUsingDirective
 using Ash.Core.Features.AshPlugin.Main.Hooks;
 using Ash.Core.Features.AshPlugin.Settings;
 using Ash.Core.Features.BetterApplicables.BetterCheekShadows.Extensions;
@@ -35,7 +36,7 @@ namespace Ash
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.anotherscenehelper";
-        public const string Version = "1.5.0";
+        public const string Version = "1.5.1";
 
         internal static Ash Instance { get; private set; }
         internal new static AshLogger Logger;

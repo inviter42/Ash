@@ -85,7 +85,7 @@ namespace Ash.Core.Features.AshPlugin.Features.AnimationControls.UI.AnimationCon
 
         private void DrawSetWheelSpeed() {
             Subtitle($"Wheel speed ({Ash.PersistentSettings.AnimationWheelSpeedValue.Value:F4}):");
-            Ash.PersistentSettings.AnimationWheelSpeedValue.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.AnimationWheelSpeedValue.Value, 0.005f, 0.1f);
+            Ash.PersistentSettings.AnimationWheelSpeedValue.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.AnimationWheelSpeedValue.Value, 0.0001f, 0.1f);
             if (SceneTypeTracker.Scene is H_Scene hScene)
                 hScene.MixCtrl.wheelSpeed = Ash.PersistentSettings.AnimationWheelSpeedValue.Value;
         }

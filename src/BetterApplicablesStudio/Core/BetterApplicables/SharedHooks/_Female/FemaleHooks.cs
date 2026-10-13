@@ -10,6 +10,7 @@ namespace BetterApplicablesStudio.Core.BetterApplicables.SharedHooks._Female
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Female), nameof(Female.Apply))]
+        // ReSharper disable once InconsistentNaming
         internal static bool FemaleApplyPrefix(Female __instance) {
             FemaleIsBeingApplied?.Invoke(__instance);
             return true;

@@ -10,6 +10,7 @@ namespace Ash.Core.Features.BetterApplicables.SharedHooks._Male
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Male), nameof(Male.Apply))]
+        // ReSharper disable once InconsistentNaming
         internal static bool MaleApplyPrefix(Male __instance) {
             MaleIsBeingApplied?.Invoke(__instance);
             return true;

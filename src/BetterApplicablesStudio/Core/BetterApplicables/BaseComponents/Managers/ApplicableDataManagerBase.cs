@@ -1,18 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Ash.Core.Features.BetterApplicables.BaseComponents.Managers.Shared;
-using Ash.Core.Features.BetterApplicables.SharedHooks._Female;
-using Ash.Core.Features.BetterApplicables.SharedHooks._Male;
 using BetterApplicablesStudio.Core.BetterApplicables.BaseComponents.Managers.Shared;
 using BetterApplicablesStudio.Core.BetterApplicables.SharedHooks._Female;
 using BetterApplicablesStudio.Core.BetterApplicables.SharedHooks._Male;
 using BetterApplicablesStudio.GlobalUtils;
 using Character;
 using ExtensibleSaveFormat;
-using KKAPI.Maker;
-using Newtonsoft.Json.Linq;
-using PhExtendedSaveFiles;
 using PhExtendedSaveFiles.Utils;
 using UnityEngine;
 using SerializableTextureData = BetterApplicablesStudio.Core.BetterApplicables.BaseComponents.Managers.Shared.SerializableTextureData;

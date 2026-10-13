@@ -96,10 +96,16 @@ namespace Ash.Core.Features.AshPlugin.Settings
         internal Setting<float> RootBoneLength = new Setting<float>(1f);
 
         [JsonProperty]
-        internal Setting<float> BoneXyScaleFactor = new Setting<float>(1f);
+        internal Setting<float> BoneXyInvSqrtScaleFactor = new Setting<float>(1f);
+
+        [JsonProperty]
+        internal Setting<float> BoneXyLinearScaleFactor = new Setting<float>(1f);
 
         [JsonProperty]
         internal Setting<float> ColliderDistanceOffset = new Setting<float>(0f);
+
+        [JsonProperty]
+        internal Setting<bool> EnableBonesTelemetry = new Setting<bool>(false);
     }
 
     internal class Setting<T> {

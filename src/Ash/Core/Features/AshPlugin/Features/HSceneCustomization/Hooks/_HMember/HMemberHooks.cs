@@ -4,7 +4,7 @@ using HarmonyLib;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
-namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HMember
+namespace Ash.Core.Features.AshPlugin.Features.HSceneCustomization.Hooks._HMember
 {
     [HarmonyPatch]
     internal class HMemberHooks

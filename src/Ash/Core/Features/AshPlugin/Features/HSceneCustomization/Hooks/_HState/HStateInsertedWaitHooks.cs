@@ -1,15 +1,15 @@
 using H;
 using HarmonyLib;
 
-namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState
+namespace Ash.Core.Features.AshPlugin.Features.HSceneCustomization.Hooks._HState
 {
     [HarmonyPatch]
-    internal class HStatePreTouchWaitHooks
+    internal class HStateInsertedWaitHooks
     {
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(H_State_PreTouchWait), nameof(H_State_PreTouchWait.Main))]
+        [HarmonyPatch(typeof(H_State_InsertedWait), nameof(H_State_InsertedWait.Main))]
         // ReSharper disable once InconsistentNaming
-        internal static bool MainPrefix(H_State_PreTouchWait __instance) {
+        internal static bool MainPrefix(H_State_PreInsertWait __instance) {
             if (!Ash.PersistentSettings.DisableFemaleInactionBark.Value)
                 return true;
 

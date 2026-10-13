@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ash.Core.Tooling.SceneManagement;
+using Ash.Logging;
 using Ash.Utility.GlobalUtils;
 using UnityEngine;
 
@@ -9,7 +10,9 @@ namespace Ash.Core.Features.BetterPenetration
 {
     internal class BoneInjector : MonoBehaviour
     {
-        internal List<Injector> ActiveInjectors { get; } = new List<Injector>();
+        internal List<Injector> ActiveInjectors { get; private set; } = new List<Injector>();
+
+        private static readonly AshLogger Logger = new AshLogger(LoggingSettings.LoggingModules.BetterPenetration);
 
         private void Awake() {
             SceneTypeTracker.SceneUnloaded += DestroyAllInjectors;
@@ -19,34 +22,44 @@ namespace Ash.Core.Features.BetterPenetration
             SceneTypeTracker.SceneUnloaded -= DestroyAllInjectors;
         }
 
-
-        internal void ResetBoneTransforms(Male male) {
-            ActiveInjectors.Find(inj => inj.Male == male)?.ResetBoneTransforms();
+        internal void DestroyAllInjectors() {
+            ActiveInjectors.Clear();
         }
 
-        internal void RemoveInjectedBonesAndResetMesh(Male male) {
-            ActiveInjectors.Find(inj => inj.Male == male)?.RemoveInjectedBonesAndResetMesh();
+        internal void RemoveInjectedBonesAndResetMesh() {
+            foreach (var injector in ActiveInjectors)
+                injector.RemoveInjectedBonesAndResetMesh();
         }
+
+        internal void PruneInjectorsList(Male male) {
+            ActiveInjectors.Remove(ActiveInjectors.FirstOrDefault(injector => injector.Male == male));
+            Logger.LogDebug($"male's {male.maleID} injector is pruned");
+        }
+
 
         internal void TryInjectBones(Male male) {
-            var existingInjector = ActiveInjectors.Find(inj => inj.Male == male);
-            if (existingInjector != null && existingInjector.Male != null)
+            if (ActiveInjectors.Find(inj => inj.Male == male) != null)
                 return;
-
-            ActiveInjectors.Remove(existingInjector);
 
             var injector = new Injector(male);
             injector.TryInjectBones();
 
             ActiveInjectors.Add(injector);
+
+
         }
 
-        internal void UpdateBonesTransforms(Male male) {
-            ActiveInjectors.Find(inj => inj.Male == male)?.UpdateBonesTransforms();
+        internal void UpdateIKBonesTransforms(Male male) {
+            ActiveInjectors.Find(inj => inj.Male == male)?.UpdateIKBonesTransforms();
         }
 
-        private void DestroyAllInjectors() {
-            ActiveInjectors.Clear();
+        internal void UpdateIKIndependentBonesTransforms(Male male) {
+            ActiveInjectors.Find(inj => inj.Male == male)?.UpdateIKIndependentBonesTransforms();
+
+        }
+
+        internal void ResetBoneTransforms(Male male) {
+            ActiveInjectors.Find(inj => inj.Male == male)?.ResetBoneTransforms();
         }
 
 
@@ -54,38 +67,18 @@ namespace Ash.Core.Features.BetterPenetration
         {
             internal Transform[] NewBones { get; private set; }
             internal Male Male { get; }
+            internal float SegmentLength { get; private set; }
 
             private Transform TinRoot;
             private Transform TinTip;
             private Mesh OriginalMesh;
             private SkinnedMeshRenderer Renderer;
-            private float SegmentLength;
 
             private bool Initialized;
 
 
             internal Injector(Male male) {
                 Male = male;
-            }
-
-            internal void RemoveInjectedBonesAndResetMesh() {
-                if (!Initialized)
-                    return;
-
-                Renderer.bones = Renderer.bones.Where(b => !NewBones.Contains(b)).ToArray();
-
-                foreach (var bone in NewBones)
-                    Destroy(bone.gameObject);
-
-                Destroy(Renderer.sharedMesh);
-
-                TinRoot = null;
-                TinTip = null;
-                NewBones = null;
-                SegmentLength = 0;
-                Renderer.sharedMesh = OriginalMesh;
-
-                Initialized = false;
             }
 
             internal void TryInjectBones() {
@@ -96,8 +89,18 @@ namespace Ash.Core.Features.BetterPenetration
                 TinTip = Male.ik.tinTip;
                 Renderer = Male.tinRoot.GetComponentInChildren<SkinnedMeshRenderer>();
 
-                if (TinRoot == null || TinTip == null || Renderer == null) {
-                    Ash.Logger.LogDebug($"TinRoot {TinRoot}{(TinRoot == null ? "(null)" : "")}, TinTip {TinTip}{(TinTip == null ? "(null)" : "")}, Renderer {Renderer}{(Renderer == null ? "(null)" : "")}");
+                if (TinRoot == null) {
+                    Logger.LogDebug($"TinRoot {TinRoot}{(TinRoot == null ? "(null)" : "")}");
+                    return;
+                }
+
+                if (TinTip == null) {
+                    Logger.LogDebug($"TinTip {TinTip}{(TinTip == null ? "(null)" : "")}");
+                    return;
+                }
+
+                if (Renderer == null) {
+                    Logger.LogDebug($"Renderer {Renderer}{(Renderer == null ? "(null)" : "")}");
                     return;
                 }
 
@@ -140,7 +143,6 @@ namespace Ash.Core.Features.BetterPenetration
                     newBonesIndices[i] = assignedIndex;
                 }
 
-                // todo: we need to keep the original mesh saved to have an ability to toggle back to it in the ash plugin menu
                 OriginalMesh = Renderer.sharedMesh;
                 var newMesh = Instantiate(OriginalMesh);
                 newMesh.name = OriginalMesh.name + "_BetterPenetration";
@@ -185,45 +187,39 @@ namespace Ash.Core.Features.BetterPenetration
 
                 Initialized = true;
 
-                Ash.Logger.LogDebug($"Bones have been injected!");
-
-                ReconstructValidState();
+                Logger.LogDebug($"Bones have been injected!");
             }
 
-            internal void UpdateBonesTransforms() {
+            internal void RemoveInjectedBonesAndResetMesh() {
+                if (!Initialized)
+                    return;
+
+                Renderer.bones = Renderer.bones.Where(b => !NewBones.Contains(b)).ToArray();
+
+                foreach (var bone in NewBones)
+                    Destroy(bone.gameObject);
+
+                Destroy(Renderer.sharedMesh);
+
+                TinRoot = null;
+                TinTip = null;
+                NewBones = null;
+                SegmentLength = 0;
+                Renderer.sharedMesh = OriginalMesh;
+
+                Initialized = false;
+            }
+
+            internal void UpdateIKBonesTransforms() {
                 if (!Initialized) {
-                    Ash.Logger.LogDebug($"Update is called, but no bones were injected");
+                    Logger.LogDebug($"Update IK transforms is called, but no bones were injected");
                     return;
                 }
 
-                var colliderPosition = Male.ik.tinTarget.position;
-                var activeBone = NewBones.LastOrDefault(bone => bone.localScale.z > 0 && bone.localScale.z < 1);
-                if (activeBone == null) {
-                    if (NewBones.All(b => b.localScale.z == 0)) {
-                        activeBone = NewBones[0];
-                    } else if (NewBones.All(b => b.localScale.z >= 1)) {
-                        activeBone = NewBones[NewBones.Length - 1];
-                    } else {
-                        var firstZeroScaleBone = NewBones.FirstOrDefault(b => b.localScale.z == 0);
-                        var lastOneScaleBone = NewBones.LastOrDefault(b => b.localScale.z >= 1);
-                        // ReSharper disable once PossibleNullReferenceException
-                        var firstZeroScaleBoneDistToCollider = VectorUtils.CalculateSignedDistance(firstZeroScaleBone.position, colliderPosition, firstZeroScaleBone.forward) + Ash.PersistentSettings.ColliderDistanceOffset.Value;
-                        // ReSharper disable once PossibleNullReferenceException
-                        var lastOneScaleBoneDistToCollider = VectorUtils.CalculateSignedDistance(lastOneScaleBone.position, colliderPosition, lastOneScaleBone.forward) + Ash.PersistentSettings.ColliderDistanceOffset.Value;
-                        if (firstZeroScaleBoneDistToCollider > 0 && lastOneScaleBoneDistToCollider > 0) {
-                            activeBone = firstZeroScaleBone;
-                        } else if (firstZeroScaleBoneDistToCollider < 0) {
-                            activeBone = lastOneScaleBone;
-                        } else {
-                            return; // intermediate state is ambiguous, wait for the next frame to resolve
-                        }
-                    }
+                foreach (var bone in NewBones) {
+                    var distance = VectorUtils.CalculateSignedDistance(bone.position, Male.ik.tinTarget.position, bone.forward) + Ash.PersistentSettings.ColliderDistanceOffset.Value;
+                    bone.localScale = new Vector3(1f, 1f, Mathf.Clamp(distance / SegmentLength, 0f, 1f));
                 }
-
-                var distance = VectorUtils.CalculateSignedDistance(activeBone.position, colliderPosition, activeBone.forward) + Ash.PersistentSettings.ColliderDistanceOffset.Value;
-                var clampedDistance = Mathf.Clamp(distance, 0f, SegmentLength);
-                var scaleFactor = clampedDistance / SegmentLength;
-                activeBone.localScale = new Vector3(1f, 1f, Mathf.Clamp(scaleFactor, 0f, scaleFactor));
 
                 for (var i = 1; i < NewBones.Length; i++) {
                     NewBones[i].localPosition = new Vector3(
@@ -231,9 +227,22 @@ namespace Ash.Core.Features.BetterPenetration
                         0f,
                         NewBones[i - 1].localPosition.z + NewBones[i - 1].localScale.z * SegmentLength
                     );
+                }
+            }
 
-                    var xyDecayingScalingFactor = Mathf.Lerp(1f, Ash.PersistentSettings.BoneXyScaleFactor.Value, 1f - Mathf.Sqrt(1f - (float)i / (NewBones.Length - 1)));
-                    NewBones[i].localScale = new Vector3(xyDecayingScalingFactor, xyDecayingScalingFactor, NewBones[i].localScale.z);
+            internal void UpdateIKIndependentBonesTransforms() {
+                if (!Initialized) {
+                    Logger.LogDebug($"Update IK-independent transforms is called, but no bones were injected");
+                    return;
+                }
+
+                for (var i = 1; i < NewBones.Length; i++) {
+                    var xyInvSqrtScalingFactor = Mathf.Lerp(1f, Ash.PersistentSettings.BoneXyInvSqrtScaleFactor.Value, 1f - Mathf.Sqrt(1f - (float)i / (NewBones.Length - 1)));
+                    NewBones[i].localScale = new Vector3(
+                        xyInvSqrtScalingFactor * Ash.PersistentSettings.BoneXyLinearScaleFactor.Value,
+                        xyInvSqrtScalingFactor * Ash.PersistentSettings.BoneXyLinearScaleFactor.Value,
+                        NewBones[i].localScale.z
+                    );
                 }
 
                 TinRoot.localScale = new Vector3(1f, 1f, Ash.PersistentSettings.RootBoneLength.Value);
@@ -249,33 +258,7 @@ namespace Ash.Core.Features.BetterPenetration
                     NewBones[i].localScale = Vector3.one;
                 }
 
-                Ash.Logger.LogDebug($"Bone transforms have been reset");
-            }
-
-            private void ReconstructValidState() {
-                if (!Initialized) {
-                    Ash.Logger.LogDebug($"ReconstructValidState is called, but no bones were injected");
-                    return;
-                }
-
-                ResetBoneTransforms();
-
-                var colliderPosition = Male.ik.tinTarget.position;
-
-                foreach (var bone in NewBones) {
-                    var distance = VectorUtils.CalculateSignedDistance(bone.position, colliderPosition, bone.forward) + Ash.PersistentSettings.ColliderDistanceOffset.Value;
-                    var clampedDistance = Mathf.Clamp(distance, 0f, SegmentLength);
-                    var scaleFactor = clampedDistance / SegmentLength;
-                    bone.localScale = new Vector3(1f, 1f, Mathf.Clamp(scaleFactor, 0f, scaleFactor));
-                }
-
-                for (var i = 1; i < NewBones.Length; i++) {
-                    NewBones[i].localPosition = new Vector3(
-                        0f,
-                        0f,
-                        NewBones[i - 1].localPosition.z + NewBones[i - 1].localScale.z * SegmentLength
-                    );
-                }
+                Logger.LogDebug($"Bone transforms have been reset");
             }
         }
     }

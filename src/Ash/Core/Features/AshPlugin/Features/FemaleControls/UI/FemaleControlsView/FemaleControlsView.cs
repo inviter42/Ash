@@ -8,9 +8,9 @@ using UnityEngine;
 using static Ash.Utility.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.AshPlugin.Common.Misc.CommonLabels;
 
-namespace Ash.Core.Features.AshPlugin.Features.HSceneControls.UI.HSceneControlsView
+namespace Ash.Core.Features.AshPlugin.Features.FemaleControls.UI.FemaleControlsView
 {
-    internal class HSceneControlsView
+    internal class FemaleControlsView
     {
         internal const string HSceneControlsViewTabLabel = "Female Controls";
 
@@ -44,7 +44,7 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneControls.UI.HSceneControlsV
 
         private Vector2 ScrollPosition;
 
-        internal HSceneControlsView(HSceneWindow parentWindow) {
+        internal FemaleControlsView(HSceneWindow parentWindow) {
             ParentWindow = parentWindow;
         }
 

@@ -29,7 +29,8 @@ namespace Ash.Logging
             PhExtendedSaveFiles,
             HMembersHooks,
             HumanHooks,
-            WearablesHooks
+            WearablesHooks,
+            BetterPenetration
         }
     }
 }

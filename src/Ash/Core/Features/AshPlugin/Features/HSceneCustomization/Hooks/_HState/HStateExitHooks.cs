@@ -1,7 +1,7 @@
 using H;
 using HarmonyLib;
 
-namespace Ash.Core.Features.AshPlugin.Features.HSceneSettings.Hooks._HState
+namespace Ash.Core.Features.AshPlugin.Features.HSceneCustomization.Hooks._HState
 {
     [HarmonyPatch]
     internal class HStateExitHooks

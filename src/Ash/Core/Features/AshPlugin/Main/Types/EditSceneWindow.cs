@@ -22,6 +22,7 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
 
         private ItemsVisibilityControlsView ItemsVisibilityControlsViewInstance;
         private ItemsCoordinatorView ItemsCoordinatorViewInstance;
+        // ReSharper disable once InconsistentNaming
         private Female _ActiveFemale;
 
         private void Awake() {

@@ -6,14 +6,15 @@ namespace Ash.Core.Features.BetterApplicables.BaseComponents.MakerExtensions.Ext
     internal class SelectionToggle : ExtSelectionToggle
     {
         internal bool IsEmpty {
-            get => isEmpty;
+            get => _IsEmpty;
             set {
-                isEmpty = value;
+                _IsEmpty = value;
                 UpdateColorBlocks();
             }
         }
 
-        private bool isEmpty = true;
+        // ReSharper disable once InconsistentNaming
+        private bool _IsEmpty = true;
 
         private static readonly ColorBlock EmptyColorBlockOn = new ColorBlock {
             normalColor = new Color(0, 0, 0, 0.58f),

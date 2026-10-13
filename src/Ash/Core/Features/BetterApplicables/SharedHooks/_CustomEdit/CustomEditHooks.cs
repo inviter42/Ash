@@ -85,6 +85,7 @@ namespace Ash.Core.Features.BetterApplicables.SharedHooks._CustomEdit
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(FaceCustomEdit), nameof(FaceCustomEdit.OnChangeEyeShadow), typeof(CustomSelectSet))]
+        // ReSharper disable once InconsistentNaming
         internal static bool FaceOnChangeEyeShadowPrefix(FaceCustomEdit __instance, CustomSelectSet set) {
             if (!__instance.invoke)
                 return false;
@@ -113,6 +114,7 @@ namespace Ash.Core.Features.BetterApplicables.SharedHooks._CustomEdit
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(FaceCustomEdit), nameof(FaceCustomEdit.OnChangeCheek), typeof(CustomSelectSet))]
+        // ReSharper disable once InconsistentNaming
         internal static bool FaceOnChangeCheekShadowPrefix(FaceCustomEdit __instance, CustomSelectSet set) {
             if (!__instance.invoke)
                 return false;
@@ -141,6 +143,7 @@ namespace Ash.Core.Features.BetterApplicables.SharedHooks._CustomEdit
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(FaceCustomEdit), nameof(FaceCustomEdit.OnChangeMole), typeof(CustomSelectSet))]
+        // ReSharper disable once InconsistentNaming
         internal static bool FaceOnChangeMolePrefix(FaceCustomEdit __instance, CustomSelectSet set) {
             if (!__instance.invoke)
                 return false;
