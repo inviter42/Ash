@@ -218,7 +218,11 @@ namespace Ash.Core.Features.BetterPenetration
 
                 foreach (var bone in NewBones) {
                     var distance = VectorUtils.CalculateSignedDistance(bone.position, Male.ik.tinTarget.position, bone.forward) + Ash.PersistentSettings.ColliderDistanceOffset.Value;
-                    bone.localScale = new Vector3(1f, 1f, Mathf.Clamp(distance / SegmentLength, 0f, 1f));
+                    bone.localScale = new Vector3(
+                        bone.localScale.x,
+                        bone.localScale.y,
+                        Mathf.Clamp(distance / SegmentLength, 0f, 1f)
+                    );
                 }
 
                 for (var i = 1; i < NewBones.Length; i++) {
