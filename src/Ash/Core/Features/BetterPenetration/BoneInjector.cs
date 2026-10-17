@@ -10,7 +10,7 @@ namespace Ash.Core.Features.BetterPenetration
 {
     internal class BoneInjector : MonoBehaviour
     {
-        internal List<Injector> ActiveInjectors { get; private set; } = new List<Injector>();
+        internal List<Injector> ActiveInjectors { get; } = new List<Injector>();
 
         private static readonly AshLogger Logger = new AshLogger(LoggingSettings.LoggingModules.BetterPenetration);
 
@@ -38,6 +38,9 @@ namespace Ash.Core.Features.BetterPenetration
 
 
         internal void TryInjectBones(Male male) {
+            if (!Ash.PersistentSettings.EnableBetterPenetration.Value)
+                return;
+
             if (ActiveInjectors.Find(inj => inj.Male == male) != null)
                 return;
 
@@ -45,20 +48,26 @@ namespace Ash.Core.Features.BetterPenetration
             injector.TryInjectBones();
 
             ActiveInjectors.Add(injector);
-
-
         }
 
         internal void UpdateIKBonesTransforms(Male male) {
+            if (!Ash.PersistentSettings.EnableBetterPenetration.Value)
+                return;
+
             ActiveInjectors.Find(inj => inj.Male == male)?.UpdateIKBonesTransforms();
         }
 
         internal void UpdateIKIndependentBonesTransforms(Male male) {
-            ActiveInjectors.Find(inj => inj.Male == male)?.UpdateIKIndependentBonesTransforms();
+            if (!Ash.PersistentSettings.EnableBetterPenetration.Value)
+                return;
 
+            ActiveInjectors.Find(inj => inj.Male == male)?.UpdateIKIndependentBonesTransforms();
         }
 
         internal void ResetBoneTransforms(Male male) {
+            if (!Ash.PersistentSettings.EnableBetterPenetration.Value)
+                return;
+
             ActiveInjectors.Find(inj => inj.Male == male)?.ResetBoneTransforms();
         }
 
@@ -218,11 +227,7 @@ namespace Ash.Core.Features.BetterPenetration
 
                 foreach (var bone in NewBones) {
                     var distance = VectorUtils.CalculateSignedDistance(bone.position, Male.ik.tinTarget.position, bone.forward) + Ash.PersistentSettings.ColliderDistanceOffset.Value;
-                    bone.localScale = new Vector3(
-                        bone.localScale.x,
-                        bone.localScale.y,
-                        Mathf.Clamp(distance / SegmentLength, 0f, 1f)
-                    );
+                    bone.localScale = new Vector3(1f, 1f, Mathf.Clamp(distance / SegmentLength, 0f, 1f));
                 }
 
                 for (var i = 1; i < NewBones.Length; i++) {

@@ -23,8 +23,6 @@ namespace Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.Bett
 
         private Vector2 ScrollPosition;
 
-        private H_Scene HScene;
-
         internal void DrawView() {
             ScrollPosition = GUILayout.BeginScrollView(ScrollPosition, GUILayout.ExpandWidth(true),
                 GUILayout.ExpandHeight(true));
@@ -71,11 +69,12 @@ namespace Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.Bett
                 (state, idx) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
                     Ash.PersistentSettings.EnableBetterPenetration.Value == state,
                     () => {
+                        Ash.PersistentSettings.EnableBetterPenetration.Value = state;
+
                         if (!state) {
                             Ash.BoneInjector.RemoveInjectedBonesAndResetMesh();
                             Ash.BoneInjector.DestroyAllInjectors();
                         }
-                        Ash.PersistentSettings.EnableBetterPenetration.Value = state;
                     })
             );
         }
@@ -147,11 +146,10 @@ namespace Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.Bett
             if (activeInjector?.NewBones == null)
                 return;
 
-            if (HScene == null && SceneTypeTracker.Scene is H_Scene hScene)
-                HScene = hScene;
-
-            if (HScene == null)
+            if (activeInjector.Male.ik.tinTarget == null) {
+                Info("Collider is null at the moment.");
                 return;
+            }
 
             foreach (var bone in activeInjector.NewBones) {
                 var colliderPosition = activeInjector.Male.ik.tinTarget.position;

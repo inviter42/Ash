@@ -36,7 +36,7 @@ namespace Ash
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.anotherscenehelper";
-        public const string Version = "1.5.2";
+        public const string Version = "1.5.3";
 
         internal static Ash Instance { get; private set; }
         internal new static AshLogger Logger;
