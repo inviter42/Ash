@@ -53,6 +53,9 @@ namespace Ash.Core.Features.BetterApplicables.BetterTattoos.Extensions
                 ? CustomDataManager.GetFaceTattoo_Female(set.id)
                 : CustomDataManager.GetFaceTattoo_Male(set.id);
 
+            if (combinedTextureData == null)
+                return null;
+
             return new SerializableTextureData(
                 combinedTextureData.id,
                 combinedTextureData.assetbundleName,

@@ -19,7 +19,7 @@ namespace BetterApplicablesStudio.Core.BetterApplicables.BetterEyeShadows.Manage
 
             var headArray = new SerializableTextureData[NumberOfSlots];
 
-            if (param.head.eyeshadowTexID != 0)
+            if (param.head.eyeshadowTexID != 0 && combinedTextureDataFace != null)
                 headArray[0] = new SerializableTextureData(
                     combinedTextureDataFace.id,
                     combinedTextureDataFace.assetbundleName,

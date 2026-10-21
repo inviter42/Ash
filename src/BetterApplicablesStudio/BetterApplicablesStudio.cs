@@ -21,7 +21,7 @@ namespace BetterApplicablesStudio
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.betterapplicablesstudio";
         public const string AshGUID = "inviter42.anotherscenehelper";
-        public const string Version = "1.1.0";
+        public const string Version = "1.1.1";
 
         internal new static ManualLogSource Logger;
 

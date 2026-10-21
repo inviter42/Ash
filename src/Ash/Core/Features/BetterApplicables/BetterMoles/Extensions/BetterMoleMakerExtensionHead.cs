@@ -54,6 +54,9 @@ namespace Ash.Core.Features.BetterApplicables.BetterMoles.Extensions
                 ? CustomDataManager.GetMole(set.id)
                 : CustomDataManager.GetMole(set.id); // if we want to add eye-shadows to males, it needs a custom getter!
 
+            if (combinedTextureData == null)
+                return null;
+
             return new SerializableTextureData(
                 combinedTextureData.id,
                 combinedTextureData.assetbundleName,

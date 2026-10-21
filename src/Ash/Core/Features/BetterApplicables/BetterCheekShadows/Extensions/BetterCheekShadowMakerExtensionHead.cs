@@ -55,6 +55,9 @@ namespace Ash.Core.Features.BetterApplicables.BetterCheekShadows.Extensions
                 ? CustomDataManager.GetCheek(set.id)
                 : CustomDataManager.GetCheek(set.id); // if we want to add cheek-shadows to males, it needs a custom getter!
 
+            if (combinedTextureData == null)
+                return null;
+
             return new SerializableTextureData(
                 combinedTextureData.id,
                 combinedTextureData.assetbundleName,

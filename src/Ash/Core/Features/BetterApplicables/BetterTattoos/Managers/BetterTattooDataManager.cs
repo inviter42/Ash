@@ -62,7 +62,7 @@ namespace Ash.Core.Features.BetterApplicables.BetterTattoos.Managers
             var headArray = new SerializableTextureData[NumberOfSlots];
             var bodyArray = new SerializableTextureData[NumberOfSlots];
 
-            if (param.head.tattooID != 0)
+            if (param.head.tattooID != 0 && combinedTextureDataFace != null)
                 headArray[0] = new SerializableTextureData(
                     combinedTextureDataFace.id,
                     combinedTextureDataFace.assetbundleName,
@@ -74,7 +74,7 @@ namespace Ash.Core.Features.BetterApplicables.BetterTattoos.Managers
                     Vector2.one
                 );
 
-            if (param.body.tattooID != 0)
+            if (param.body.tattooID != 0 && combinedTextureDataBody != null)
                 bodyArray[0] = new SerializableTextureData(
                     combinedTextureDataBody.id,
                     combinedTextureDataBody.assetbundleName,

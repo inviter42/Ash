@@ -46,7 +46,7 @@ namespace Ash.Core.Features.BetterApplicables.BetterMoles.Managers
 
             var headArray = new SerializableTextureData[NumberOfSlots];
 
-            if (param.head.moleTexID != 0)
+            if (param.head.moleTexID != 0 && combinedTextureDataFace != null)
                 headArray[0] = new SerializableTextureData(
                     combinedTextureDataFace.id,
                     combinedTextureDataFace.assetbundleName,

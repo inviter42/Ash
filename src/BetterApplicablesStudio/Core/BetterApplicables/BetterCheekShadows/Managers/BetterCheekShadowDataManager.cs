@@ -18,7 +18,7 @@ namespace BetterApplicablesStudio.Core.BetterApplicables.BetterCheekShadows.Mana
 
             var headArray = new SerializableTextureData[NumberOfSlots];
 
-            if (param.head.cheekTexID != 0)
+            if (param.head.cheekTexID != 0 && combinedTextureDataFace != null)
                 headArray[0] = new SerializableTextureData(
                     combinedTextureDataFace.id,
                     combinedTextureDataFace.assetbundleName,
