@@ -28,7 +28,7 @@ Download and install:
 1. Download and install the dependent versions of [BepInEx](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.22), [Bepis Plugins](https://github.com/IllusionMods/BepisPlugins/releases/tag/r21.1.2) and [ModdingAPI](https://github.com/IllusionMods/IllusionModdingAPI/releases/tag/v1.45.1)  
 1. Download the [latest release](https://github.com/inviter42/Ash/releases), unzip the archive, drag and drop the contents into the game directory.
 
-The plugin has a MoreAccessories dependency. If you are a BetterRepack user - you're all set already, as it is included in the repack. Otherwise you need to install it.
+The plugin has a MoreAccessories and MaterialEditor dependency. If you are a BetterRepack user you only need to update MaterialEditor to 5.0 version.
 
 It is highly recommended to use a BetterRepack, as the new releases are getting tested against it.
 
