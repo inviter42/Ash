@@ -11,8 +11,7 @@ namespace Ash.Utility.GlobalUtils
                 return JsonSerializeToByteArray(obj);
             }
             catch (Exception e) {
-                Ash.Logger.LogWarning($"Unexpected exception during JSON deserialization: {e}");
-                return null;
+                throw new Exception($"Unexpected exception during JSON deserialization: {e}");
             }
         }
 
@@ -25,8 +24,7 @@ namespace Ash.Utility.GlobalUtils
                 return JsonDeserializeFromByteArray<T>(obj);
             }
             catch (Exception e) {
-                Ash.Logger.LogWarning($"Unexpected exception during JSON deserialization: {e}");
-                return default;
+                throw new Exception($"Unexpected exception during JSON deserialization: {e}");
             }
         }
 

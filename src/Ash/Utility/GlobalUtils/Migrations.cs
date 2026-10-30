@@ -267,17 +267,24 @@ namespace Ash.Utility.GlobalUtils
                     return;
                 }
 
-                var version = reader.ReadUInt32();
-                Logger.LogDebug($"Version: {version}");
+                try {
+                    var version = reader.ReadUInt32();
+                    Logger.LogDebug($"Version: {version}");
 
-                do {
-                    var kv = ReadSection(reader);
-                    if (kv.Key == null)
-                        break;
-                    PluginDataDictFromSave.Add(kv.Key, kv.Value);
-                } while (true);
+                    do {
+                        var kv = ReadSection(reader);
+                        if (kv.Key == null)
+                            break;
+                        PluginDataDictFromSave.Add(kv.Key, kv.Value);
+                    } while (true);
 
-                MigrationIsRequired = true;
+                    MigrationIsRequired = true;
+                }
+                catch (Exception e) {
+                    Logger.LogError(e);
+
+                    MigrationIsRequired = false;
+                }
 
                 reader.BaseStream.Position = position;
             }
@@ -414,8 +421,7 @@ namespace Ash.Utility.GlobalUtils
                     return default;
                 }
                 catch (Exception e) {
-                    Logger.LogError($"Unexpected exception has occured while trying to read magic bytes: {e}");
-                    throw;
+                    throw new Exception($"Unexpected exception has occured while trying to read magic bytes: {e}");
                 }
             }
 

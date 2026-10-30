@@ -64,8 +64,8 @@ namespace Ash.Core.Features.BetterApplicables.BetterCheekShadows.Managers
 
         protected override void MigrateExtendedData(CustomParameter file) {
             var migrationData = file.sex == SEX.FEMALE
-                ? Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.FemaleDataCheekShadows.GetValueOrDefaultValue(GetHeroineIdByCustomParam(file), null)
-                : Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.MaleDataCheekShadows.GetValueOrDefaultValue(GetMaleIdByCustomParam(file), null);
+                ? Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.FemaleDataCheekShadows?.GetValueOrDefaultValue(GetHeroineIdByCustomParam(file), null)
+                : Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.MaleDataCheekShadows?.GetValueOrDefaultValue(GetMaleIdByCustomParam(file), null);
 
             if (migrationData == null || migrationData.All(kvp => kvp.Value == null || kvp.Value.All(e => e == null))) {
                 PluginDataLoaded = false;

@@ -94,8 +94,8 @@ namespace Ash.Core.Features.BetterApplicables.BetterTattoos.Managers
 
         protected override void MigrateExtendedData(CustomParameter file) {
             var migrationData = file.sex == SEX.FEMALE
-                ? Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.FemaleDataTattoos.GetValueOrDefaultValue(GetHeroineIdByCustomParam(file), null)
-                : Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.MaleDataTattoos.GetValueOrDefaultValue(GetMaleIdByCustomParam(file), null);
+                ? Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.FemaleDataTattoos?.GetValueOrDefaultValue(GetHeroineIdByCustomParam(file), null)
+                : Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.MaleDataTattoos?.GetValueOrDefaultValue(GetMaleIdByCustomParam(file), null);
 
             if (migrationData == null || migrationData.All(kvp => kvp.Value == null || kvp.Value.All(e => e == null))) {
                 PluginDataLoaded = false;
