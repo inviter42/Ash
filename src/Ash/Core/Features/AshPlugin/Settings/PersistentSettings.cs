@@ -42,6 +42,15 @@ namespace Ash.Core.Features.AshPlugin.Settings
         internal Setting<bool> FixIncorrectShowMouthLiquidState = new Setting<bool>(false);
 
         [JsonProperty]
+        internal Setting<bool> FixTearsShaderColorBinding = new Setting<bool>(false);
+
+        [JsonProperty]
+        internal Setting<bool> FixVirginBloodZFighting = new Setting<bool>(false);
+
+        [JsonProperty]
+        internal Setting<float> TearsAlphaInterpolationMax = new Setting<float>(0.5882353f);
+
+        [JsonProperty]
         internal Setting<bool> IsImmersiveUiEnabled = new Setting<bool>(false);
 
         [JsonProperty]

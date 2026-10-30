@@ -17,7 +17,6 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneCustomization.UI.HSceneCust
 
         private static readonly AshLogger Logger = new AshLogger(LoggingSettings.LoggingModules.HSceneSettings);
 
-        private const string BugFixesTitle = "Bug Fixes";
         private const string AnimationControlsTitle = "Animation settings";
         private const string ParticleSystemsControlsTitle = "Particle systems settings";
         private const string VoiceControlsTitle = "Voice settings";
@@ -33,8 +32,7 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneCustomization.UI.HSceneCust
         private const string DisableFemaleVoiceBarkAfterEjaInSubtitle = "Disable female voice lines after ejaculation inside:";
         private const string DisableFemaleVoiceBarkAfterExtractSubtitle = "Disable female voice lines after extraction:";
         private const string DisableFemaleSpermDripAfterExtractSubtitle = "Disable female sperm drip after extraction:";
-        private const string InterruptVoiceClipImmediatelyUponGagChangeSubtitle = "Update female voice clip immediately upon gag change:";
-        private const string FixIncorrectShowMouthLiquidStateSubtitle = "Fix ShowMouthLiquid animation:";
+
 
         private readonly HSceneWindow ParentWindow;
         private Female ActiveFemale => ParentWindow.ActiveFemale;
@@ -54,7 +52,6 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneCustomization.UI.HSceneCust
                 DrawAnimationControlsSection();
                 DrawParticleSystemsSection();
                 DrawVoiceControlsSection();
-                DrawBugFixesSection();
                 DrawDirtyTalkSettingsSection();
             }
 
@@ -101,18 +98,6 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneCustomization.UI.HSceneCust
                 dc.Invoke();
                 GUILayout.Space(12);
             });
-        }
-
-        private void DrawBugFixesSection() {
-            GUILayout.Space(20);
-
-            Title(BugFixesTitle);
-
-            DrawInterruptVoiceClipImmediatelyUponGagChange();
-
-            GUILayout.Space(12);
-
-            DrawFixIncorrectShowMouthLiquidState();
         }
 
         private void DrawDirtyTalkSettingsSection() {
@@ -216,26 +201,6 @@ namespace Ash.Core.Features.AshPlugin.Features.HSceneCustomization.UI.HSceneCust
                 (state, idx) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
                     Ash.PersistentSettings.DisableFemaleVoiceBarkAfterExtract.Value == state,
                     () => Ash.PersistentSettings.DisableFemaleVoiceBarkAfterExtract.Value = state)
-            );
-        }
-
-        private void DrawInterruptVoiceClipImmediatelyUponGagChange() {
-            Subtitle(InterruptVoiceClipImmediatelyUponGagChangeSubtitle);
-            Flow(
-                new[] { true, false },
-                (state, idx) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                    Ash.PersistentSettings.InterruptVoiceClipImmediatelyUponGagChange.Value == state,
-                    () => Ash.PersistentSettings.InterruptVoiceClipImmediatelyUponGagChange.Value = state)
-            );
-        }
-
-        private void DrawFixIncorrectShowMouthLiquidState() {
-            Subtitle(FixIncorrectShowMouthLiquidStateSubtitle);
-            Flow(
-                new[] { true, false },
-                (state, idx) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                    Ash.PersistentSettings.FixIncorrectShowMouthLiquidState.Value == state,
-                    () => Ash.PersistentSettings.FixIncorrectShowMouthLiquidState.Value = state)
             );
         }
 

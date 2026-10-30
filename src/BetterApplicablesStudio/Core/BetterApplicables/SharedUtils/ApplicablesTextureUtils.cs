@@ -41,7 +41,7 @@ namespace BetterApplicablesStudio.Core.BetterApplicables.SharedUtils
                 mat.SetColor(colorId, Color.white);
             }
             else {
-                BetterApplicablesStudio.Logger.LogDebug($"[{(shape.human.sex == SEX.FEMALE ? "Female" : "Male")}] Multi-texture {category} rendering branch");
+                BetterApplicablesStudio.Logger.LogDebug($"[{(shape.human.sex == SEX.FEMALE ? "Female" : "Male")}] Default {category} rendering branch");
                 var data = dataArray?.FirstOrDefault(d => d != null);
                 var textureAsset = GetTextureAsset(data);
                 var tint = data?.Tint ?? Color.clear;
@@ -68,15 +68,20 @@ namespace BetterApplicablesStudio.Core.BetterApplicables.SharedUtils
         }
 
         private static Vector2[] CalculateOffsetAndScale(
-            Texture eyeShadowTex,
+            Texture texture,
             Vector2 abOffset,
             Vector2 userOffset,
             Vector2 userScale
         ) {
+            if (texture == null) {
+                BetterApplicablesStudio.Logger.LogWarning("Unable to calculate offset and scale - provided texture is null.");
+                return new[] { Vector2.zero, Vector2.zero };
+            }
+
             var baseW = 1024;
             var baseH = 1024;
-            var texW = eyeShadowTex.width;
-            var texH = eyeShadowTex.height;
+            var texW = texture.width;
+            var texH = texture.height;
             var offsetPx = abOffset.x;
             var offsetPy = abOffset.y;
 

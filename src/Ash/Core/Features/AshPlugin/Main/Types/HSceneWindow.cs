@@ -4,6 +4,7 @@ using System.Linq;
 // ReSharper disable once RedundantUsingDirective
 using Ash.Core.Features.AshPlugin.Features.AnimationControls.UI.AnimationControlsView;
 using Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.BetterPenetrationSettingsView;
+using Ash.Core.Features.AshPlugin.Features.BugFixes.UI.BugFixesView;
 using Ash.Core.Features.AshPlugin.Features.FemaleControls.UI.FemaleControlsView;
 using Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.GameUIControlsView;
 using Ash.Core.Features.AshPlugin.Features.HSceneCustomization.UI.HSceneCustomizationView;
@@ -25,6 +26,7 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
             set => _ActiveFemale = value;
         }
 
+        // ReSharper disable once MemberCanBeMadeStatic.Global
         internal H_Scene HScene => (H_Scene)SceneTypeTracker.Scene;
 
 
@@ -34,6 +36,7 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
         private ItemsVisibilityControlsView ItemsVisibilityControlsViewInstance;
         private ItemsCoordinatorView ItemsCoordinatorViewInstance;
         private BetterPenetrationSettingsView BetterPenetrationSettingsViewInstance;
+        private BugFixesView BugFixesViewInstance;
 #if DEBUG
         private AnimationControlsView AnimationControlsViewInstance;
 #endif
@@ -48,6 +51,7 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
             FemaleControlsViewInstance = new FemaleControlsView(this);
             HSceneCustomizationViewInstance = new HSceneCustomizationView(this);
             BetterPenetrationSettingsViewInstance = new BetterPenetrationSettingsView();
+            BugFixesViewInstance = new BugFixesView();
 #if DEBUG
             AnimationControlsViewInstance = new AnimationControlsView();
 #endif
@@ -61,6 +65,7 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
                 FemaleControlsView.HSceneControlsViewTabLabel,
                 HSceneCustomizationView.HSceneSettingsViewTabLabel,
                 BetterPenetrationSettingsView.AnimationControlsViewTabLabel,
+                BugFixesView.BugFixesViewTabLabel,
 #if DEBUG
                 AnimationControlsView.AnimationControlsViewTabLabel,
 #endif
@@ -75,6 +80,7 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
                 FemaleControlsViewInstance.DrawView,
                 HSceneCustomizationViewInstance.DrawView,
                 BetterPenetrationSettingsViewInstance.DrawView,
+                BugFixesViewInstance.DrawView,
 #if DEBUG
                 AnimationControlsViewInstance.DrawView,
 #endif

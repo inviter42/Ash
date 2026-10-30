@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Ash.Core.Features.BetterApplicables.BaseComponents.Managers;
 using Ash.Core.Features.BetterApplicables.BaseComponents.Managers.Shared;
 using Ash.Core.Features.BetterApplicables.SharedComponents;
@@ -18,11 +19,9 @@ namespace Ash.Core.Features.BetterApplicables.BetterMoles.Managers
 
         internal override void RecordExtendedData() {
             var human = MakerAPI.GetMakerBase().human;
-            if (human.sex == SEX.FEMALE) {
-                FemaleMultiTextureData[((Female)human).heroineID][Part.Head] = Ash.BetterMoleMakerExtensionHead.UnsavedChanges;
-            } else {
-                MaleMultiTextureData[((Male)human).maleID][Part.Head] = Ash.BetterMoleMakerExtensionHead.UnsavedChanges;
-            }
+
+            if (MultiTextureData.TryGetValue(GetCustomParamByHuman(human), out var dict))
+                dict[Part.Head] = Ash.BetterMoleMakerExtensionHead.UnsavedChanges;
 
             ApplicablesTextureCaches.UpdateTextureCache(
                 BetterCategory.Mole,
@@ -61,6 +60,24 @@ namespace Ash.Core.Features.BetterApplicables.BetterMoles.Managers
             return new Dictionary<Part, SerializableTextureData[]> {
                 [Part.Head] = headArray
             };
+        }
+
+        protected override void MigrateExtendedData(CustomParameter file) {
+            var migrationData = file.sex == SEX.FEMALE
+                ? Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.FemaleDataMoles.GetValueOrDefaultValue(GetHeroineIdByCustomParam(file), null)
+                : Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.MaleDataMoles.GetValueOrDefaultValue(GetMaleIdByCustomParam(file), null);
+
+            if (migrationData == null || migrationData.All(kvp => kvp.Value == null || kvp.Value.All(e => e == null))) {
+                PluginDataLoaded = false;
+                Logger.LogDebug("No PluginData is found in this card");
+                InitializeDictionaryWithVanillaData(file);
+                return;
+            }
+
+
+            MultiTextureData[file] = migrationData;
+
+            Logger.LogDebug($"Extended texture data has been loaded");
         }
     }
 }

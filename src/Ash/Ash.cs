@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Ash.Core;
 using Ash.Core.Features.Actions;
+using Ash.Core.Features.AshPlugin.Features.HSceneCustomization._MaterialEditor;
 using Ash.Core.Features.AshPlugin.Main;
 // ReSharper disable once RedundantUsingDirective
 using Ash.Core.Features.AshPlugin.Main.Hooks;
@@ -23,12 +24,14 @@ using HarmonyLib;
 using KKAPI;
 using UnityEngine;
 using BepInEx.Bootstrap;
+using KK_Plugins.MaterialEditor;
 using MoreAccessoriesPH;
 
 namespace Ash
 {
     [BepInPlugin(GUID, PluginName, Version)]
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
+    [BepInDependency(MaterialEditorPlugin.PluginGUID, MaterialEditorPlugin.PluginVersion)]
     public class Ash : BaseUnityPlugin
     {
         public const string PluginName = "Ash";
@@ -36,7 +39,7 @@ namespace Ash
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.anotherscenehelper";
-        public const string Version = "1.5.5";
+        public const string Version = "1.5.6";
 
         internal static Ash Instance { get; private set; }
         internal new static AshLogger Logger;
@@ -93,6 +96,8 @@ namespace Ash
 
             // Register hooks
             Harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            MaterialEditorInjector.InjectProperties();
 
             GlobalPluginData.PerformShaderCacheWarmup();
 

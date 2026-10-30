@@ -8,11 +8,18 @@ namespace Ash.Utility.GlobalUtils
 {
     internal static class ImGuiPrimitivesLib
     {
+        internal static readonly GUIStyle VerticalTabsStyle = new GUIStyle(GUI.skin.button) {
+            padding = new RectOffset(18, 18, 6, 6),
+            alignment = TextAnchor.MiddleLeft,
+        };
+
+
         private static readonly Color MatrixGreen = new Color(0.0f, 0.7f, 0.05f);
 
         private static readonly GUIStyle ButtonStyle = new GUIStyle(GUI.skin.button) {
             padding = new RectOffset(12, 12, 4, 4)
         };
+
 
         internal static void Title(string text, GUIStyle style = null) {
             var finalStyle = new GUIStyle(CommonImGuiStyles.TitleStyle);

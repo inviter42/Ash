@@ -353,3 +353,10 @@ MigrationBackup/
 bin/
 
 *.psd
+
+src/Unity/Library/
+src/Unity/ProjectSettings/
+src/Unity/Temp/
+src/Unity/Assets/AssetBundles/
+src/Unity/*.csproj
+src/Unity/*.sln

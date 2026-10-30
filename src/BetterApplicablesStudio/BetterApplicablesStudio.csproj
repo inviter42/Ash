@@ -139,6 +139,7 @@
         <Compile Include="Core\BetterApplicables\SharedUtils\ApplicablesTextureUtils.cs" />
         <Compile Include="GlobalUtils\AssetBundleUtils.cs" />
         <Compile Include="GlobalUtils\DictionaryUtils.cs" />
+        <Compile Include="GlobalUtils\SerializationUtils.cs" />
         <Compile Include="GlobalUtils\TextureUtils.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
     </ItemGroup>
@@ -154,10 +155,6 @@
     <ProjectReference Include="..\Ash\Ash.csproj">
       <Project>{799e8918-d6e9-47af-9218-466d328960fc}</Project>
       <Name>Ash</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PhExtendedSaveFiles\PhExtendedSaveFiles.csproj">
-      <Project>{3dc5ce48-d9cb-4286-8b19-fc4ea92f5d5e}</Project>
-      <Name>PhExtendedSaveFiles</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

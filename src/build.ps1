@@ -8,7 +8,6 @@ param (
     [string]$ApplicationProcess,
     [string]$ProjectName,
     [string]$OutputName,
-    [string]$EsfName,
 
     [string]$DotNetPath = "C:\Program Files\dotnet"
 )
@@ -17,8 +16,6 @@ param (
 $exePath = Join-Path -Path $PlayHomePath -ChildPath "$ApplicationProcess.exe"
 $outputDll = "..\bin\BepInEx\plugins\$OutputName.dll"
 $outputPDB = "..\bin\BepInEx\plugins\$OutputName.pdb"
-$esfDll = "..\bin\BepInEx\plugins\$EsfName.dll"
-$esfPDB = "..\bin\BepInEx\plugins\$EsfName.pdb"
 $pluginDir = Join-Path -Path $PlayHomePath -ChildPath "BepInEx\plugins\"
 $targetDir = Join-Path -Path $pluginDir -ChildPath "$ProjectName"
 $projectPath = ".\$ProjectName\$ProjectName.csproj"
@@ -84,10 +81,8 @@ try {
         try {
             # 2. Perform the copy operations once the file is free
             Copy-Item -Path $outputDll -Destination $targetDir -Force -ErrorAction Stop
-            Copy-Item -Path $esfDll -Destination $pluginDir -Force -ErrorAction Stop
             if ($BuildConfiguration -eq "Debug") {
                 Copy-Item -Path $outputPDB -Destination $targetDir -Force -ErrorAction Stop
-                Copy-Item -Path $esfPDB -Destination $pluginDir -Force -ErrorAction Stop
             }
             $copySuccess = $true
         } catch {

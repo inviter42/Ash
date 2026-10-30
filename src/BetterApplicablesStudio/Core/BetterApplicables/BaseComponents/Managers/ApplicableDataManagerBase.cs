@@ -6,7 +6,6 @@ using BetterApplicablesStudio.Core.BetterApplicables.SharedHooks._Male;
 using BetterApplicablesStudio.GlobalUtils;
 using Character;
 using ExtensibleSaveFormat;
-using PhExtendedSaveFiles.Utils;
 using UnityEngine;
 using SerializableTextureData = BetterApplicablesStudio.Core.BetterApplicables.BaseComponents.Managers.Shared.SerializableTextureData;
 

@@ -4,15 +4,14 @@ using System.Linq;
 using Ash.Core.Features.BetterApplicables.BaseComponents.Managers.Shared;
 using Ash.Core.Features.BetterApplicables.SharedHooks._Female;
 using Ash.Core.Features.BetterApplicables.SharedHooks._Male;
+using Ash.Core.Tooling.SaveLoadManagement;
 using Ash.Logging;
 using Ash.Utility.GlobalUtils;
 using Character;
 using ExtensibleSaveFormat;
 using KKAPI.Maker;
-using Newtonsoft.Json.Linq;
-using PhExtendedSaveFiles;
-using PhExtendedSaveFiles.Utils;
 using UnityEngine;
+using SerializationUtils = Ash.Utility.GlobalUtils.SerializationUtils;
 
 namespace Ash.Core.Features.BetterApplicables.BaseComponents.Managers
 {
@@ -22,22 +21,8 @@ namespace Ash.Core.Features.BetterApplicables.BaseComponents.Managers
 
         internal virtual int NumberOfSlots => 10;
 
-        protected Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> FemaleMultiTextureData =
-            new Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> {
-                [HEROINE.RITSUKO] = new Dictionary<Part, SerializableTextureData[]>(),
-                [HEROINE.AKIKO] = new Dictionary<Part, SerializableTextureData[]>(),
-                [HEROINE.YUKIKO] = new Dictionary<Part, SerializableTextureData[]>(),
-                [HEROINE.MARIKO] = new Dictionary<Part, SerializableTextureData[]>(),
-            };
-
-        protected Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> MaleMultiTextureData =
-            new Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> {
-                [MALE_ID.HERO] = new Dictionary<Part, SerializableTextureData[]>(),
-                [MALE_ID.KOUICHI] = new Dictionary<Part, SerializableTextureData[]>(),
-                [MALE_ID.MOB_A] = new Dictionary<Part, SerializableTextureData[]>(),
-                [MALE_ID.MOB_B] = new Dictionary<Part, SerializableTextureData[]>(),
-                [MALE_ID.MOB_C] = new Dictionary<Part, SerializableTextureData[]>(),
-            };
+        protected readonly Dictionary<CustomParameter, Dictionary<Part, SerializableTextureData[]>> MultiTextureData =
+            new Dictionary<CustomParameter, Dictionary<Part, SerializableTextureData[]>> ();
 
 
         internal event Action<Part, SerializableTextureData[]> ExtDataFromTheCard;
@@ -45,12 +30,12 @@ namespace Ash.Core.Features.BetterApplicables.BaseComponents.Managers
 
         protected virtual string PayloadId { get; }
 
-        private bool PluginDataLoaded;
+        protected bool PluginDataLoaded;
 
 
         private void Awake() {
-            ExtendedSaveFiles.SaveFileBeingLoaded += OnSaveFileBeingLoaded;
-            ExtendedSaveFiles.SaveFileBeingWritten += OnSaveFileBeingWritten;
+            Migrations.ApplicablesMigration.LoadingIsStarted += OnLoadingIsStarted;
+            Migrations.ApplicablesMigration.LoadingIsComplete += OnLoadingIsComplete;
 
             ExtendedSave.CardBeingLoaded += OnCardBeingLoaded;
             ExtendedSave.CardBeingSaved += OnCardBeingSaved;
@@ -60,8 +45,9 @@ namespace Ash.Core.Features.BetterApplicables.BaseComponents.Managers
         }
 
         private void OnDestroy() {
-            ExtendedSaveFiles.SaveFileBeingLoaded -= OnSaveFileBeingLoaded;
-            ExtendedSaveFiles.SaveFileBeingWritten -= OnSaveFileBeingWritten;
+            Migrations.ApplicablesMigration.LoadingIsStarted -= OnLoadingIsStarted;
+            Migrations.ApplicablesMigration.LoadingIsComplete -= OnLoadingIsComplete;
+
             ExtendedSave.CardBeingLoaded -= OnCardBeingLoaded;
             ExtendedSave.CardBeingSaved -= OnCardBeingSaved;
 
@@ -71,9 +57,9 @@ namespace Ash.Core.Features.BetterApplicables.BaseComponents.Managers
 
 
         internal SerializableTextureData[] GetSerializableTextureDataList(Human human, Part part) {
-            return human.sex == SEX.FEMALE
-                ? FemaleMultiTextureData[((Female)human).heroineID].GetValueOrDefaultValue(part, null)
-                : MaleMultiTextureData[((Male)human).maleID].GetValueOrDefaultValue(part, null);
+            return MultiTextureData
+                .GetValueOrDefaultValue(GetCustomParamByHuman(human), null)
+                ?.GetValueOrDefaultValue(part, null);
         }
 
         internal SerializableTextureData[] GetSerializableTextureDataListCopy(Human human, Part part) {
@@ -93,113 +79,83 @@ namespace Ash.Core.Features.BetterApplicables.BaseComponents.Managers
             throw new NotImplementedException();
         }
 
-
-        private void OnSaveFileBeingLoaded() {
-            ResetDictionaries();
-
-            var pluginData = ExtendedSaveFiles.GetDataById(PayloadId);
-            if (pluginData == null) {
-                Logger.LogDebug("No PluginData is found in this save file");
-                InitializeDictionariesWithVanillaData();
-                return;
-            }
-
-            foreach (var kvp in pluginData.Data) {
-                Ash.Logger.LogDebug($"PluginData key - {kvp.Key}");
-                switch (kvp.Key) {
-                    case nameof(FemaleMultiTextureData):
-                        FemaleMultiTextureData = ((JObject)kvp.Value)
-                            .ToObject<Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>>>();
-                        break;
-                    case nameof(MaleMultiTextureData):
-                        MaleMultiTextureData = ((JObject)kvp.Value)
-                            .ToObject<Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>>>();
-                        break;
-                    default:
-                        Logger.LogWarning($"Unknown data type {kvp.Key}");
-                        Logger.LogDebug($"Attempting to deserialize using known aliases for key \"{kvp.Key}\"");
-                        var femaleKeyAliases = new[] { "FemaleMultiEyeShadowData", "FemaleMultiTattooData" };
-                        var maleKeyAliases = new[] { "MaleMultiEyeShadowData", "MaleMultiTattooData" };
-                        if (femaleKeyAliases.Contains(kvp.Key)) {
-                            FemaleMultiTextureData = ((JObject)kvp.Value)
-                                .ToObject<Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>>>();
-
-                            Ash.Logger.LogDebug($"Successfully deserialized female data for key \"{kvp.Key}\"");
-                        }
-
-                        if (maleKeyAliases.Contains(kvp.Key)) {
-                            MaleMultiTextureData = ((JObject)kvp.Value)
-                                .ToObject<Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>>>();
-
-                            Ash.Logger.LogDebug($"Successfully deserialized female data for key \"{kvp.Key}\"");
-                        }
-                        break;
-                }
-            }
-
-            Logger.LogDebug("////////////////////////// FemaleMultiTextureData /////////////////////////////");
-            Logger.LogDebug($"FemaleMultiTextureData {SerializationUtils.JsonSerializeToString(FemaleMultiTextureData)}\n\n");
-
-            Logger.LogDebug("/////////////////////////// MaleMultiTextureData //////////////////////////////");
-            Logger.LogDebug($"MaleMultiTextureData {SerializationUtils.JsonSerializeToString(MaleMultiTextureData)}\n\n");
-
-            Logger.LogDebug("Extended data has been loaded");
-        }
-
-        private void OnSaveFileBeingWritten() {
-            var data = new ExtendedSaveFiles.PluginData {
-                Version = 0,
-                Data = new Dictionary<string, object> {
-                    [nameof(FemaleMultiTextureData)] = FemaleMultiTextureData,
-                    [nameof(MaleMultiTextureData)] = MaleMultiTextureData
-                }
-            };
-
-            ExtendedSaveFiles.SetPayload(PayloadId, data);
+        protected virtual void MigrateExtendedData(CustomParameter file) {
+            throw new NotImplementedException();
         }
 
 
         private void OnCardBeingLoaded(CustomParameter file) {
-            if (!MakerAPI.InsideMaker)
+            Logger.LogDebug($"OnCardBeingLoaded {(SaveLoadDataTracker.SexOfLoadingCharacter == SEX.FEMALE ? SaveLoadDataTracker.FemaleIdOfLoadingCharacter.ToString() : SaveLoadDataTracker.MaleIdOfLoadingCharacter.ToString())}");
+
+            if (Migrations.ApplicablesMigration.MigrationIsRequired) {
+                Logger.LogDebug($"Migrating extended data.");
+                MigrateExtendedData(file);
                 return;
+            }
 
             var pluginData = ExtendedSave.GetExtendedDataById(file, PayloadId);
             if (pluginData == null) {
                 PluginDataLoaded = false;
                 Logger.LogDebug("No PluginData is found in this card");
+                if (!MakerAPI.InsideMaker) InitializeDictionaryWithVanillaData(file);
                 return;
             }
 
-            foreach (var kvp in pluginData.data) {
-                var value = SerializationUtils.JsonDeserializeFromString<SerializableTextureData[]>((string)kvp.Value);
-                ExtDataFromTheCard?.Invoke((Part)Enum.Parse(typeof(Part), kvp.Key), value);
+            if (MakerAPI.InsideMaker) {
+                foreach (var kvp in pluginData.data) {
+                    var value = SerializationUtils.JsonDeserializeFromString<SerializableTextureData[]>((string)kvp.Value);
+                    ExtDataFromTheCard?.Invoke((Part)Enum.Parse(typeof(Part), kvp.Key), value);
+                }
             }
+            else {
+                var kvp = pluginData.data.ElementAt(0);
+                MultiTextureData[file] = SerializationUtils
+                    .JsonDeserializeFromString<Dictionary<Part, SerializableTextureData[]>>(kvp.Value.ToString());
 
-            PluginDataLoaded = true;
+                PluginDataLoaded = true;
 
-            Logger.LogDebug($"Extended texture data has been loaded");
+                Logger.LogDebug($"Extended texture data has been loaded");
+            }
         }
 
         private void OnCardBeingSaved(CustomParameter file) {
-            if (!MakerAPI.InsideMaker)
-                return;
+            Logger.LogDebug($"OnCardBeingSaved {(SaveLoadDataTracker.SexOfSavingCharacter == SEX.FEMALE ? SaveLoadDataTracker.FemaleIdOfSavingCharacter.ToString() : SaveLoadDataTracker.MaleIdOfSavingCharacter.ToString())}");
 
-            var dict = new Dictionary<string, object>();
-            var headData = GetUnsavedChanges(Part.Head);
-            var bodyData = GetUnsavedChanges(Part.Body);
-
-            if (headData != null)
-                dict.Add(nameof(Part.Head), SerializationUtils.JsonSerializeToString(headData));
-
-            if (bodyData != null)
-                dict.Add(nameof(Part.Body), SerializationUtils.JsonSerializeToString(bodyData));
-
-            var data = new PluginData {
+            var pluginData = new PluginData {
                 version = 0,
-                data = dict
+                data = new Dictionary<string, object>()
             };
+            if (MakerAPI.InsideMaker) {
+                var headData = GetUnsavedChanges(Part.Head);
+                var bodyData = GetUnsavedChanges(Part.Body);
 
-            ExtendedSave.SetExtendedDataById(file, PayloadId, data);
+                if (headData != null)
+                    pluginData.data.Add(nameof(Part.Head), SerializationUtils.JsonSerializeToString(headData));
+
+                if (bodyData != null)
+                    pluginData.data.Add(nameof(Part.Body), SerializationUtils.JsonSerializeToString(bodyData));
+            }
+            else {
+                pluginData.data.Add(
+                    SaveLoadDataTracker.SexOfSavingCharacter == SEX.FEMALE
+                        ? SaveLoadDataTracker.FemaleIdOfSavingCharacter.ToString()
+                        : SaveLoadDataTracker.MaleIdOfSavingCharacter.ToString(),
+                    SerializationUtils.JsonSerializeToString(MultiTextureData.GetValueOrDefaultValue(GetCustomParamOfSavingCharacter(), null))
+                );
+            }
+
+            ExtendedSave.SetExtendedDataById(file, PayloadId, pluginData);
+        }
+
+        private void OnLoadingIsStarted() {
+            Logger.LogDebug($"OnLoadingIsStarted");
+            ResetDictionaries();
+        }
+
+        private void OnLoadingIsComplete() {
+            Logger.LogDebug($"OnLoadingIsComplete");
+            Logger.LogDebug("/////////////////////////// MultiTextureData //////////////////////////////");
+            Logger.LogDebug($"MaleMultiTextureData {SerializationUtils.JsonSerializeToString(MultiTextureData)}\n\n");
         }
 
 
@@ -211,99 +167,71 @@ namespace Ash.Core.Features.BetterApplicables.BaseComponents.Managers
             ExtDataFromVanilla?.Invoke(Part.Head, convertedVanillaData?.GetValueOrDefaultValue(Part.Head, null));
         }
 
-
         private void ResetDictionaries() {
             Logger.LogDebug($"Resetting MultiTextureData dictionaries");
-            FemaleMultiTextureData =
-                new Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> {
-                    [HEROINE.RITSUKO] = new Dictionary<Part, SerializableTextureData[]>(),
-                    [HEROINE.AKIKO] = new Dictionary<Part, SerializableTextureData[]>(),
-                    [HEROINE.YUKIKO] = new Dictionary<Part, SerializableTextureData[]>(),
-                    [HEROINE.MARIKO] = new Dictionary<Part, SerializableTextureData[]>(),
-                };
-
-            MaleMultiTextureData =
-                new Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> {
-                    [MALE_ID.HERO] = new Dictionary<Part, SerializableTextureData[]>(),
-                    [MALE_ID.KOUICHI] = new Dictionary<Part, SerializableTextureData[]>(),
-                    [MALE_ID.MOB_A] = new Dictionary<Part, SerializableTextureData[]>(),
-                    [MALE_ID.MOB_B] = new Dictionary<Part, SerializableTextureData[]>(),
-                    [MALE_ID.MOB_C] = new Dictionary<Part, SerializableTextureData[]>(),
-                };
+            MultiTextureData.Clear();
         }
 
-        private void InitializeDictionariesWithVanillaData() {
+        protected void InitializeDictionaryWithVanillaData(CustomParameter file) {
             Logger.LogDebug("Initializing dictionaries with vanilla data");
-
-            foreach (var kvp in FemaleMultiTextureData)
-                InitFemaleEyeShadowData(GetCustomParamByHeroineId(kvp.Key), kvp.Key);
-
-            foreach (var kvp in MaleMultiTextureData)
-                InitMaleEyeShadowData(GetCustomParamByMaleId(kvp.Key), kvp.Key);
-
-            return;
-
-            void InitFemaleEyeShadowData(CustomParameter param, HEROINE heroineId) {
-                var data = CreateMultiTextureDataDict(param);
-                if (data == null) return;
-
-                FemaleMultiTextureData[heroineId][Part.Head] = data[Part.Head];
-            }
-
-            void InitMaleEyeShadowData(CustomParameter param, MALE_ID maleId) {
-                var data = CreateMultiTextureDataDict(param);
-                if (data == null) return;
-
-                MaleMultiTextureData[maleId][Part.Head] = data[Part.Head];
-            }
+            MultiTextureData[file] = CreateMultiTextureDataDict(file);
         }
 
+
+        protected static CustomParameter GetCustomParamByHuman(Human human) {
+            return human.sex == SEX.FEMALE
+                ? GetCustomParamByHeroineId(((Female)human).heroineID)
+                : GetCustomParamByMaleId(((Male)human).maleID);
+        }
+
+        protected static HEROINE GetHeroineIdByCustomParam(CustomParameter customParam) {
+            if (ReferenceEquals(customParam, GlobalData.PlayData.custom_ritsuko))
+                return HEROINE.RITSUKO;
+
+            if (ReferenceEquals(customParam, GlobalData.PlayData.custom_akiko))
+                return HEROINE.AKIKO;
+
+            if (ReferenceEquals(customParam, GlobalData.PlayData.custom_yukiko))
+                return HEROINE.YUKIKO;
+
+            if (ReferenceEquals(customParam, GlobalData.PlayData.custom_mariko))
+                return HEROINE.MARIKO;
+
+            return HEROINE.NUM;
+        }
+
+        protected static MALE_ID GetMaleIdByCustomParam(CustomParameter customParam) {
+            if (ReferenceEquals(customParam, GlobalData.PlayData.custom_hero))
+                return MALE_ID.HERO;
+
+            if (ReferenceEquals(customParam, GlobalData.PlayData.custom_kouichi))
+                return MALE_ID.KOUICHI;
+
+            if (ReferenceEquals(customParam, GlobalData.PlayData.custom_h_maleMobA))
+                return MALE_ID.MOB_A;
+
+            if (ReferenceEquals(customParam, GlobalData.PlayData.custom_h_maleMobB))
+                return MALE_ID.MOB_B;
+
+            if (ReferenceEquals(customParam, GlobalData.PlayData.custom_h_maleMobC))
+                return MALE_ID.MOB_C;
+
+            return MALE_ID.NUM;
+        }
+
+
+        private static CustomParameter GetCustomParamOfSavingCharacter() {
+            return SaveLoadDataTracker.SexOfSavingCharacter == SEX.FEMALE
+                ? GetCustomParamByHeroineId(SaveLoadDataTracker.FemaleIdOfSavingCharacter)
+                : GetCustomParamByMaleId(SaveLoadDataTracker.MaleIdOfSavingCharacter);
+        }
 
         private static CustomParameter GetCustomParamByHeroineId(HEROINE heroineId) {
-            if (MakerAPI.InsideMaker)
-                return MakerAPI.GetMakerBase().human.customParam;
-
-            switch (heroineId) {
-                case HEROINE.RITSUKO:
-                    return GlobalData.PlayData.custom_ritsuko;
-
-                case HEROINE.AKIKO:
-                    return GlobalData.PlayData.custom_akiko;
-
-                case HEROINE.YUKIKO:
-                    return GlobalData.PlayData.custom_yukiko;
-
-                case HEROINE.MARIKO:
-                    return GlobalData.PlayData.custom_mariko;
-
-                default:
-                    return null;
-            }
+            return GlobalData.PlayData.GetHeroineCustomParam(heroineId);
         }
 
         private static CustomParameter GetCustomParamByMaleId(MALE_ID maleId) {
-            if (MakerAPI.InsideMaker)
-                return MakerAPI.GetMakerBase().human.customParam;
-
-            switch (maleId) {
-                case MALE_ID.HERO:
-                    return GlobalData.PlayData.custom_hero;
-
-                case MALE_ID.KOUICHI:
-                    return GlobalData.PlayData.custom_kouichi;
-
-                case MALE_ID.MOB_A:
-                    return GlobalData.PlayData.custom_h_maleMobA;
-
-                case MALE_ID.MOB_B:
-                    return GlobalData.PlayData.custom_h_maleMobB;
-
-                case MALE_ID.MOB_C:
-                    return GlobalData.PlayData.custom_h_maleMobC;
-
-                default:
-                    return null;
-            }
+            return GlobalData.PlayData.GetMaleCustomParam(maleId);
         }
     }
 }

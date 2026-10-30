@@ -18,6 +18,8 @@ namespace Ash.Core
 
         internal static readonly AssetBundle BetterApplicablesShadersAssetBundle = AssetBundleUtils.LoadBundleFromResource("Ash.Resources.better_applicables_shaders");
 
+        internal static readonly AssetBundle StandaloneShadersAssetBundle = AssetBundleUtils.LoadBundleFromResource("Ash.Resources.standalone_shaders");
+
 
         internal static void InvalidateShaderCache() {
             ShaderCache.Clear();
@@ -47,6 +49,11 @@ namespace Ash.Core
                 ShaderName.TextureStackingShader,
                 BetterApplicablesShadersAssetBundle.LoadAsset<Shader>("assets/betterapplicables/shaders/texturestacking.shader")
             );
+
+            ShaderCache.Add(
+                ShaderName.BpExtendedTessellationOffsetCutout,
+                StandaloneShadersAssetBundle.LoadAsset<Shader>("assets/standaloneshaders/bpextendedtessellationoffsetcutout.shader")
+            );
         }
 
         internal enum ShaderName
@@ -54,7 +61,8 @@ namespace Ash.Core
             TextureStackingShader,
             SeparableBlur,
             FrostedGlass,
-            CircleMaskSdf
+            CircleMaskSdf,
+            BpExtendedTessellationOffsetCutout
         }
     }
 }

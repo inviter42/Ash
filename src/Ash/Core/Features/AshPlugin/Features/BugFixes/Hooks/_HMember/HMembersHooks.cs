@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using H;
 using HarmonyLib;
 
-namespace Ash.Core.Features.Fixes.Hooks._HMember
+namespace Ash.Core.Features.AshPlugin.Features.BugFixes.Hooks._HMember
 {
     [HarmonyPatch]
     internal class HMembersHooks
@@ -44,6 +44,5 @@ namespace Ash.Core.Features.Fixes.Hooks._HMember
 
             return false;
         }
-
     }
 }

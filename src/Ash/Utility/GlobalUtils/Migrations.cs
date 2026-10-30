@@ -2,7 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using Ash.Core.Features.BetterApplicables.BaseComponents.Managers.Shared;
+using Ash.Logging;
 using BepInEx;
+using Character;
+using HarmonyLib;
+using MessagePack;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Ash.Utility.GlobalUtils
@@ -231,6 +239,302 @@ namespace Ash.Utility.GlobalUtils
             }
 
             return new KeyValuePair<string, string>("", "");
+        }
+
+
+        internal static class ApplicablesMigration
+        {
+            internal static ApplicablesMigrationData ApplicablesMigrationDataInstance;
+
+            internal static event Action LoadingIsStarted;
+            internal static event Action LoadingIsComplete;
+
+            internal static bool MigrationIsRequired;
+
+            private static AshLogger Logger { get; } = new AshLogger(LoggingSettings.LoggingModules.ApplicablesMigrations);
+
+            private const uint AppendixMagicBytes = 0x415348;
+            private const uint AppendixEndMagicBytes = 0x454E44;
+
+            private static readonly Dictionary<string, PluginData> PluginDataDictFromSave = new Dictionary<string, PluginData>();
+
+
+            private static void FillExtDataDictionary(BinaryReader reader) {
+                var position = reader.BaseStream.Position;
+
+                if (!ReaderUtils.SeekByteSequence(reader, AppendixMagicBytes)) {
+                    Logger.LogWarning("Unable to find appendix magic bytes");
+                    return;
+                }
+
+                var version = reader.ReadUInt32();
+                Logger.LogDebug($"Version: {version}");
+
+                do {
+                    var kv = ReadSection(reader);
+                    if (kv.Key == null)
+                        break;
+                    PluginDataDictFromSave.Add(kv.Key, kv.Value);
+                } while (true);
+
+                MigrationIsRequired = true;
+
+                reader.BaseStream.Position = position;
+            }
+
+            private static ApplicablesMigrationData PrepareDictionaries() {
+                Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> femaleMultiTextureDataCheekShadows = null;
+                Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> maleMultiTextureDataCheekShadows = null;
+                Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> femaleMultiTextureDataEyeShadows = null;
+                Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> maleMultiTextureDataEyeShadows = null;
+                Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> femaleMultiTextureDataMoles = null;
+                Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> maleMultiTextureDataMoles = null;
+                Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> femaleMultiTextureDataTattoos = null;
+                Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> maleMultiTextureDataTattoos = null;
+
+                foreach (var payloadPair in PluginDataDictFromSave) {
+                    switch (payloadPair.Key) {
+                        case Ash.GUID + "_CheekShadowExtData":
+                        {
+                            RetrieveDictionariesByPayloadId(payloadPair.Key, out femaleMultiTextureDataCheekShadows, out maleMultiTextureDataCheekShadows);
+                            break;
+                        }
+
+                        case Ash.GUID + "_EyeShadowExtData":
+                        {
+                            RetrieveDictionariesByPayloadId(payloadPair.Key, out femaleMultiTextureDataEyeShadows, out maleMultiTextureDataEyeShadows);
+                            break;
+                        }
+
+                        case Ash.GUID + "_MoleExtData":
+                        {
+                            RetrieveDictionariesByPayloadId(payloadPair.Key, out femaleMultiTextureDataMoles, out maleMultiTextureDataMoles);
+                            break;
+                        }
+
+                        case Ash.GUID + "_TattooExtData":
+                        {
+                            RetrieveDictionariesByPayloadId(payloadPair.Key, out femaleMultiTextureDataTattoos, out maleMultiTextureDataTattoos);
+                            break;
+                        }
+
+                        default:
+                            throw new Exception("Unknown payload identifier, migration failed.");
+                    }
+                }
+
+                return new ApplicablesMigrationData(
+                    femaleMultiTextureDataCheekShadows,
+                    maleMultiTextureDataCheekShadows,
+                    femaleMultiTextureDataEyeShadows,
+                    maleMultiTextureDataEyeShadows,
+                    femaleMultiTextureDataMoles,
+                    maleMultiTextureDataMoles,
+                    femaleMultiTextureDataTattoos,
+                    maleMultiTextureDataTattoos
+                );
+            }
+
+            private static void RetrieveDictionariesByPayloadId(
+                string payloadId,
+                out Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> fDict,
+                out Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> mDict
+            ) {
+                fDict = null;
+                mDict = null;
+
+                var pluginData = PluginDataDictFromSave.TryGetValue(payloadId, out var data) ? data : null;
+                if (pluginData == null) {
+                    Logger.LogDebug($"No PluginData is found by this is id {payloadId}");
+                    return;
+                }
+
+                foreach (var kvp in pluginData.Data) {
+                    switch (kvp.Key) {
+                        case "FemaleMultiTextureData":
+                            fDict = ((JObject)kvp.Value)
+                                .ToObject<Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>>>();
+                            break;
+                        case "MaleMultiTextureData":
+                            mDict = ((JObject)kvp.Value)
+                                .ToObject<Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>>>();
+                            break;
+                        default:
+                        {
+                            Logger.LogWarning($"Unknown data type {kvp.Key}");
+                            Logger.LogDebug($"Attempting to deserialize using known aliases for key \"{kvp.Key}\"");
+                            var femaleKeyAliases = new[] { "FemaleMultiEyeShadowData", "FemaleMultiTattooData" };
+                            var maleKeyAliases = new[] { "MaleMultiEyeShadowData", "MaleMultiTattooData" };
+                            if (femaleKeyAliases.Contains(kvp.Key)) {
+                                fDict = ((JObject)kvp.Value)
+                                    .ToObject<Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>>>();
+
+                                Ash.Logger.LogDebug($"Successfully deserialized female data for key \"{kvp.Key}\"");
+                            }
+
+                            if (maleKeyAliases.Contains(kvp.Key)) {
+                                mDict = ((JObject)kvp.Value)
+                                    .ToObject<Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>>>();
+
+                                Ash.Logger.LogDebug($"Successfully deserialized male data for key \"{kvp.Key}\"");
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            private static KeyValuePair<string, PluginData> ReadSection(BinaryReader reader) {
+                try {
+                    var closingBytes = reader.ReadUInt32();
+                    if (closingBytes == AppendixEndMagicBytes) {
+                        Logger.LogDebug($"Reached closing bytes");
+                        return default;
+                    }
+
+                    reader.BaseStream.Position -= sizeof(uint);
+
+                    var sectionName = reader.ReadString();
+                    var length = reader.ReadInt32();
+
+                    if (sectionName.Length == 0 || length == 0) {
+                        Logger.LogDebug($"Reached end of file");
+                        return default;
+                    }
+
+                    var data = SerializationUtils.Deserialize<PluginData>(reader.ReadBytes(length));
+
+                    Logger.LogDebug($"Section '{sectionName}' deserialized successfully");
+
+                    return new KeyValuePair<string, PluginData>(sectionName, data);
+                }
+                catch (EndOfStreamException) {
+                    Logger.LogDebug($"Last section has been read");
+                    return default;
+                }
+                catch (Exception e) {
+                    Logger.LogError($"Unexpected exception has occured while trying to read magic bytes: {e}");
+                    throw;
+                }
+            }
+
+            internal class ApplicablesMigrationData
+            {
+                internal readonly Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> FemaleDataCheekShadows;
+                internal readonly Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> MaleDataCheekShadows;
+
+                internal readonly Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> FemaleDataEyeShadows;
+                internal readonly Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> MaleDataEyeShadows;
+
+                internal readonly Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> FemaleDataMoles;
+                internal readonly Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> MaleDataMoles;
+
+                internal readonly Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> FemaleDataTattoos;
+                internal readonly Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> MaleDataTattoos;
+
+                internal ApplicablesMigrationData(
+                    Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> femaleDataCheekShadows,
+                    Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> maleDataCheekShadows,
+                    Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> femaleDataEyeShadows,
+                    Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> maleDataEyeShadows,
+                    Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> femaleDataMoles,
+                    Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> maleDataMoles,
+                    Dictionary<HEROINE, Dictionary<Part, SerializableTextureData[]>> femaleDataTattoos,
+                    Dictionary<MALE_ID, Dictionary<Part, SerializableTextureData[]>> maleDataTattoos
+                ) {
+                    FemaleDataCheekShadows = femaleDataCheekShadows;
+                    MaleDataCheekShadows = maleDataCheekShadows;
+                    FemaleDataEyeShadows = femaleDataEyeShadows;
+                    MaleDataEyeShadows = maleDataEyeShadows;
+                    FemaleDataMoles = femaleDataMoles;
+                    MaleDataMoles = maleDataMoles;
+                    FemaleDataTattoos = femaleDataTattoos;
+                    MaleDataTattoos = maleDataTattoos;
+                }
+            }
+
+            // ReSharper disable once ClassNeverInstantiated.Local
+            private class PluginData
+            {
+                [Key(0)] public int Version = 0;
+                [Key(1)] public Dictionary<string, object> Data = new Dictionary<string, object>();
+            }
+
+            [HarmonyPatch]
+            internal class ApplicablesMigrationHooks
+            {
+                [HarmonyPrefix]
+                [HarmonyPatch(typeof(GamePlayData), nameof(GamePlayData.Load), typeof(string))]
+                // ReSharper disable once InconsistentNaming
+                internal static bool GamePlayDataLoadPrefix(GamePlayData __instance, string path) {
+                    LoadingIsStarted?.Invoke();
+
+                    PluginDataDictFromSave.Clear();
+                    MigrationIsRequired = false;
+
+                    FileStream input;
+                    try {
+                        input = File.OpenRead(path);
+                    }
+                    catch {
+                        return false;
+                    }
+
+                    var reader = new BinaryReader(input);
+
+                    if (!__instance.header.Load(reader)) {
+                        input.Close();
+                        return false;
+                    }
+
+                    Logger.LogDebug($"Path {path}, Comment {__instance.header.comment}");
+
+                    FillExtDataDictionary(reader);
+
+                    input.Close();
+
+                    if (!MigrationIsRequired)
+                        return true;
+
+                    Logger.LogDebug("Initiating applicables migration");
+
+                    ApplicablesMigrationDataInstance = PrepareDictionaries();
+
+                    return true;
+                }
+
+                [HarmonyPostfix]
+                [HarmonyPatch(typeof(GamePlayData), nameof(GamePlayData.Load), typeof(string))]
+                // ReSharper disable once InconsistentNaming
+                internal static void GamePlayDataLoadPostfix(GamePlayData __instance, string path) {
+                    LoadingIsComplete?.Invoke();
+
+                    if (MigrationIsRequired) {
+                        Ash.Logger.LogDebug($"Resaving the file {__instance.header.comment}");
+                        GlobalData.PlayData.Save(path, __instance.header.comment); // trigger save to migrate data
+                    }
+                }
+
+                /// Replaces File.OpenWrite with File.Create to ensure file is flushed prior to writing
+                [HarmonyTranspiler]
+                [HarmonyPatch(typeof(GamePlayData), nameof(GamePlayData.Save), typeof(string), typeof(string))]
+                internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                    var codes = new List<CodeInstruction>(instructions);
+                    foreach (var code in codes) {
+                        if (code.opcode == OpCodes.Call &&
+                            code.operand is MethodInfo method &&
+                            method.DeclaringType == typeof(File) &&
+                            method.Name == nameof(File.OpenWrite))
+                        {
+                            code.operand = AccessTools.Method(typeof(File), nameof(File.Create), new[] { typeof(string) });
+                            break;
+                        }
+                    }
+
+                    return codes.AsEnumerable();
+                }
+            }
         }
     }
 }

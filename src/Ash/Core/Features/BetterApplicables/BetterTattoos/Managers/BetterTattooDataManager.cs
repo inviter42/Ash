@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Ash.Core.Features.BetterApplicables.BaseComponents.Managers;
 using Ash.Core.Features.BetterApplicables.BaseComponents.Managers.Shared;
 using Ash.Core.Features.BetterApplicables.SharedComponents;
@@ -18,13 +19,12 @@ namespace Ash.Core.Features.BetterApplicables.BetterTattoos.Managers
 
         internal override void RecordExtendedData() {
             var human = MakerAPI.GetMakerBase().human;
-            if (human.sex == SEX.FEMALE) {
-                FemaleMultiTextureData[((Female)human).heroineID][Part.Head] = Ash.BetterTattooMakerExtensionHead.UnsavedChanges;
-                FemaleMultiTextureData[((Female)human).heroineID][Part.Body] = Ash.BetterTattooMakerExtensionBody.UnsavedChanges;
-            } else {
-                MaleMultiTextureData[((Male)human).maleID][Part.Head] = Ash.BetterTattooMakerExtensionHead.UnsavedChanges;
-                MaleMultiTextureData[((Male)human).maleID][Part.Body] = Ash.BetterTattooMakerExtensionBody.UnsavedChanges;
-            }
+
+            if (MultiTextureData.TryGetValue(GetCustomParamByHuman(human), out var dictHead))
+                dictHead[Part.Head] = Ash.BetterTattooMakerExtensionHead.UnsavedChanges;
+
+            if (MultiTextureData.TryGetValue(GetCustomParamByHuman(human), out var dictBody))
+                dictBody[Part.Body] = Ash.BetterTattooMakerExtensionBody.UnsavedChanges;
 
             ApplicablesTextureCaches.UpdateTextureCache(
                 BetterCategory.Tattoo,
@@ -90,6 +90,24 @@ namespace Ash.Core.Features.BetterApplicables.BetterTattoos.Managers
                 [Part.Head] = headArray,
                 [Part.Body] = bodyArray
             };
+        }
+
+        protected override void MigrateExtendedData(CustomParameter file) {
+            var migrationData = file.sex == SEX.FEMALE
+                ? Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.FemaleDataTattoos.GetValueOrDefaultValue(GetHeroineIdByCustomParam(file), null)
+                : Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.MaleDataTattoos.GetValueOrDefaultValue(GetMaleIdByCustomParam(file), null);
+
+            if (migrationData == null || migrationData.All(kvp => kvp.Value == null || kvp.Value.All(e => e == null))) {
+                PluginDataLoaded = false;
+                Logger.LogDebug("No PluginData is found in this card");
+                InitializeDictionaryWithVanillaData(file);
+                return;
+            }
+
+
+            MultiTextureData[file] = migrationData;
+
+            Logger.LogDebug($"Extended texture data has been loaded");
         }
     }
 }

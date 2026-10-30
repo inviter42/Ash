@@ -1,10 +1,10 @@
-﻿Shader "Hidden/TattooStacking"
+﻿Shader "Hidden/TextureStacking"
 {
     Properties
     {
         _MainTex ("Accumulated Canvas", 2D) = "white" {}
-        _TattooTex ("Tattoo", 2D) = "white" {}
-        _Color ("Tattoo Color", Color) = (1,1,1,1)
+        _ApplicableTex ("Applicable", 2D) = "white" {}
+        _Tint ("Tint", Color) = (1,1,1,1)
     }
     SubShader
     {
@@ -29,9 +29,9 @@
             };
 
             sampler2D _MainTex;
-            sampler2D _TattooTex;
-            float4 _TattooTex_ST;
-            fixed4 _Color;
+            sampler2D _ApplicableTex;
+            float4 _ApplicableTex_ST;
+            fixed4 _Tint;
 
             v2f vert (appdata v) {
                 v2f o;
@@ -43,27 +43,27 @@
             fixed4 frag (v2f i) : SV_Target {
                 fixed4 baseCanvas = tex2D(_MainTex, i.uv);
 
-                float2 tattooUV = TRANSFORM_TEX(i.uv, _TattooTex);
+                float2 applicableUV = TRANSFORM_TEX(i.uv, _ApplicableTex);
 
-                if (tattooUV.x < 0.0 || tattooUV.x > 1.0 || tattooUV.y < 0.0 || tattooUV.y > 1.0) {
+                if (applicableUV.x < 0.0 || applicableUV.x > 1.0 || applicableUV.y < 0.0 || applicableUV.y > 1.0) {
                     return baseCanvas;
                 }
 
-                fixed4 tattooCol = tex2D(_TattooTex, tattooUV);
+                fixed4 tint = tex2D(_ApplicableTex, applicableUV);
 
-                fixed3 incomingRGB = tattooCol.rgb * _Color.rgb;
-                float incomingAlpha = tattooCol.a * _Color.a;
+                fixed3 incomingRgb = tint.rgb * _Tint.rgb;
+                float incomingAlpha = tint.a * _Tint.a;
 
                 // we have to do alpha pre-multiplication, because the canvas buffer (rtA) is pre-cleared with transparent black
                 // doing straight alpha approach will result in an incorrect alpha-blending between the canvas and the tattoo
                 float finalAlpha = incomingAlpha + baseCanvas.a * (1.0 - incomingAlpha);
 
-                fixed3 finalRGB = baseCanvas.rgb;
+                fixed3 finalRgb = baseCanvas.rgb;
                 if (finalAlpha > 0.0) {
-                    finalRGB = (incomingRGB * incomingAlpha + baseCanvas.rgb * baseCanvas.a * (1.0 - incomingAlpha)) / finalAlpha;
+                    finalRgb = (incomingRgb * incomingAlpha + baseCanvas.rgb * baseCanvas.a * (1.0 - incomingAlpha)) / finalAlpha;
                 }
 
-                return fixed4(finalRGB, finalAlpha);
+                return fixed4(finalRgb, finalAlpha);
             }
             ENDCG
         }

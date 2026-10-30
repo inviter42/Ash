@@ -22,15 +22,16 @@ namespace Ash.Logging
             GameUIControls,
             HSceneControls,
             HSceneSettings,
+            BugFixes,
             AnimationControls,
             ImmersiveUI,
             ItemsVisibilityControls,
             SceneManagement,
-            PhExtendedSaveFiles,
             HMembersHooks,
             HumanHooks,
             WearablesHooks,
-            BetterPenetration
+            BetterPenetration,
+            ApplicablesMigrations
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Ash.Core.Features.BetterApplicables.BaseComponents.Managers;
 using Ash.Core.Features.BetterApplicables.BaseComponents.Managers.Shared;
 using Ash.Core.Features.BetterApplicables.SharedComponents;
@@ -18,11 +19,9 @@ namespace Ash.Core.Features.BetterApplicables.BetterCheekShadows.Managers
 
         internal override void RecordExtendedData() {
             var human = MakerAPI.GetMakerBase().human;
-            if (human.sex == SEX.FEMALE) {
-                FemaleMultiTextureData[((Female)human).heroineID][Part.Head] = Ash.BetterCheekShadowMakerExtensionHead.UnsavedChanges;
-            } else {
-                MaleMultiTextureData[((Male)human).maleID][Part.Head] = Ash.BetterCheekShadowMakerExtensionHead.UnsavedChanges;
-            }
+
+            if (MultiTextureData.TryGetValue(GetCustomParamByHuman(human), out var dict))
+                dict[Part.Head] = Ash.BetterCheekShadowMakerExtensionHead.UnsavedChanges;
 
             ApplicablesTextureCaches.UpdateTextureCache(
                 BetterCategory.CheekShadow,
@@ -61,6 +60,25 @@ namespace Ash.Core.Features.BetterApplicables.BetterCheekShadows.Managers
             return new Dictionary<Part, SerializableTextureData[]> {
                 [Part.Head] = headArray
             };
+        }
+
+        protected override void MigrateExtendedData(CustomParameter file) {
+            var migrationData = file.sex == SEX.FEMALE
+                ? Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.FemaleDataCheekShadows.GetValueOrDefaultValue(GetHeroineIdByCustomParam(file), null)
+                : Migrations.ApplicablesMigration.ApplicablesMigrationDataInstance.MaleDataCheekShadows.GetValueOrDefaultValue(GetMaleIdByCustomParam(file), null);
+
+            if (migrationData == null || migrationData.All(kvp => kvp.Value == null || kvp.Value.All(e => e == null))) {
+                PluginDataLoaded = false;
+                Logger.LogDebug("No PluginData is found in this card");
+                InitializeDictionaryWithVanillaData(file);
+                return;
+            }
+
+
+
+            MultiTextureData[file] = migrationData;
+
+            Logger.LogDebug($"Extended texture data has been loaded");
         }
     }
 }

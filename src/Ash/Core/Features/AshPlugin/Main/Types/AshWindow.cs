@@ -12,7 +12,7 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
         private int SelectedTabIndex { get; set; }
         private string[] ToolbarTabs { get; set; } = { };
 
-        public float windowWidth = 680;
+        public float windowWidth = 980;
         public float windowHeight = 600;
 
         protected abstract string[] SetTabsModel();
@@ -50,7 +50,6 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
 
         protected override void DrawContents() {
             ToolbarTabs = SetTabsModel();
-            SelectedTabIndex = GUILayout.Toolbar(SelectedTabIndex, ToolbarTabs, CommonImGuiStyles.ToolbarStyle);
 
             var tabViewsModel = SetTabViewsModel();
             if (tabViewsModel.Count == 0) {
@@ -58,7 +57,20 @@ namespace Ash.Core.Features.AshPlugin.Main.Types
                 return;
             }
 
+            GUILayout.BeginHorizontal();
+
+            GUILayout.BeginVertical(GUILayout.Width(windowWidth * 0.25f));
+            SelectedTabIndex = GUILayout.SelectionGrid(SelectedTabIndex, ToolbarTabs, 1, ImGuiPrimitivesLib.VerticalTabsStyle);
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical(GUILayout.Width(10));
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical();
             tabViewsModel[SelectedTabIndex].Invoke();
+            GUILayout.EndVertical();
+
+            GUILayout.EndHorizontal();
         }
 
         // Verbatim from KKAPI.Utilities

@@ -102,6 +102,9 @@
       <HintPath>..\packages\ExtensibleSaveFormat.PlayHome.21.1.2\lib\net35\PH_ExtensibleSaveFormat.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PH_MaterialEditor, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MaterialEditor.PlayHome.5.0.0\lib\net35\PH_MaterialEditor.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -136,6 +139,9 @@
     <Compile Include="Core\Features\AshPlugin\Features\AnimationControls\Hooks\_MixController\MixControllerHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\AnimationControls\UI\AnimationControlsView\AnimationControlsView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\BetterPenetrationSettings\UI\BetterPenetrationSettingsView\BetterPenetrationSettingsView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\BugFixes\Hooks\_Female\FemaleHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\BugFixes\Hooks\_HMember\HMembersHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\BugFixes\UI\BugFixesView\BugFixesView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\GameUIControlsView\GameUIControlsView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIAdjustments.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIManagementHelper.cs" />
@@ -151,6 +157,7 @@
     <Compile Include="Core\Features\AshPlugin\Features\HSceneCustomization\Hooks\_HState\HStatePreTouchWaitHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\HSceneCustomization\Hooks\_HState\HStateStartHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\HSceneCustomization\UI\HSceneCustomizationView\HSceneCustomizationView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneCustomization\_MaterialEditor\MaterialEditorInjector.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_Female\FemaleHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_HMembers\HMembersHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\ItemsCoordinator\Hooks\_Wearables\AccessoriesHooks.cs" />
@@ -222,8 +229,6 @@
     <Compile Include="Core\Features\BetterPenetration\Hooks\_HMembers\HMembersHooks.cs" />
     <Compile Include="Core\Features\BetterPenetration\Hooks\_IKControl\IKControlHooks.cs" />
     <Compile Include="Core\Features\BetterPenetration\Hooks\_Male\MaleHooks.cs" />
-    <Compile Include="Core\Features\Fixes\Hooks\_Female\FemaleHooks.cs" />
-    <Compile Include="Core\Features\Fixes\Hooks\_HMember\HMembersHooks.cs" />
     <Compile Include="Core\Features\ImmersiveUI\CommandBufferBlur.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Components\Config\GenericComponentsConfig.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Components\Generic\RoundButton.cs" />
@@ -290,6 +295,7 @@
     <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Textures\WearsMenuTextures.cs" />
     <Compile Include="Core\Features\ImmersiveUI\State\IuiMainStateControl.cs" />
     <Compile Include="Core\GlobalPluginData.cs" />
+    <Compile Include="Core\Tooling\SaveLoadManagement\SaveLoadDataTracker.cs" />
     <Compile Include="Core\Tooling\SceneManagement\Hooks\_Female\FemaleHooks.cs" />
     <Compile Include="Core\Tooling\SceneManagement\Hooks\_Male\MaleHooks.cs" />
     <Compile Include="Core\Tooling\SceneManagement\Hooks\_SceneControl\SceneControlHooks.cs" />
@@ -312,7 +318,9 @@
     <Compile Include="Utility\GlobalUtils\IO.cs" />
     <Compile Include="Utility\GlobalUtils\Migrations.cs" />
     <Compile Include="Utility\GlobalUtils\ParticleSystemsUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\ReaderUtils.cs" />
     <Compile Include="Utility\GlobalUtils\SceneUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\SerializationUtils.cs" />
     <Compile Include="Utility\GlobalUtils\TextureUtils.cs" />
     <Compile Include="Utility\GlobalUtils\TransformUtils.cs" />
     <Compile Include="Utility\GlobalUtils\VectorUtils.cs" />
@@ -333,22 +341,15 @@
     <EmbeddedResource Include="Resources\immersive_ui_icons" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Core\Features\BetterApplicables\SharedShaders\TattooStacking.shader" />
     <Content Include="Core\Features\ImmersiveUI\Shaders\FrostedGlass.shader" />
     <Content Include="Core\Features\ImmersiveUI\Shaders\SeparableBlur.shader" />
+    <EmbeddedResource Include="Resources\standalone_shaders" />
     <EmbeddedResource Include="Resources\better_applicables_shaders" />
     <EmbeddedResource Include="Resources\immersive_ui_thumbnails" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\Features\BetterApplicables\SharedHooks\" />
-    <Folder Include="Core\Tooling\" />
     <Folder Include="Utility\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PhExtendedSaveFiles\PhExtendedSaveFiles.csproj">
-      <Project>{3dc5ce48-d9cb-4286-8b19-fc4ea92f5d5e}</Project>
-      <Name>PhExtendedSaveFiles</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

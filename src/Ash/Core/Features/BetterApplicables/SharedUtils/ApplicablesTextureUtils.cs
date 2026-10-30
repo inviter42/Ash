@@ -50,7 +50,7 @@ namespace Ash.Core.Features.BetterApplicables.SharedUtils
                 mat.SetColor(colorId, Color.white);
             }
             else {
-                AshLogger.LogDebug(LoggingSettings.LoggingModules.HumanHooks, $"[{(shape.human.sex == SEX.FEMALE ? "Female" : "Male")}] Multi-texture {category} rendering branch");
+                AshLogger.LogDebug(LoggingSettings.LoggingModules.HumanHooks, $"[{(shape.human.sex == SEX.FEMALE ? "Female" : "Male")}] Default {category} rendering branch");
                 var data = dataArray?.FirstOrDefault(d => d != null);
                 var textureAsset = GetTextureAsset(data);
                 var tint = data?.Tint ?? Color.clear;
