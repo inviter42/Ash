@@ -1,17 +1,16 @@
 using Character;
 
-namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types
-{
-    internal class ItemAccessoryFormData
-    {
-        internal readonly int SlotNo;
-        internal readonly AccessoryParameter AccessoryParameter;
-        internal readonly AccessoryData AccessoryData;
+namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Types;
 
-        internal ItemAccessoryFormData(int slotNo, AccessoryParameter accessoryParameter, AccessoryData accessoryData) {
-            SlotNo = slotNo;
-            AccessoryParameter = accessoryParameter;
-            AccessoryData = accessoryData;
-        }
+internal class ItemAccessoryFormData
+{
+    internal readonly int SlotNo;
+    internal readonly AccessoryParameter AccessoryParameter;
+    internal readonly AccessoryData AccessoryData;
+
+    internal ItemAccessoryFormData(int slotNo, AccessoryParameter accessoryParameter, AccessoryData accessoryData) {
+        SlotNo = slotNo;
+        AccessoryParameter = accessoryParameter;
+        AccessoryData = accessoryData;
     }
 }

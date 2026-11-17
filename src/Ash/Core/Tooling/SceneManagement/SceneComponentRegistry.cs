@@ -3,24 +3,23 @@ using System.Linq;
 using Ash.Logging;
 using UnityEngine;
 
-namespace Ash.Core.Tooling.SceneManagement
+namespace Ash.Core.Tooling.SceneManagement;
+
+internal static class SceneComponentRegistry
 {
-    internal static class SceneComponentRegistry
-    {
-        private static List<Component> ComponentRegistry { get; } = new List<Component>();
+    private static List<Component> ComponentRegistry { get; } = new();
 
-        internal static void RegisterComponent(Component component) {
-            AshLogger.LogDebug(LoggingSettings.LoggingModules.SceneManagement, $"Register component {component}");
-            ComponentRegistry.Add(component);
-        }
+    internal static void RegisterComponent(Component component) {
+        AshLogger.LogDebug(LoggingSettings.LoggingModules.SceneManagement, $"Register component {component}");
+        ComponentRegistry.Add(component);
+    }
 
-        internal static void UnregisterComponent(Component component) {
-            AshLogger.LogDebug(LoggingSettings.LoggingModules.SceneManagement, $"Unregister component {component}");
-            ComponentRegistry.Remove(component);
-        }
+    internal static void UnregisterComponent(Component component) {
+        AshLogger.LogDebug(LoggingSettings.LoggingModules.SceneManagement, $"Unregister component {component}");
+        ComponentRegistry.Remove(component);
+    }
 
-        internal static IEnumerable<T> GetComponentsOfType<T>() where T : Component {
-            return ComponentRegistry.OfType<T>();
-        }
+    internal static IEnumerable<T> GetComponentsOfType<T>() where T : Component {
+        return ComponentRegistry.OfType<T>();
     }
 }

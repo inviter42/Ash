@@ -5,73 +5,72 @@ using UnityEngine;
 using static Ash.Utility.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.AshPlugin.Common.Misc.CommonLabels;
 
-namespace Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.GameUIControlsView
+namespace Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.GameUIControlsView;
+
+internal class GameUIControlsView
 {
-    internal class GameUIControlsView
-    {
-        // Tab Labels
-        internal const string UIControlsLabel = "UI Settings";
+    // Tab Labels
+    internal const string UIControlsLabel = "UI Settings";
 
-        private const string ImmersiveUiTitle = "Immersive UI";
-        private const string GlobalSettingsTitle = "Global Settings";
+    private const string ImmersiveUiTitle = "Immersive UI";
+    private const string GlobalSettingsTitle = "Global Settings";
 
-        private const string SceneUiSubtitle = "Scene UI";
-        private const string ConfineCursorSubtitle = "Confine cursor to window (multi-monitor fix)";
-        private const string ThumbnailBgRemovalSubtitle = "[Requires restart] Remove background from thumbnails";
+    private const string SceneUiSubtitle = "Scene UI";
+    private const string ConfineCursorSubtitle = "Confine cursor to window (multi-monitor fix)";
+    private const string ThumbnailBgRemovalSubtitle = "[Requires restart] Remove background from thumbnails";
 
-        private static readonly Dictionary<bool, string> SceneUILabels = new Dictionary<bool, string> {
-            [true] = "Immersive",
-            [false] = "Default"
-        };
+    private static readonly Dictionary<bool, string> SceneUILabels = new() {
+        [true] = "Immersive",
+        [false] = "Default"
+    };
 
-        // ReSharper disable once MemberCanBeMadeStatic.Global
-        internal void DrawView() {
-            using (new GUILayout.VerticalScope("box")) {
-                Title(ImmersiveUiTitle);
+    // ReSharper disable once MemberCanBeMadeStatic.Global
+    internal void DrawView() {
+        using (new GUILayout.VerticalScope("box")) {
+            Title(ImmersiveUiTitle);
 
-                Subtitle(SceneUiSubtitle);
-                Flow(
-                    new[] { true, false },
-                    (state, idx) => RadioButton(SceneUILabels.GetValueOrDefaultValue(state, ErrorLabel),
-                        Ash.PersistentSettings.IsImmersiveUiEnabled.Value == state,
-                        () => {
-                            if (Ash.PersistentSettings.IsImmersiveUiEnabled.Value == state)
-                                return;
+            Subtitle(SceneUiSubtitle);
+            Flow(
+                new[] { true, false },
+                (state, _) => RadioButton(SceneUILabels.GetValueOrDefaultValue(state, ErrorLabel),
+                    Ash.PersistentSettings.IsImmersiveUiEnabled.Value == state,
+                    () => {
+                        if (Ash.PersistentSettings.IsImmersiveUiEnabled.Value == state)
+                            return;
 
-                            Ash.PersistentSettings.IsImmersiveUiEnabled.Value = state;
+                        Ash.PersistentSettings.IsImmersiveUiEnabled.Value = state;
 
-                            if (state) {
-                                Ash.AshUI.CreateImmersiveUI();
-                                InGameUIManagementHelper.SwitchToImmersiveUIMode();
-                            }
-                            else {
-                                Ash.AshUI.DestroyImmersiveUI();
-                                InGameUIManagementHelper.SwitchToDefaultUIMode();
-                            }
+                        if (state) {
+                            Ash.AshUI.CreateImmersiveUI();
+                            InGameUIManagementHelper.SwitchToImmersiveUIMode();
                         }
-                    )
-                );
+                        else {
+                            Ash.AshUI.DestroyImmersiveUI();
+                            InGameUIManagementHelper.SwitchToDefaultUIMode();
+                        }
+                    }
+                )
+            );
 
-                Subtitle(ThumbnailBgRemovalSubtitle);
-                Flow(
-                    new[] { true, false },
-                    (state, idx) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                        Ash.PersistentSettings.ThumbnailBackgroundRemovalEnabled.Value == state,
-                        () => Ash.PersistentSettings.ThumbnailBackgroundRemovalEnabled.Value = state)
-                );
+            Subtitle(ThumbnailBgRemovalSubtitle);
+            Flow(
+                new[] { true, false },
+                (state, _) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
+                    Ash.PersistentSettings.ThumbnailBackgroundRemovalEnabled.Value == state,
+                    () => Ash.PersistentSettings.ThumbnailBackgroundRemovalEnabled.Value = state)
+            );
 
-                GUILayout.Space(20);
+            GUILayout.Space(20);
 
-                Title(GlobalSettingsTitle);
+            Title(GlobalSettingsTitle);
 
-                Subtitle(ConfineCursorSubtitle);
-                Flow(
-                    new[] { true, false },
-                    (state, idx) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                        Ash.PersistentSettings.ConfineCursorToWindowEnabled.Value == state,
-                        () => Ash.PersistentSettings.ConfineCursorToWindowEnabled.Value = state)
-                );
-            }
+            Subtitle(ConfineCursorSubtitle);
+            Flow(
+                new[] { true, false },
+                (state, _) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
+                    Ash.PersistentSettings.ConfineCursorToWindowEnabled.Value == state,
+                    () => Ash.PersistentSettings.ConfineCursorToWindowEnabled.Value = state)
+            );
         }
     }
 }

@@ -4,49 +4,48 @@ using H;
 using Newtonsoft.Json;
 using OneOf;
 
-namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Types
+namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Types;
+
+internal class HPosRuleSet : IEquatable<HPosRuleSet>
 {
-    internal class HPosRuleSet : IEquatable<HPosRuleSet>
-    {
-        [JsonProperty("HPosItem")]
-        internal readonly OneOf<BaseItem, WEAR_SHOW_TYPE> HPosItem;
+    [JsonProperty("HPosItem")]
+    internal readonly OneOf<BaseItem, WEAR_SHOW_TYPE> HPosItem;
 
-        [JsonProperty("HPosStyle")]
-        internal readonly OneOf<H_StyleData.TYPE, HStyleDetail> HPosStyle;
+    [JsonProperty("HPosStyle")]
+    internal readonly OneOf<H_StyleData.TYPE, HStyleDetail> HPosStyle;
 
-        [JsonConstructor]
-        internal HPosRuleSet(OneOf<BaseItem, WEAR_SHOW_TYPE> hPosItem,
-            OneOf<H_StyleData.TYPE, HStyleDetail> hPosStyle) {
-            HPosItem = hPosItem;
-            HPosStyle = hPosStyle;
+    [JsonConstructor]
+    internal HPosRuleSet(OneOf<BaseItem, WEAR_SHOW_TYPE> hPosItem,
+        OneOf<H_StyleData.TYPE, HStyleDetail> hPosStyle) {
+        HPosItem = hPosItem;
+        HPosStyle = hPosStyle;
+    }
+
+    public bool Equals(HPosRuleSet other) {
+        if (other is null)
+            return false;
+
+        return HPosItem.Equals(other.HPosItem) && HPosStyle.Equals(other.HPosStyle);
+    }
+
+    public override bool Equals(object obj) {
+        return obj is HPosRuleSet other && Equals(other);
+    }
+
+    public override int GetHashCode() {
+        unchecked {
+            return (HPosItem.GetHashCode() * 397) ^ HPosStyle.GetHashCode();
         }
+    }
 
-        public bool Equals(HPosRuleSet other) {
-            if (other is null)
-                return false;
+    public static bool operator ==(HPosRuleSet left, HPosRuleSet right) {
+        if (left is null)
+            return right is null;
 
-            return HPosItem.Equals(other.HPosItem) && HPosStyle.Equals(other.HPosStyle);
-        }
+        return left.Equals(right);
+    }
 
-        public override bool Equals(object obj) {
-            return obj is HPosRuleSet other && Equals(other);
-        }
-
-        public override int GetHashCode() {
-            unchecked {
-                return (HPosItem.GetHashCode() * 397) ^ HPosStyle.GetHashCode();
-            }
-        }
-
-        public static bool operator ==(HPosRuleSet left, HPosRuleSet right) {
-            if (left is null)
-                return right is null;
-
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(HPosRuleSet left, HPosRuleSet right) {
-            return !(left == right);
-        }
+    public static bool operator !=(HPosRuleSet left, HPosRuleSet right) {
+        return !(left == right);
     }
 }

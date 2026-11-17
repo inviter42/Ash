@@ -1,16 +1,15 @@
 using HarmonyLib;
 
-namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Hooks._Female
+namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Hooks._Female;
+
+[HarmonyPatch]
+internal class FemaleHooks
 {
-    [HarmonyPatch]
-    internal class FemaleHooks
-    {
-        // Female instance is ready
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(Female), nameof(Female.Start))]
-        // ReSharper disable once InconsistentNaming
-        internal static void FemaleStartPostfix(Female __instance) {
-            ItemsCoordinator.ApplyRules(__instance, RulesManager.InterItemRuleSets);
-        }
+    // Female instance is ready
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(Female), nameof(Female.Start))]
+    // ReSharper disable once InconsistentNaming
+    internal static void FemaleStartPostfix(Female __instance) {
+        ItemsCoordinator.ApplyRules(__instance, RulesManager.InterItemRuleSets);
     }
 }

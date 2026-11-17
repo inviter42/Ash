@@ -4,22 +4,21 @@ using Ash.Core.Tooling.SceneManagement;
 using Illusion.Extensions;
 using static Ash.Utility.GlobalUtils.ImGuiPrimitivesLib;
 
-namespace Ash.Core.Features.AshPlugin.Common.Components
-{
-    internal static class FemaleSelectionComponent
-    {
-        private const string ChooseFemaleSubtitle = "Select female:";
+namespace Ash.Core.Features.AshPlugin.Common.Components;
 
-        internal static void Component(Female activeFemale, Action<Female> callback) {
-            // Female selection
-            Subtitle(ChooseFemaleSubtitle);
-            Flow(
-                SceneComponentRegistry.GetComponentsOfType<Female>().ToArray(),
-                (female, idx) => RadioButton(
-                    female.HeroineID.ToString().ToLower().ToTitleCase(),
-                    activeFemale.heroineID == female.heroineID,
-                    () => callback(female))
-            );
-        }
+internal static class FemaleSelectionComponent
+{
+    private const string ChooseFemaleSubtitle = "Select female:";
+
+    internal static void Component(Female activeFemale, Action<Female> callback) {
+        // Female selection
+        Subtitle(ChooseFemaleSubtitle);
+        Flow(
+            SceneComponentRegistry.GetComponentsOfType<Female>().ToArray(),
+            (female, idx) => RadioButton(
+                female.HeroineID.ToString().ToLower().ToTitleCase(),
+                activeFemale.heroineID == female.heroineID,
+                () => callback(female))
+        );
     }
 }

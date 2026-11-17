@@ -4,35 +4,34 @@ using BetterApplicablesStudio.Core.BetterApplicables.BaseComponents.Managers.Sha
 using Character;
 using UnityEngine;
 
-namespace BetterApplicablesStudio.Core.BetterApplicables.BetterCheekShadows.Managers
+namespace BetterApplicablesStudio.Core.BetterApplicables.BetterCheekShadows.Managers;
+
+internal class BetterCheekShadowDataManager : ApplicableDataManagerBase
 {
-    internal class BetterCheekShadowDataManager : ApplicableDataManagerBase
-    {
-        protected override string PayloadId => BetterApplicablesStudio.AshGUID + "_CheekShadowExtData";
+    protected override string PayloadId => BetterApplicablesStudio.AshGuid + "_CheekShadowExtData";
 
-        protected override Dictionary<Part, SerializableTextureData[]> CreateMultiTextureDataDict(CustomParameter param) {
-            var combinedTextureDataFace = param.sex == SEX.FEMALE
-                // ReSharper disable once ConditionalTernaryEqualBranch
-                ? CustomDataManager.GetCheek(param.head.cheekTexID)
-                : CustomDataManager.GetCheek(param.head.cheekTexID); // if we want to add cheek-shadows to males, it needs a custom getter!
+    protected override Dictionary<Part, SerializableTextureData[]> CreateMultiTextureDataDict(CustomParameter param) {
+        var combinedTextureDataFace = param.sex == SEX.FEMALE
+            // ReSharper disable once ConditionalTernaryEqualBranch
+            ? CustomDataManager.GetCheek(param.head.cheekTexID)
+            : CustomDataManager.GetCheek(param.head.cheekTexID); // if we want to add cheek-shadows to males, it needs a custom getter!
 
-            var headArray = new SerializableTextureData[NumberOfSlots];
+        var headArray = new SerializableTextureData[NumberOfSlots];
 
-            if (param.head.cheekTexID != 0 && combinedTextureDataFace != null)
-                headArray[0] = new SerializableTextureData(
-                    combinedTextureDataFace.id,
-                    combinedTextureDataFace.assetbundleName,
-                    combinedTextureDataFace.textureName,
-                    param.head.cheekColor,
-                    combinedTextureDataFace.pos.x,
-                    combinedTextureDataFace.pos.y,
-                    Vector2.zero,
-                    Vector2.one
-                );
+        if (param.head.cheekTexID != 0 && combinedTextureDataFace != null)
+            headArray[0] = new SerializableTextureData(
+                combinedTextureDataFace.id,
+                combinedTextureDataFace.assetbundleName,
+                combinedTextureDataFace.textureName,
+                param.head.cheekColor,
+                combinedTextureDataFace.pos.x,
+                combinedTextureDataFace.pos.y,
+                Vector2.zero,
+                Vector2.one
+            );
 
-            return new Dictionary<Part, SerializableTextureData[]> {
-                [Part.Head] = headArray
-            };
-        }
+        return new Dictionary<Part, SerializableTextureData[]> {
+            [Part.Head] = headArray
+        };
     }
 }

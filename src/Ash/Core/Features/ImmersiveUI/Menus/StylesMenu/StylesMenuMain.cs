@@ -16,400 +16,399 @@ using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu
+namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu;
+
+internal class StylesMenuMain
 {
-    internal class StylesMenuMain
-    {
 
-        internal readonly GameObject StylesMenuRootGameObj;
+    internal readonly GameObject StylesMenuRootGameObj;
 
-        internal readonly StylesMenuStateControl StateControl;
-        internal readonly StylesMenuThumbnailCollection Thumbnails;
+    internal readonly StylesMenuStateControl StateControl;
+    internal readonly StylesMenuThumbnailCollection Thumbnails;
 
-        private Material FrostedGlassMaterial;
+    private Material FrostedGlassMaterial;
 
-        private bool IsScrollPositionDirty;
+    private bool IsScrollPositionDirty;
 
-        private readonly RectTransform ScrollViewContentRectTransform;
-        private readonly RawImage ThumbnailRawImage;
-        private readonly ScrollRect ScrollViewRect;
+    private readonly RectTransform ScrollViewContentRectTransform;
+    private readonly RawImage ThumbnailRawImage;
+    private readonly ScrollRect ScrollViewRect;
 
-        private readonly StylesMenuTextures Textures;
+    private readonly StylesMenuTextures Textures;
 
-        private readonly StylesMenuConfig Config = IuiMain.StylesMenuConfig;
-        private readonly StylesMenuStylesData StylesData;
+    private readonly StylesMenuConfig Config = IuiMain.StylesMenuConfig;
+    private readonly StylesMenuStylesData StylesData;
 
-        private const string HeaderText = "Positions";
+    private const string HeaderText = "Positions";
 
-        private static readonly int FrostTex = Shader.PropertyToID("_FrostTex");
-        private static readonly int FrostIntensity = Shader.PropertyToID("_FrostIntensity");
+    private static readonly int FrostTex = Shader.PropertyToID("_FrostTex");
+    private static readonly int FrostIntensity = Shader.PropertyToID("_FrostIntensity");
 
-        internal StylesMenuMain(IuiMain iuiMain, GameObject canvasGameObj) {
-            StylesData = canvasGameObj.GetComponent<StylesMenuStylesData>();
-            Textures = new StylesMenuTextures();
-            Thumbnails = new StylesMenuThumbnailCollection();
+    internal StylesMenuMain(IuiMain iuiMain, GameObject canvasGameObj) {
+        StylesData = canvasGameObj.GetComponent<StylesMenuStylesData>();
+        Textures = new StylesMenuTextures();
+        Thumbnails = new StylesMenuThumbnailCollection();
 
-            StylesMenuRootGameObj = new GameObject("StylesMenuRoot");
-            StylesMenuRootGameObj.transform.SetParent(canvasGameObj.transform, false);
+        StylesMenuRootGameObj = new GameObject("StylesMenuRoot");
+        StylesMenuRootGameObj.transform.SetParent(canvasGameObj.transform, false);
 
-            IuiPositioningHelpers.AnchorsFillParent(StylesMenuRootGameObj);
+        IuiPositioningHelpers.AnchorsFillParent(StylesMenuRootGameObj);
 
-            // frosted glass bg
-            var frostedGlassGameObj = CreateFrostedGlass(StylesMenuRootGameObj);
+        // frosted glass bg
+        var frostedGlassGameObj = CreateFrostedGlass(StylesMenuRootGameObj);
 
-            var containerGameObj = CreateContentContainer(frostedGlassGameObj);
+        var containerGameObj = CreateContentContainer(frostedGlassGameObj);
 
-            var containerSafeMarginsGameObj = CreateContainerWithSafeMargins(containerGameObj);
+        var containerSafeMarginsGameObj = CreateContainerWithSafeMargins(containerGameObj);
 
-            AddVerticalLayoutComponent(containerSafeMarginsGameObj);
+        AddVerticalLayoutComponent(containerSafeMarginsGameObj);
 
-            // x button
-            CreateXButton(containerGameObj);
+        // x button
+        CreateXButton(containerGameObj);
 
-            // header
-            CreateHeader(containerSafeMarginsGameObj);
+        // header
+        CreateHeader(containerSafeMarginsGameObj);
 
-            var hLayoutGameObj = AddHorizontalLayoutComponent(containerSafeMarginsGameObj);
-            var leftGameObj = AddLeftContainer(hLayoutGameObj);
-            var rightGameObj = AddRightContainer(hLayoutGameObj);
+        var hLayoutGameObj = AddHorizontalLayoutComponent(containerSafeMarginsGameObj);
+        var leftGameObj = AddLeftContainer(hLayoutGameObj);
+        var rightGameObj = AddRightContainer(hLayoutGameObj);
 
-            // scroll view
-            var scrollViewData = StylesScrollView.CreateScrollView(leftGameObj, Textures);
+        // scroll view
+        var scrollViewData = StylesScrollView.CreateScrollView(leftGameObj, Textures);
 
-            ScrollViewRect = scrollViewData[0].GetComponent<ScrollRect>();
-            ScrollViewContentRectTransform = scrollViewData[1].GetComponent<RectTransform>();
+        ScrollViewRect = scrollViewData[0].GetComponent<ScrollRect>();
+        ScrollViewContentRectTransform = scrollViewData[1].GetComponent<RectTransform>();
 
-            // create style selection buttons
-            var genreTogglesList = CreateGenreSelectionToggles(frostedGlassGameObj);
+        // create style selection buttons
+        var genreTogglesList = CreateGenreSelectionToggles(frostedGlassGameObj);
 
-            // create female state selection buttons
-            var femaleStateTogglesList = CreateFemaleStateSelectionToggles(frostedGlassGameObj);
+        // create female state selection buttons
+        var femaleStateTogglesList = CreateFemaleStateSelectionToggles(frostedGlassGameObj);
 
-            // thumbnails
-            var thumbnailGameObj = StyleThumbnail.AddThumbnailComponent(rightGameObj);
-            ThumbnailRawImage = thumbnailGameObj.GetComponent<RawImage>();
-            ThumbnailRawImage.enabled = false;
+        // thumbnails
+        var thumbnailGameObj = StyleThumbnail.AddThumbnailComponent(rightGameObj);
+        ThumbnailRawImage = thumbnailGameObj.GetComponent<RawImage>();
+        ThumbnailRawImage.enabled = false;
 
-            StylesMenuRootGameObj.SetActive(false);
+        StylesMenuRootGameObj.SetActive(false);
 
-            StateControl = new StylesMenuStateControl(
-                iuiMain,
-                this,
-                StylesData,
-                genreTogglesList,
-                femaleStateTogglesList,
-                OnUpdateScrollList,
-                OnAfterScrollListUpdatedRoutine
-            );
+        StateControl = new StylesMenuStateControl(
+            iuiMain,
+            this,
+            StylesData,
+            genreTogglesList,
+            femaleStateTogglesList,
+            OnUpdateScrollList,
+            OnAfterScrollListUpdatedRoutine
+        );
 
-            // refers to StateControl, should be called last
-            PopulateScrollList();
+        // refers to StateControl, should be called last
+        PopulateScrollList();
+    }
+
+    ~StylesMenuMain() {
+        Object.Destroy(FrostedGlassMaterial);
+    }
+
+    private void OnUpdateScrollList() {
+        ClearScrollList();
+        PopulateScrollList();
+
+        IsScrollPositionDirty = true;
+    }
+
+    private IEnumerator OnAfterScrollListUpdatedRoutine() {
+        yield return new WaitForEndOfFrame();
+
+        if (!IsScrollPositionDirty)
+            yield break;
+
+        ScrollViewRect.verticalNormalizedPosition = 1;
+        IsScrollPositionDirty = false;
+    }
+
+    private GameObject CreateFrostedGlass(GameObject root) {
+        var frostedGlassShader = GlobalPluginData.ShaderCache.GetValueOrDefaultValue(GlobalPluginData.ShaderName.FrostedGlass, null);
+
+        if (frostedGlassShader == null) {
+            IuiMain.Logger.LogError($"{nameof(frostedGlassShader)} is null");
+            return null;
         }
 
-        ~StylesMenuMain() {
-            Object.Destroy(FrostedGlassMaterial);
+        if (Textures.FrostedGlassAtlasMask == null) {
+            IuiMain.Logger.LogError($"{nameof(Textures.FrostedGlassAtlasMask)} is null");
+            return null;
         }
 
-        private void OnUpdateScrollList() {
-            ClearScrollList();
-            PopulateScrollList();
+        var frostedGlassGameObj = new GameObject("FrostedGlass", typeof(RectTransform), typeof(RawImage));
+        frostedGlassGameObj.transform.SetParent(root.transform, false);
 
-            IsScrollPositionDirty = true;
-        }
+        var frostedGlassRectTransform = frostedGlassGameObj.GetComponent<RectTransform>();
+        frostedGlassRectTransform.sizeDelta = new Vector2(
+            Textures.FrostedGlassAtlasMask.width, Textures.FrostedGlassAtlasMask.height
+        );
 
-        private IEnumerator OnAfterScrollListUpdatedRoutine() {
-            yield return new WaitForEndOfFrame();
+        FrostedGlassMaterial = new Material(frostedGlassShader);
+        FrostedGlassMaterial.SetTexture(FrostTex, Textures.FrostedGlassAtlasMask);
+        FrostedGlassMaterial.SetFloat(FrostIntensity, IuiSettings.SubMenusFrostIntensity);
 
-            if (!IsScrollPositionDirty)
-                yield break;
+        var frostedGlassBackground = frostedGlassGameObj.GetComponent<RawImage>();
+        frostedGlassBackground.material = FrostedGlassMaterial;
 
-            ScrollViewRect.verticalNormalizedPosition = 1;
-            IsScrollPositionDirty = false;
-        }
+        IuiPositioningHelpers.AnchorsCenterIn(frostedGlassGameObj);
 
-        private GameObject CreateFrostedGlass(GameObject root) {
-            var frostedGlassShader = GlobalPluginData.ShaderCache.GetValueOrDefaultValue(GlobalPluginData.ShaderName.FrostedGlass, null);
+        var tintGameObj = new GameObject("FrostedGlassTint", typeof(RawImage));
+        tintGameObj.transform.SetParent(frostedGlassGameObj.transform, false);
 
-            if (frostedGlassShader == null) {
-                IuiMain.Logger.LogError($"{nameof(frostedGlassShader)} is null");
-                return null;
-            }
+        var frostGlassTint = tintGameObj.GetComponent<RawImage>();
+        frostGlassTint.texture = Textures.FrostGlassTintTexture;
+        frostGlassTint.SetNativeSize();
 
-            if (Textures.FrostedGlassAtlasMask == null) {
-                IuiMain.Logger.LogError($"{nameof(Textures.FrostedGlassAtlasMask)} is null");
-                return null;
-            }
+        var tintRectTransform = IuiPositioningHelpers.AnchorsLeftBottom(tintGameObj);
+        tintRectTransform.pivot = Vector2.zero;
 
-            var frostedGlassGameObj = new GameObject("FrostedGlass", typeof(RectTransform), typeof(RawImage));
-            frostedGlassGameObj.transform.SetParent(root.transform, false);
+        return frostedGlassGameObj;
+    }
 
-            var frostedGlassRectTransform = frostedGlassGameObj.GetComponent<RectTransform>();
-            frostedGlassRectTransform.sizeDelta = new Vector2(
-                Textures.FrostedGlassAtlasMask.width, Textures.FrostedGlassAtlasMask.height
-            );
+    private void CreateXButton(GameObject root) {
+        var xButtonGameObject = new GameObject("XButton", typeof(RectTransform), typeof(RawImage), typeof(Button));
+        xButtonGameObject.transform.SetParent(root.transform, false);
 
-            FrostedGlassMaterial = new Material(frostedGlassShader);
-            FrostedGlassMaterial.SetTexture(FrostTex, Textures.FrostedGlassAtlasMask);
-            FrostedGlassMaterial.SetFloat(FrostIntensity, IuiSettings.SubMenusFrostIntensity);
+        var buttonRawImage = xButtonGameObject.GetComponent<RawImage>();
+        buttonRawImage.texture = Textures.XButtonTexture;
 
-            var frostedGlassBackground = frostedGlassGameObj.GetComponent<RawImage>();
-            frostedGlassBackground.material = FrostedGlassMaterial;
+        var buttonComp = xButtonGameObject.GetComponent<Button>();
+        buttonComp.targetGraphic = buttonRawImage;
 
-            IuiPositioningHelpers.AnchorsCenterIn(frostedGlassGameObj);
+        buttonComp.onClick.AddListener(delegate { StateControl.ToggleMenuVisibility(); });
 
-            var tintGameObj = new GameObject("FrostedGlassTint", typeof(RawImage));
-            tintGameObj.transform.SetParent(frostedGlassGameObj.transform, false);
+        var buttonRectTransform = buttonComp.GetComponent<RectTransform>();
+        buttonRectTransform.anchorMin = Vector2.one;
+        buttonRectTransform.anchorMax = Vector2.one;
+        buttonRectTransform.pivot = Vector2.one;
+        buttonRectTransform.anchoredPosition =
+            new Vector2(-Config.XButtonSize.Width, -Config.XButtonSize.Height) * 1.1f;
+        buttonRectTransform.sizeDelta = new Vector2(Config.XButtonSize.Width, Config.XButtonSize.Height);
+    }
 
-            var frostGlassTint = tintGameObj.GetComponent<RawImage>();
-            frostGlassTint.texture = Textures.FrostGlassTintTexture;
-            frostGlassTint.SetNativeSize();
+    private GameObject CreateContentContainer(GameObject root) {
+        var containerGameObject = new GameObject("ContentContainer", typeof(RectTransform));
+        containerGameObject.transform.SetParent(root.transform, false);
 
-            var tintRectTransform = IuiPositioningHelpers.AnchorsLeftBottom(tintGameObj);
-            tintRectTransform.pivot = Vector2.zero;
+        var containerRectTransform = IuiPositioningHelpers.AnchorsLeftBottom(containerGameObject);
+        containerRectTransform.pivot = Vector2.zero;
+        containerRectTransform.sizeDelta = new Vector2(
+            Config.BackgroundRectSize.Width,
+            Config.BackgroundRectSize.Height
+        );
 
-            return frostedGlassGameObj;
-        }
+        return containerGameObject;
+    }
 
-        private void CreateXButton(GameObject root) {
-            var xButtonGameObject = new GameObject("XButton", typeof(RectTransform), typeof(RawImage), typeof(Button));
-            xButtonGameObject.transform.SetParent(root.transform, false);
+    private GameObject CreateContainerWithSafeMargins(GameObject root) {
+        var containerGameObject = new GameObject("ContentContainerSafeMargins", typeof(RectTransform),
+            typeof(VerticalLayoutGroup));
+        containerGameObject.transform.SetParent(root.transform, false);
 
-            var buttonRawImage = xButtonGameObject.GetComponent<RawImage>();
-            buttonRawImage.texture = Textures.XButtonTexture;
+        var containerRectTransform = IuiPositioningHelpers.AnchorsFillParent(containerGameObject);
+        containerRectTransform.offsetMin =
+            new Vector2(Config.BackgroundContainerMargins.left, Config.BackgroundContainerMargins.bottom);
+        containerRectTransform.offsetMax =
+            new Vector2(-Config.BackgroundContainerMargins.right, -Config.BackgroundContainerMargins.top);
 
-            var buttonComp = xButtonGameObject.GetComponent<Button>();
-            buttonComp.targetGraphic = buttonRawImage;
+        return containerGameObject;
+    }
 
-            buttonComp.onClick.AddListener(delegate { StateControl.ToggleMenuVisibility(); });
+    private void CreateHeader(GameObject root) {
+        var textGameObj = new GameObject("HeaderText", typeof(RectTransform), typeof(Text), typeof(LayoutElement));
+        textGameObj.transform.SetParent(root.transform, false);
 
-            var buttonRectTransform = buttonComp.GetComponent<RectTransform>();
-            buttonRectTransform.anchorMin = Vector2.one;
-            buttonRectTransform.anchorMax = Vector2.one;
-            buttonRectTransform.pivot = Vector2.one;
-            buttonRectTransform.anchoredPosition =
-                new Vector2(-Config.XButtonSize.Width, -Config.XButtonSize.Height) * 1.1f;
-            buttonRectTransform.sizeDelta = new Vector2(Config.XButtonSize.Width, Config.XButtonSize.Height);
-        }
+        var layoutElement = textGameObj.GetComponent<LayoutElement>();
+        layoutElement.flexibleWidth = 1f;
+        layoutElement.minHeight = Config.HeaderFontSize;
 
-        private GameObject CreateContentContainer(GameObject root) {
-            var containerGameObject = new GameObject("ContentContainer", typeof(RectTransform));
-            containerGameObject.transform.SetParent(root.transform, false);
+        var textComp = textGameObj.GetComponent<Text>();
+        textComp.text = HeaderText;
+        textComp.font =
+            GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                "assets/frostedglass/fonts/tangerine-regular.ttf");
+        textComp.fontSize = Config.HeaderFontSize;
+        textComp.fontStyle = FontStyle.Normal;
+        textComp.alignment = TextAnchor.LowerCenter;
+        textComp.color = ColorUtils.Color32Af(251, 244, 248);
+    }
 
-            var containerRectTransform = IuiPositioningHelpers.AnchorsLeftBottom(containerGameObject);
-            containerRectTransform.pivot = Vector2.zero;
-            containerRectTransform.sizeDelta = new Vector2(
-                Config.BackgroundRectSize.Width,
-                Config.BackgroundRectSize.Height
-            );
+    private List<IuiToggle> CreateGenreSelectionToggles(GameObject root) {
+        var containerGameObject =
+            new GameObject("GenreSelectionToggles", typeof(RectTransform), typeof(HorizontalLayoutGroup),
+                typeof(ContentSizeFitter), typeof(ToggleGroup));
+        containerGameObject.transform.SetParent(root.transform, false);
 
-            return containerGameObject;
-        }
+        var genreTogglesContainerOffset = new Vector2(Config.GenreTogglesContainerLeftMargin,
+            Config.BackgroundRectSize.Height + Config.GenreTogglesContainerBottomMargin);
 
-        private GameObject CreateContainerWithSafeMargins(GameObject root) {
-            var containerGameObject = new GameObject("ContentContainerSafeMargins", typeof(RectTransform),
-                typeof(VerticalLayoutGroup));
-            containerGameObject.transform.SetParent(root.transform, false);
+        var containerRectTransform =
+            IuiPositioningHelpers.AnchorsLeftBottom(containerGameObject, genreTogglesContainerOffset);
+        containerRectTransform.pivot = Vector2.zero;
 
-            var containerRectTransform = IuiPositioningHelpers.AnchorsFillParent(containerGameObject);
-            containerRectTransform.offsetMin =
-                new Vector2(Config.BackgroundContainerMargins.left, Config.BackgroundContainerMargins.bottom);
-            containerRectTransform.offsetMax =
-                new Vector2(-Config.BackgroundContainerMargins.right, -Config.BackgroundContainerMargins.top);
+        var hLayout = containerGameObject.GetComponent<HorizontalLayoutGroup>();
+        hLayout.childControlWidth = true;
+        hLayout.childControlHeight = true;
+        hLayout.childForceExpandWidth = false;
+        hLayout.childForceExpandHeight = false;
+        hLayout.spacing = Config.GenreToggleSpacing;
 
-            return containerGameObject;
-        }
+        var contentSizeFitter = containerGameObject.GetComponent<ContentSizeFitter>();
+        contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-        private void CreateHeader(GameObject root) {
-            var textGameObj = new GameObject("HeaderText", typeof(RectTransform), typeof(Text), typeof(LayoutElement));
-            textGameObj.transform.SetParent(root.transform, false);
+        var toggleGroup = containerGameObject.GetComponent<ToggleGroup>();
+        toggleGroup.allowSwitchOff = false;
 
-            var layoutElement = textGameObj.GetComponent<LayoutElement>();
-            layoutElement.flexibleWidth = 1f;
-            layoutElement.minHeight = Config.HeaderFontSize;
+        var types = (H_StyleData.TYPE[])Enum.GetValues(typeof(H_StyleData.TYPE));
+        var genreTogglesList = new List<IuiToggle>();
 
-            var textComp = textGameObj.GetComponent<Text>();
-            textComp.text = HeaderText;
-            textComp.font =
-                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
-                    "assets/frostedglass/fonts/tangerine-regular.ttf");
-            textComp.fontSize = Config.HeaderFontSize;
-            textComp.fontStyle = FontStyle.Normal;
-            textComp.alignment = TextAnchor.LowerCenter;
-            textComp.color = ColorUtils.Color32Af(251, 244, 248);
-        }
-
-        private List<IuiToggle> CreateGenreSelectionToggles(GameObject root) {
-            var containerGameObject =
-                new GameObject("GenreSelectionToggles", typeof(RectTransform), typeof(HorizontalLayoutGroup),
-                    typeof(ContentSizeFitter), typeof(ToggleGroup));
-            containerGameObject.transform.SetParent(root.transform, false);
-
-            var genreTogglesContainerOffset = new Vector2(Config.GenreTogglesContainerLeftMargin,
-                Config.BackgroundRectSize.Height + Config.GenreTogglesContainerBottomMargin);
-
-            var containerRectTransform =
-                IuiPositioningHelpers.AnchorsLeftBottom(containerGameObject, genreTogglesContainerOffset);
-            containerRectTransform.pivot = Vector2.zero;
-
-            var hLayout = containerGameObject.GetComponent<HorizontalLayoutGroup>();
-            hLayout.childControlWidth = true;
-            hLayout.childControlHeight = true;
-            hLayout.childForceExpandWidth = false;
-            hLayout.childForceExpandHeight = false;
-            hLayout.spacing = Config.GenreToggleSpacing;
-
-            var contentSizeFitter = containerGameObject.GetComponent<ContentSizeFitter>();
-            contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            var toggleGroup = containerGameObject.GetComponent<ToggleGroup>();
-            toggleGroup.allowSwitchOff = false;
-
-            var types = (H_StyleData.TYPE[])Enum.GetValues(typeof(H_StyleData.TYPE));
-            var genreTogglesList = new List<IuiToggle>();
-
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var type in types.Where(t => t != H_StyleData.TYPE.NUM))
-                genreTogglesList.Add(
-                    new GenreSelectionToggle(
-                        Textures,
-                        containerGameObject,
-                        toggleGroup,
-                        type,
-                        () => StateControl.OnUpdateStyleType(type)
-                    )
-                );
-
-            return genreTogglesList;
-        }
-
-        private List<IuiToggle> CreateFemaleStateSelectionToggles(GameObject root) {
-            var containerGameObject =
-                new GameObject("FemaleStateSelectionToggles", typeof(RectTransform), typeof(VerticalLayoutGroup),
-                    typeof(ContentSizeFitter), typeof(ToggleGroup));
-            containerGameObject.transform.SetParent(root.transform, false);
-
-            var femaleStateTogglesContainerOffset = new Vector2(Config.BackgroundRectSize.Width + Config.FemaleStateButtonsContainerRightMargin,
-                Config.FemaleStateButtonsContainerBottomMargin);
-
-            var containerRectTransform =
-                IuiPositioningHelpers.AnchorsLeftBottom(containerGameObject, femaleStateTogglesContainerOffset);
-            containerRectTransform.pivot = Vector2.zero;
-
-            var vLayout = containerGameObject.GetComponent<VerticalLayoutGroup>();
-            vLayout.childControlWidth = true;
-            vLayout.childControlHeight = true;
-            vLayout.childForceExpandWidth = false;
-            vLayout.childForceExpandHeight = false;
-            vLayout.spacing = StylesMenuConfig.FemaleStateToggleSpacing;
-
-            var contentSizeFitter = containerGameObject.GetComponent<ContentSizeFitter>();
-            contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            var toggleGroup = containerGameObject.GetComponent<ToggleGroup>();
-            toggleGroup.allowSwitchOff = false;
-
-            var states = (H_StyleData.STATE[])Enum.GetValues(typeof(H_StyleData.STATE));
-            var femaleStateTogglesList = new List<IuiToggle>();
-
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var state in states.Where(t => t != H_StyleData.STATE.UNKNOWN))
-                femaleStateTogglesList.Add(
-                    new FemaleStateSelectionToggle(
-                        Textures,
-                        containerGameObject,
-                        toggleGroup,
-                        state,
-                        () => StateControl.OnUpdateFemaleState(state)
-                    )
-                );
-
-            return femaleStateTogglesList;
-        }
-
-        // populate
-
-        private void PopulateScrollList() {
-            if (StateControl.ListButtons.Count > 0)
-                return;
-
-            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-            foreach (var hStyleData in StylesData.ValidStyles) {
-                // IuiMain.Logger.LogDebug($"name: {hStyleData.name}, id: {hStyleData.id}");
-
-                // ReSharper disable once MoveLocalFunctionAfterJumpStatement
-                var buttonGameObj = StylesScrollViewButton.CreateScrollListButton(
+        // ReSharper disable once LoopCanBeConvertedToQuery
+        foreach (var type in types.Where(t => t != H_StyleData.TYPE.NUM))
+            genreTogglesList.Add(
+                new GenreSelectionToggle(
                     Textures,
-                    ScrollViewContentRectTransform,
-                    hStyleData,
-                    () => StateControl.UpdateThumbnailImage(hStyleData, ThumbnailRawImage),
-                    () => {
-                        StateControl.OnStyleSelected(hStyleData.id);
-                        StateControl.ToggleMenuVisibility();
-                    }
-                );
+                    containerGameObject,
+                    toggleGroup,
+                    type,
+                    () => StateControl.OnUpdateStyleType(type)
+                )
+            );
 
-                StateControl.ListButtons.Add(buttonGameObj);
-            }
+        return genreTogglesList;
+    }
+
+    private List<IuiToggle> CreateFemaleStateSelectionToggles(GameObject root) {
+        var containerGameObject =
+            new GameObject("FemaleStateSelectionToggles", typeof(RectTransform), typeof(VerticalLayoutGroup),
+                typeof(ContentSizeFitter), typeof(ToggleGroup));
+        containerGameObject.transform.SetParent(root.transform, false);
+
+        var femaleStateTogglesContainerOffset = new Vector2(Config.BackgroundRectSize.Width + Config.FemaleStateButtonsContainerRightMargin,
+            Config.FemaleStateButtonsContainerBottomMargin);
+
+        var containerRectTransform =
+            IuiPositioningHelpers.AnchorsLeftBottom(containerGameObject, femaleStateTogglesContainerOffset);
+        containerRectTransform.pivot = Vector2.zero;
+
+        var vLayout = containerGameObject.GetComponent<VerticalLayoutGroup>();
+        vLayout.childControlWidth = true;
+        vLayout.childControlHeight = true;
+        vLayout.childForceExpandWidth = false;
+        vLayout.childForceExpandHeight = false;
+        vLayout.spacing = StylesMenuConfig.FemaleStateToggleSpacing;
+
+        var contentSizeFitter = containerGameObject.GetComponent<ContentSizeFitter>();
+        contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        var toggleGroup = containerGameObject.GetComponent<ToggleGroup>();
+        toggleGroup.allowSwitchOff = false;
+
+        var states = (H_StyleData.STATE[])Enum.GetValues(typeof(H_StyleData.STATE));
+        var femaleStateTogglesList = new List<IuiToggle>();
+
+        // ReSharper disable once LoopCanBeConvertedToQuery
+        foreach (var state in states.Where(t => t != H_StyleData.STATE.UNKNOWN))
+            femaleStateTogglesList.Add(
+                new FemaleStateSelectionToggle(
+                    Textures,
+                    containerGameObject,
+                    toggleGroup,
+                    state,
+                    () => StateControl.OnUpdateFemaleState(state)
+                )
+            );
+
+        return femaleStateTogglesList;
+    }
+
+    // populate
+
+    private void PopulateScrollList() {
+        if (StateControl.ListButtons.Count > 0)
+            return;
+
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        foreach (var hStyleData in StylesData.ValidStyles) {
+            // IuiMain.Logger.LogDebug($"name: {hStyleData.name}, id: {hStyleData.id}");
+
+            // ReSharper disable once MoveLocalFunctionAfterJumpStatement
+            var buttonGameObj = StylesScrollViewButton.CreateScrollListButton(
+                Textures,
+                ScrollViewContentRectTransform,
+                hStyleData,
+                () => StateControl.UpdateThumbnailImage(hStyleData, ThumbnailRawImage),
+                () => {
+                    StateControl.OnStyleSelected(hStyleData.id);
+                    StateControl.ToggleMenuVisibility();
+                }
+            );
+
+            StateControl.ListButtons.Add(buttonGameObj);
         }
+    }
 
-        private void ClearScrollList() {
-            foreach (var buttonGameObj in StateControl.ListButtons)
-                Object.Destroy(buttonGameObj);
+    private void ClearScrollList() {
+        foreach (var buttonGameObj in StateControl.ListButtons)
+            Object.Destroy(buttonGameObj);
 
-            StateControl.ListButtons.Clear();
-        }
+        StateControl.ListButtons.Clear();
+    }
 
-        // layouts
-        private void AddVerticalLayoutComponent(GameObject root) {
-            var vLayout = root.GetComponent<VerticalLayoutGroup>();
-            vLayout.childControlWidth = true;
-            vLayout.childControlHeight = true;
-            vLayout.childForceExpandWidth = true;
-            vLayout.childForceExpandHeight = false;
-            vLayout.spacing = Config.MainVerticalLayoutSpacing;
-        }
+    // layouts
+    private void AddVerticalLayoutComponent(GameObject root) {
+        var vLayout = root.GetComponent<VerticalLayoutGroup>();
+        vLayout.childControlWidth = true;
+        vLayout.childControlHeight = true;
+        vLayout.childForceExpandWidth = true;
+        vLayout.childForceExpandHeight = false;
+        vLayout.spacing = Config.MainVerticalLayoutSpacing;
+    }
 
-        private GameObject AddHorizontalLayoutComponent(GameObject root) {
-            var hLayoutGameObj =
-                new GameObject("HorizontalLayout", typeof(LayoutElement), typeof(HorizontalLayoutGroup));
-            hLayoutGameObj.transform.SetParent(root.transform, false);
+    private GameObject AddHorizontalLayoutComponent(GameObject root) {
+        var hLayoutGameObj =
+            new GameObject("HorizontalLayout", typeof(LayoutElement), typeof(HorizontalLayoutGroup));
+        hLayoutGameObj.transform.SetParent(root.transform, false);
 
-            var hLayoutElement = hLayoutGameObj.GetComponent<LayoutElement>();
-            hLayoutElement.minHeight = 100f;
-            hLayoutElement.flexibleHeight = 1f;
+        var hLayoutElement = hLayoutGameObj.GetComponent<LayoutElement>();
+        hLayoutElement.minHeight = 100f;
+        hLayoutElement.flexibleHeight = 1f;
 
-            var hLayout = hLayoutGameObj.GetComponent<HorizontalLayoutGroup>();
-            hLayout.childControlWidth = true;
-            hLayout.childForceExpandWidth = false;
-            hLayout.spacing = Config.MainHorizontalLayoutSpacing;
+        var hLayout = hLayoutGameObj.GetComponent<HorizontalLayoutGroup>();
+        hLayout.childControlWidth = true;
+        hLayout.childForceExpandWidth = false;
+        hLayout.spacing = Config.MainHorizontalLayoutSpacing;
 
-            return hLayoutGameObj;
-        }
+        return hLayoutGameObj;
+    }
 
-        private GameObject AddLeftContainer(GameObject root) {
-            var leftGameObj = new GameObject("LeftContainer", typeof(RectTransform), typeof(LayoutElement));
-            leftGameObj.transform.SetParent(root.transform, false);
+    private GameObject AddLeftContainer(GameObject root) {
+        var leftGameObj = new GameObject("LeftContainer", typeof(RectTransform), typeof(LayoutElement));
+        leftGameObj.transform.SetParent(root.transform, false);
 
-            var leftLayoutElement = leftGameObj.GetComponent<LayoutElement>();
-            leftLayoutElement.flexibleWidth =
-                (float)Config.StylesListWidth / Config.BackgroundRectSize.Width;
-            leftLayoutElement.flexibleHeight = 1f;
+        var leftLayoutElement = leftGameObj.GetComponent<LayoutElement>();
+        leftLayoutElement.flexibleWidth =
+            (float)Config.StylesListWidth / Config.BackgroundRectSize.Width;
+        leftLayoutElement.flexibleHeight = 1f;
 
-            return leftGameObj;
-        }
+        return leftGameObj;
+    }
 
-        private GameObject AddRightContainer(GameObject root) {
-            var rightGameObj = new GameObject("RightContainer", typeof(RectTransform), typeof(LayoutElement));
-            rightGameObj.transform.SetParent(root.transform, false);
+    private GameObject AddRightContainer(GameObject root) {
+        var rightGameObj = new GameObject("RightContainer", typeof(RectTransform), typeof(LayoutElement));
+        rightGameObj.transform.SetParent(root.transform, false);
 
-            var rightLayoutElement = rightGameObj.GetComponent<LayoutElement>();
-            rightLayoutElement.flexibleWidth =
-                1 - (float)Config.StylesListWidth / Config.BackgroundRectSize.Width;
-            rightLayoutElement.flexibleHeight = 1f;
+        var rightLayoutElement = rightGameObj.GetComponent<LayoutElement>();
+        rightLayoutElement.flexibleWidth =
+            1 - (float)Config.StylesListWidth / Config.BackgroundRectSize.Width;
+        rightLayoutElement.flexibleHeight = 1f;
 
-            return rightGameObj;
-        }
+        return rightGameObj;
     }
 }

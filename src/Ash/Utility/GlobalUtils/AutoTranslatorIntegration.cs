@@ -1,19 +1,18 @@
 ﻿using XUnity.AutoTranslator.Plugin.Core;
 
-namespace Ash.Utility.GlobalUtils
+namespace Ash.Utility.GlobalUtils;
+
+internal static class AutoTranslatorIntegration
 {
-    internal static class AutoTranslatorIntegration
-    {
-        internal static string Translate(string text) {
-            var translated = text;
+    internal static string Translate(string text) {
+        var translated = text;
 
-            AutoTranslator.Default.TranslateAsync(text, result => {
-                translated = result.Succeeded
-                    ? result.TranslatedText
-                    : result.ErrorMessage;
-            });
+        AutoTranslator.Default.TranslateAsync(text, result => {
+            translated = result.Succeeded
+                ? result.TranslatedText
+                : result.ErrorMessage;
+        });
 
-            return translated;
-        }
+        return translated;
     }
 }

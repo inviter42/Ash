@@ -1,10 +1,9 @@
-namespace Ash.Core.Features.BetterApplicables.BaseComponents.Managers.Shared
+namespace Ash.Core.Features.BetterApplicables.BaseComponents.Managers.Shared;
+
+internal enum BetterCategory
 {
-    internal enum BetterCategory
-    {
-        EyeShadow,
-        CheekShadow,
-        Tattoo,
-        Mole,
-    }
+    EyeShadow,
+    CheekShadow,
+    Tattoo,
+    Mole,
 }

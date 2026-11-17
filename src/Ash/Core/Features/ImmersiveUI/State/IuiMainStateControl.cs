@@ -5,56 +5,55 @@ using System.Linq;
 using Ash.Core.Features.ImmersiveUI.InputHandler;
 using UnityEngine;
 
-namespace Ash.Core.Features.ImmersiveUI.State
+namespace Ash.Core.Features.ImmersiveUI.State;
+
+internal class IuiMainStateControl
 {
-    internal class IuiMainStateControl
-    {
-        private readonly IuiMain IuiMain;
-        private readonly List<Func<IEnumerator>> PostStateUpdateRoutines = new List<Func<IEnumerator>>();
-        private readonly List<Action> StateUpdateRequests = new List<Action>();
+    private readonly IuiMain IuiMain;
+    private readonly List<Func<IEnumerator>> PostStateUpdateRoutines = new();
+    private readonly List<Action> StateUpdateRequests = new();
 
-        internal IuiMainStateControl(IuiMain uiMain) {
-            IuiMain = uiMain;
-        }
+    internal IuiMainStateControl(IuiMain uiMain) {
+        IuiMain = uiMain;
+    }
 
-        internal void UpdateState() {
-            foreach (var request in StateUpdateRequests)
-                request?.Invoke();
+    internal void UpdateState() {
+        foreach (var request in StateUpdateRequests)
+            request?.Invoke();
 
-            HideAnyVisibleSubmenuOnEscapePressed();
-        }
+        HideAnyVisibleSubmenuOnEscapePressed();
+    }
 
-        internal List<IEnumerator> YieldPostStateUpdateRoutineIterators() {
-            return PostStateUpdateRoutines
-                .Select(routine => routine())
-                .ToList();
-        }
+    internal List<IEnumerator> YieldPostStateUpdateRoutineIterators() {
+        return PostStateUpdateRoutines
+            .Select(routine => routine())
+            .ToList();
+    }
 
-        internal void AddPostStateUpdateRoutine(Func<IEnumerator> routine) {
-            PostStateUpdateRoutines.Add(routine);
-        }
+    internal void AddPostStateUpdateRoutine(Func<IEnumerator> routine) {
+        PostStateUpdateRoutines.Add(routine);
+    }
 
-        internal void AddStateUpdateRequest(Action request) {
-            StateUpdateRequests.Add(request);
-        }
+    internal void AddStateUpdateRequest(Action request) {
+        StateUpdateRequests.Add(request);
+    }
 
-        private void HideAnyVisibleSubmenuOnEscapePressed() {
-            if (!IuiMain.IsLegalScene)
-                return;
+    private void HideAnyVisibleSubmenuOnEscapePressed() {
+        if (!IuiMain.IsLegalScene)
+            return;
 
-            if (IuiMain.IsAnyCanvasRenderedOnTop)
-                return;
+        if (IuiMain.IsAnyCanvasRenderedOnTop)
+            return;
 
-            if (!IuiInputHandler.IsEscapeReleased())
-                return;
+        if (!IuiInputHandler.IsEscapeReleased())
+            return;
 
-            var activeSubmenus = IuiMain.CanvasGameObj.transform
-                .Cast<Transform>()
-                .Where(t => t.gameObject.activeSelf && t.gameObject.name.EndsWith("MenuRoot"))
-                .Select(t => t.gameObject);
+        var activeSubmenus = IuiMain.CanvasGameObj.transform
+            .Cast<Transform>()
+            .Where(t => t.gameObject.activeSelf && t.gameObject.name.EndsWith("MenuRoot"))
+            .Select(t => t.gameObject);
 
-            foreach (var gameObj in activeSubmenus)
-                gameObj.SetActive(false);
-        }
+        foreach (var gameObj in activeSubmenus)
+            gameObj.SetActive(false);
     }
 }

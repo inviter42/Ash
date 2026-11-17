@@ -15,7 +15,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>10</LangVersion>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -28,7 +28,6 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.3</LangVersion>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -41,7 +40,6 @@
     <DebugSymbols>true</DebugSymbols>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.3</LangVersion>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
 
@@ -131,17 +129,35 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ash.cs" />
+    <Compile Include="Core\Features\Actions\AbstractAction.cs" />
     <Compile Include="Core\Features\Actions\ActionsManager.cs" />
+    <Compile Include="Core\Features\Actions\AhegaoFaceAction.cs" />
     <Compile Include="Core\Features\Actions\DirtyTalkAction.cs" />
+    <Compile Include="Core\Features\Actions\LarTargetMouseControlAction.cs" />
     <Compile Include="Core\Features\AshPlugin\Common\Components\FemaleSelectionComponent.cs" />
     <Compile Include="Core\Features\AshPlugin\Common\Misc\CommonImGuiStyles.cs" />
     <Compile Include="Core\Features\AshPlugin\Common\Misc\CommonLabels.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\HStates\_HStateInEjaIn\HStateInEjaInHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\HStates\_HStateInXtcAfterWait\HStateInXtcAfterWaitHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\HStates\_HStateOutEjaIn\HStateOutEjaInHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\HStates\_HStateOutXtcAfterWait\HStateOutXtcAfterWaitHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\HStates\_HStateXtcFIn\HStateXtcFInHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\HStates\_HStateXtcWin\HStateXtcWinHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_Female\FemaleHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_HExpressionData\H_ExpressionDataHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_HMembers\HMembersHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_Human\HumanHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_HVisitorExpressionData\HVisitorExpressionDataHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_HVoice\HVoiceHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\UI\AhegaoFacesView\AhegaoFacesView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\AnimationControls\Hooks\_MixController\MixControllerHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\AnimationControls\UI\AnimationControlsView\AnimationControlsView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\BetterPenetrationSettings\UI\BetterPenetrationSettingsView\BetterPenetrationSettingsView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\BugFixes\Hooks\_Female\FemaleHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\BugFixes\Hooks\_HMember\HMembersHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\BugFixes\Hooks\_LookAtRotator\LookAtRotatorHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\BugFixes\UI\BugFixesView\BugFixesView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\FemaleControls\Hooks\_Female\FemaleHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\GameUIControlsView\GameUIControlsView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIAdjustments.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIManagementHelper.cs" />
@@ -227,7 +243,6 @@
     <Compile Include="Core\Features\BetterApplicables\SharedUtils\ApplicablesTextureUtils.cs" />
     <Compile Include="Core\Features\BetterPenetration\BoneInjector.cs" />
     <Compile Include="Core\Features\BetterPenetration\Hooks\_HMembers\HMembersHooks.cs" />
-    <Compile Include="Core\Features\BetterPenetration\Hooks\_IKControl\IKControlHooks.cs" />
     <Compile Include="Core\Features\BetterPenetration\Hooks\_Male\MaleHooks.cs" />
     <Compile Include="Core\Features\ImmersiveUI\CommandBufferBlur.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Components\Config\GenericComponentsConfig.cs" />
@@ -294,6 +309,7 @@
     <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Textures\WearsMenuMaskAtlas.cs" />
     <Compile Include="Core\Features\ImmersiveUI\Menus\WearsMenu\Textures\WearsMenuTextures.cs" />
     <Compile Include="Core\Features\ImmersiveUI\State\IuiMainStateControl.cs" />
+    <Compile Include="Core\GlobalGameData.cs" />
     <Compile Include="Core\GlobalPluginData.cs" />
     <Compile Include="Core\Tooling\SaveLoadManagement\SaveLoadDataTracker.cs" />
     <Compile Include="Core\Tooling\SceneManagement\Hooks\_Female\FemaleHooks.cs" />
@@ -306,18 +322,23 @@
     <Compile Include="Logging\AshLogger.cs" />
     <Compile Include="Logging\LoggingSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\Extensions\KeyValuePairExtensions.cs" />
+    <Compile Include="Utility\GlobalUtils\ArrayUtils.cs" />
     <Compile Include="Utility\GlobalUtils\AssetBundleUtils.cs" />
     <Compile Include="Utility\GlobalUtils\AutoTranslatorIntegration.cs" />
     <Compile Include="Utility\GlobalUtils\ColorUtils.cs" />
     <Compile Include="Utility\GlobalUtils\DictionaryUtils.cs" />
     <Compile Include="Utility\GlobalUtils\EnumUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\FemaleUtils.cs" />
     <Compile Include="Utility\GlobalUtils\FileUtils.cs" />
     <Compile Include="Utility\GlobalUtils\HotkeyUtils.cs" />
     <Compile Include="Utility\GlobalUtils\ImageUtils.cs" />
     <Compile Include="Utility\GlobalUtils\ImGuiPrimitivesLib.cs" />
     <Compile Include="Utility\GlobalUtils\IO.cs" />
     <Compile Include="Utility\GlobalUtils\Migrations.cs" />
+    <Compile Include="Utility\GlobalUtils\ParsingUtils.cs" />
     <Compile Include="Utility\GlobalUtils\ParticleSystemsUtils.cs" />
+    <Compile Include="Utility\GlobalUtils\RandomUtils.cs" />
     <Compile Include="Utility\GlobalUtils\ReaderUtils.cs" />
     <Compile Include="Utility\GlobalUtils\SceneUtils.cs" />
     <Compile Include="Utility\GlobalUtils\SerializationUtils.cs" />
@@ -341,15 +362,18 @@
     <EmbeddedResource Include="Resources\immersive_ui_icons" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Core\Features\ImmersiveUI\Shaders\FrostedGlass.shader" />
-    <Content Include="Core\Features\ImmersiveUI\Shaders\SeparableBlur.shader" />
     <EmbeddedResource Include="Resources\standalone_shaders" />
     <EmbeddedResource Include="Resources\better_applicables_shaders" />
     <EmbeddedResource Include="Resources\immersive_ui_thumbnails" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\Features\BetterApplicables\SharedHooks\" />
-    <Folder Include="Utility\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\alloy_shaders_materials" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\game_data" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

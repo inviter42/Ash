@@ -1,60 +1,51 @@
 using UnityEngine;
 
-namespace Ash.Utility.GlobalUtils
+namespace Ash.Utility.GlobalUtils;
+
+internal static class HotkeyUtils
 {
-    internal static class HotkeyUtils
-    {
-        // ReSharper disable once MemberCanBeMadeStatic.Local
-        internal static bool HotkeyIsDown(KeyCode mainKey) {
-            var ev = Event.current;
-            if (ev == null)
-                return false;
+    // ReSharper disable once MemberCanBeMadeStatic.Local
+    internal static bool HotkeyIsDown(KeyCode mainKey) {
+        var ev = Event.current;
+        if (ev == null)
+            return false;
 
-            if (ev.isKey && ev.type == EventType.KeyDown) {
-                if (ev.keyCode == mainKey || (ev.keyCode == KeyCode.None && ev.character == (int)mainKey)) {
-                    ev.Use();
-                    return true;
-                }
+        if (ev.isKey && ev.type == EventType.KeyDown) {
+            if (ev.keyCode == mainKey || (ev.keyCode == KeyCode.None && ev.character == (int)mainKey)) {
+                ev.Use();
+                return true;
             }
+        }
 
-            if (ev.isMouse && ev.type == EventType.MouseDown) {
-                if (Input.GetKeyDown(mainKey)) {
-                    ev.Use();
-                    return true;
-                }
-            }
-
+        if (ev.isMouse && ev.type == EventType.MouseDown) {
             if (Input.GetKeyDown(mainKey)) {
+                ev.Use();
                 return true;
             }
-
-            return false;
         }
 
-        internal static bool HotkeyIsUp(KeyCode mainKey) {
-            var ev = Event.current;
-            if (ev == null)
-                return false;
+        return Input.GetKeyDown(mainKey);
+    }
 
-            if (ev.isKey && ev.type == EventType.KeyUp) {
-                if (ev.keyCode == mainKey || (ev.keyCode == KeyCode.None && ev.character == (int)mainKey)) {
-                    ev.Use();
-                    return true;
-                }
+    internal static bool HotkeyIsUp(KeyCode mainKey) {
+        var ev = Event.current;
+        if (ev == null)
+            return false;
+
+        if (ev.isKey && ev.type == EventType.KeyUp) {
+            if (ev.keyCode == mainKey || (ev.keyCode == KeyCode.None && ev.character == (int)mainKey)) {
+                ev.Use();
+                return true;
             }
+        }
 
-            if (ev.isMouse && ev.type == EventType.MouseUp) {
-                if (Input.GetKeyUp(mainKey)) {
-                    ev.Use();
-                    return true;
-                }
-            }
-
+        if (ev.isMouse && ev.type == EventType.MouseUp) {
             if (Input.GetKeyUp(mainKey)) {
+                ev.Use();
                 return true;
             }
-
-            return false;
         }
+
+        return Input.GetKeyUp(mainKey);
     }
 }

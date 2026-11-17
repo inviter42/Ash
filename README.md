@@ -12,15 +12,21 @@ The plugin has a separate tab that provides visibility controls for all the item
 Complete re-imagining of the h-scene UI, designed and implemented completely from scratch to provide you with the most immersive h-scene experience.
 
 ### Better Applicables
-Improved tattoos, moles and makeup for both main game and studio. Now they can be scaled, moved and even stacked on top of each other, with ten tattoo layers available for both face and body.
+Improved tattoos, moles and makeup for both main game and studio. Now they can be scaled, moved and even stacked on top of each other, with up to ten layers available for both face and body.
 
 ### Better Penetration
 Replaces penis IK squishing behavior. A flat bone structure offers a little better compatibility with settings/sliders in certain cases, compared to the cascading one of the original.
 
-### H-Scene Controls
-Controls for bodily fluids, as well as neck and eyes targets.
+### H-Scene Customization
+Controls for bodily fluids, voice settings, neck and eyes targets and face expressions. Improved neck and eyes rotation calculations and customizable rotation limits.
 
-### H-Scene Settings
+### Ahegao Faces
+Custom presets for ahegao face expressions, triggered manually or automatically during climax, with many sliders available to personalize your experience.
+
+### Extended Interactivity
+Allows to bring attention of a female by double-clicking her in the scene. Click and hold lets you fix current neck and eyes position in-place.
+
+### Bug fixes
 Quality of life features and bug fixes.
 
 ## Installation

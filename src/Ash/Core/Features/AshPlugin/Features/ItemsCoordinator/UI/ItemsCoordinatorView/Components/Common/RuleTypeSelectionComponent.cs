@@ -5,26 +5,25 @@ using Ash.Utility.GlobalUtils;
 using static Ash.Utility.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.AshPlugin.Common.Misc.CommonLabels;
 
-namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.Common
+namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.Common;
+
+internal static class RuleTypeSelectionComponent
 {
-    internal static class RuleTypeSelectionComponent
-    {
-        private const string ChooseRuleTypeSubtitle = "Choose rule type:";
+    private const string ChooseRuleTypeSubtitle = "Choose rule type:";
 
-        private static readonly Dictionary<string, string> RuleTypeLabels = new Dictionary<string, string> {
-            { HPosRuleItemSelectionComponent.HPosRuleTypeStateKey, "H-Pose Rule" },
-            { MasterItemSelectionComponent.InterItemRuleTypeStateKey, "Inter Item Rule" },
-        };
+    private static readonly Dictionary<string, string> RuleTypeLabels = new() {
+        { HPosRuleItemSelectionComponent.HPosRuleTypeStateKey, "H-Pose Rule" },
+        { MasterItemSelectionComponent.InterItemRuleTypeStateKey, "Inter Item Rule" },
+    };
 
-        internal static void DrawRuleTypeSelection() {
-            Subtitle(ChooseRuleTypeSubtitle);
-            Flow(
-                new[] { HPosRuleItemSelectionComponent.HPosRuleTypeStateKey, MasterItemSelectionComponent.InterItemRuleTypeStateKey },
-                (state, idx) => RadioButton(
-                    RuleTypeLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                    ItemsCoordinatorView.SelectedRuleType == state,
-                    () => ItemsCoordinatorView.SelectedRuleType = state)
-            );
-        }
+    internal static void DrawRuleTypeSelection() {
+        Subtitle(ChooseRuleTypeSubtitle);
+        Flow(
+            new[] { HPosRuleItemSelectionComponent.HPosRuleTypeStateKey, MasterItemSelectionComponent.InterItemRuleTypeStateKey },
+            (state, _) => RadioButton(
+                RuleTypeLabels.GetValueOrDefaultValue(state, ErrorLabel),
+                ItemsCoordinatorView.SelectedRuleType == state,
+                () => ItemsCoordinatorView.SelectedRuleType = state)
+        );
     }
 }

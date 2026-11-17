@@ -1,0 +1,4 @@
+[submodule "src/Unity/Assets/Alloy"]
+	path = src/Unity/Assets/Alloy
+	url = https://github.com/inviter42/alloy-custom.git
+	branch = custom-shaders

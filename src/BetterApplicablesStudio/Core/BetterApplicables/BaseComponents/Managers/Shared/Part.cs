@@ -1,8 +1,7 @@
-namespace BetterApplicablesStudio.Core.BetterApplicables.BaseComponents.Managers.Shared
+namespace BetterApplicablesStudio.Core.BetterApplicables.BaseComponents.Managers.Shared;
+
+internal enum Part
 {
-    internal enum Part
-    {
-        Head,
-        Body,
-    }
+    Head,
+    Body,
 }

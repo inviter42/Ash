@@ -13,98 +13,97 @@ using InputsValues = OneOf.OneOf<
     Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Types.HStyleDetail
 >;
 
-namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State
+namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State;
+
+internal class HPosRuleForm
 {
-    internal class HPosRuleForm
-    {
 
-        internal const string FemaleFormDataKey = "FemaleFormData";
+    internal const string FemaleFormDataKey = "FemaleFormData";
 
-        internal readonly Dictionary<string, InputsValues> FormData = new Dictionary<string, InputsValues>();
+    internal readonly Dictionary<string, InputsValues> FormData = new();
 
-        internal void SubmitForm() {
-            if (!ValidateInputs())
-                return;
+    internal void SubmitForm() {
+        if (!ValidateInputs())
+            return;
 
-            var hPosItemFormDataRaw = FormData[HPosRuleItemSelectionComponent.HPosRuleItemFormDataKey];
-            var hPosItemFormData = hPosItemFormDataRaw.IsT0
-                ? hPosItemFormDataRaw.AsT0
-                : (OneOf<ItemWearFormData, WEAR_SHOW_TYPE>) hPosItemFormDataRaw.AsT3;
+        var hPosItemFormDataRaw = FormData[HPosRuleItemSelectionComponent.HPosRuleItemFormDataKey];
+        var hPosItemFormData = hPosItemFormDataRaw.IsT0
+            ? hPosItemFormDataRaw.AsT0
+            : (OneOf<ItemWearFormData, WEAR_SHOW_TYPE>) hPosItemFormDataRaw.AsT3;
 
-            var hPosStyleFormDataRaw = FormData[HPosRuleDetailsComponent.HPosStyleFormDataKey];
-            var hPosStyleFormData = hPosStyleFormDataRaw.IsT2
-                ? hPosStyleFormDataRaw.AsT2
-                : (OneOf<H_StyleData.TYPE, HStyleDetail>)hPosStyleFormDataRaw.AsT4;
+        var hPosStyleFormDataRaw = FormData[HPosRuleDetailsComponent.HPosStyleFormDataKey];
+        var hPosStyleFormData = hPosStyleFormDataRaw.IsT2
+            ? hPosStyleFormDataRaw.AsT2
+            : (OneOf<H_StyleData.TYPE, HStyleDetail>)hPosStyleFormDataRaw.AsT4;
 
-            var femaleFormDataRaw = FormData[FemaleFormDataKey];
+        var femaleFormDataRaw = FormData[FemaleFormDataKey];
 
-            // call add rule here
+        // call add rule here
 
-            RulesManager.AddRule(
-                femaleFormDataRaw.AsT1,
-                hPosItemFormData,
-                hPosStyleFormData
-            );
+        RulesManager.AddRule(
+            femaleFormDataRaw.AsT1,
+            hPosItemFormData,
+            hPosStyleFormData
+        );
 
+        FormData.Clear();
+    }
+
+    private bool ValidateInputs() {
+        if (!FormData.ContainsKey(HPosRuleItemSelectionComponent.HPosRuleItemFormDataKey)) {
+            ItemsCoordinator.Logger.LogWarning("HPosItem form data was not found. Rule will not be created.");
             FormData.Clear();
+            return false;
         }
 
-        private bool ValidateInputs() {
-            if (!FormData.ContainsKey(HPosRuleItemSelectionComponent.HPosRuleItemFormDataKey)) {
-                ItemsCoordinator.Logger.LogWarning("HPosItem form data was not found. Rule will not be created.");
-                FormData.Clear();
-                return false;
-            }
-
-            if (!FormData.ContainsKey(HPosRuleDetailsComponent.HPosStyleFormDataKey)) {
-                ItemsCoordinator.Logger.LogWarning("HPosStyle form data was not found. Rule will not be created.");
-                FormData.Clear();
-                return false;
-            }
-
-            if (!FormData.ContainsKey(FemaleFormDataKey)) {
-                ItemsCoordinator.Logger.LogWarning("Female form data was not found. Rule will not be created.");
-                FormData.Clear();
-                return false;
-            }
-
-            var hPosItemFormData = FormData[HPosRuleItemSelectionComponent.HPosRuleItemFormDataKey];
-            var hPosStyleFormData = FormData[HPosRuleDetailsComponent.HPosStyleFormDataKey];
-            var femaleFormData = FormData[FemaleFormDataKey];
-
-            if (!hPosItemFormData.IsT0 && !hPosItemFormData.IsT3) {
-                ItemsCoordinator.Logger.LogWarning("HPosItem form data is of a wrong type. Rule will not be created.");
-                FormData.Clear();
-                return false;
-            }
-
-            if (!hPosStyleFormData.IsT2 && !hPosStyleFormData.IsT4) {
-                ItemsCoordinator.Logger.LogWarning("HPosStyle form data is of a wrong type. Rule will not be created.");
-                FormData.Clear();
-                return false;
-            }
-
-            if (!femaleFormData.IsT1) {
-                ItemsCoordinator.Logger.LogWarning("Female form data is of a wrong type. Rule will not be created.");
-                FormData.Clear();
-                return false;
-            }
-
-
-            if (hPosItemFormData.IsT0 && ReferenceEquals(hPosItemFormData.AsT0.WearData, null)) {
-                ItemsCoordinator.Logger.LogWarning("HPosItem is null. Rule will not be created.");
-                FormData.Clear();
-                return false;
-            }
-
-            // ReSharper disable once InvertIf
-            if (ReferenceEquals(femaleFormData.AsT1, null)) {
-                ItemsCoordinator.Logger.LogWarning("Female is null. Rule will not be created.");
-                FormData.Clear();
-                return false;
-            }
-
-            return true;
+        if (!FormData.ContainsKey(HPosRuleDetailsComponent.HPosStyleFormDataKey)) {
+            ItemsCoordinator.Logger.LogWarning("HPosStyle form data was not found. Rule will not be created.");
+            FormData.Clear();
+            return false;
         }
+
+        if (!FormData.ContainsKey(FemaleFormDataKey)) {
+            ItemsCoordinator.Logger.LogWarning("Female form data was not found. Rule will not be created.");
+            FormData.Clear();
+            return false;
+        }
+
+        var hPosItemFormData = FormData[HPosRuleItemSelectionComponent.HPosRuleItemFormDataKey];
+        var hPosStyleFormData = FormData[HPosRuleDetailsComponent.HPosStyleFormDataKey];
+        var femaleFormData = FormData[FemaleFormDataKey];
+
+        if (hPosItemFormData is { IsT0: false, IsT3: false }) {
+            ItemsCoordinator.Logger.LogWarning("HPosItem form data is of a wrong type. Rule will not be created.");
+            FormData.Clear();
+            return false;
+        }
+
+        if (hPosStyleFormData is { IsT2: false, IsT4: false }) {
+            ItemsCoordinator.Logger.LogWarning("HPosStyle form data is of a wrong type. Rule will not be created.");
+            FormData.Clear();
+            return false;
+        }
+
+        if (!femaleFormData.IsT1) {
+            ItemsCoordinator.Logger.LogWarning("Female form data is of a wrong type. Rule will not be created.");
+            FormData.Clear();
+            return false;
+        }
+
+
+        if (hPosItemFormData.IsT0 && ReferenceEquals(hPosItemFormData.AsT0.WearData, null)) {
+            ItemsCoordinator.Logger.LogWarning("HPosItem is null. Rule will not be created.");
+            FormData.Clear();
+            return false;
+        }
+
+        // ReSharper disable once InvertIf
+        if (ReferenceEquals(femaleFormData.AsT1, null)) {
+            ItemsCoordinator.Logger.LogWarning("Female is null. Rule will not be created.");
+            FormData.Clear();
+            return false;
+        }
+
+        return true;
     }
 }

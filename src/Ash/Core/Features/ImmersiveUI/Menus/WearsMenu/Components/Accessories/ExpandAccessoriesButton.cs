@@ -6,67 +6,66 @@ using Ash.Utility.GlobalUtils;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.Accessories
+namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.Accessories;
+
+internal static class ExpandAccessoriesButton
 {
-    internal static class ExpandAccessoriesButton
-    {
-        // todo: add frosted bg here
-        internal static void CreateExpandAccessoriesButton(
-            WearsMenuMain menu,
-            WearsMenuConfig config,
-            WearsMenuTextures textures,
-            GameObject root,
-            GameObject accessoryContainer,
-            GameObject frostedGlassGameObject) {
-            var buttonGameObj = new GameObject("ExpandAccessoriesButton", typeof(RectTransform), typeof(RawImage), typeof(Button),
-                typeof(IuiPointerEventsHandler));
-            buttonGameObj.transform.SetParent(root.transform, false);
+    // todo: add frosted bg here
+    internal static void CreateExpandAccessoriesButton(
+        WearsMenuMain menu,
+        WearsMenuConfig config,
+        WearsMenuTextures textures,
+        GameObject root,
+        GameObject accessoryContainer,
+        GameObject frostedGlassGameObject) {
+        var buttonGameObj = new GameObject("ExpandAccessoriesButton", typeof(RectTransform), typeof(RawImage), typeof(Button),
+            typeof(IuiPointerEventsHandler));
+        buttonGameObj.transform.SetParent(root.transform, false);
 
-            var bgImage = buttonGameObj.GetComponent<RawImage>();
-            bgImage.texture = textures.ExpandAccessoriesButtonTintTexture;
-            bgImage.SetNativeSize();
+        var bgImage = buttonGameObj.GetComponent<RawImage>();
+        bgImage.texture = textures.ExpandAccessoriesButtonTintTexture;
+        bgImage.SetNativeSize();
 
-            var buttonStrokeGameObj = new GameObject("Stroke", typeof(RectTransform), typeof(RawImage));
-            buttonStrokeGameObj.transform.SetParent(buttonGameObj.transform, false);
+        var buttonStrokeGameObj = new GameObject("Stroke", typeof(RectTransform), typeof(RawImage));
+        buttonStrokeGameObj.transform.SetParent(buttonGameObj.transform, false);
 
-            var stroke = buttonStrokeGameObj.GetComponent<RawImage>();
-            stroke.texture = textures.ExpandAccessoriesStrokeTexture;
-            stroke.SetNativeSize();
+        var stroke = buttonStrokeGameObj.GetComponent<RawImage>();
+        stroke.texture = textures.ExpandAccessoriesStrokeTexture;
+        stroke.SetNativeSize();
 
-            var button = buttonGameObj.GetComponent<Button>();
-            button.targetGraphic = bgImage;
-            // disable persistent 'selected' state after click-and-drag
-            button.navigation = new Navigation { mode = Navigation.Mode.None };
+        var button = buttonGameObj.GetComponent<Button>();
+        button.targetGraphic = bgImage;
+        // disable persistent 'selected' state after click-and-drag
+        button.navigation = new Navigation { mode = Navigation.Mode.None };
 
-            button.onClick.AddListener(delegate {
-                var newValue = !accessoryContainer.activeSelf;
-                accessoryContainer.SetActive(newValue);
-                frostedGlassGameObject.SetActive(newValue);
+        button.onClick.AddListener(delegate {
+            var newValue = !accessoryContainer.activeSelf;
+            accessoryContainer.SetActive(newValue);
+            frostedGlassGameObject.SetActive(newValue);
 
-                menu.RecalculateButtonsContainerBoundingBox();
-            });
+            menu.RecalculateButtonsContainerBoundingBox();
+        });
 
-            var iconGameObj = new GameObject("Icon", typeof(RectTransform), typeof(RawImage));
-            iconGameObj.transform.SetParent(buttonGameObj.transform, false);
+        var iconGameObj = new GameObject("Icon", typeof(RectTransform), typeof(RawImage));
+        iconGameObj.transform.SetParent(buttonGameObj.transform, false);
 
-            var icon = iconGameObj.GetComponent<RawImage>();
-            icon.texture = GlobalPluginData.ImmersiveUIIconsAssetBundle.LoadAsset<Texture2D>(
-                "assets/frostedglass/icons/small-arrow-right.png");
+        var icon = iconGameObj.GetComponent<RawImage>();
+        icon.texture = GlobalPluginData.ImmersiveUIIconsAssetBundle.LoadAsset<Texture2D>(
+            "assets/frostedglass/icons/small-arrow-right.png");
 
-            iconGameObj.GetComponent<RectTransform>().sizeDelta = new Vector2(
-                config.ExpandAccessoriesButtonIconSize.Width,
-                config.ExpandAccessoriesButtonIconSize.Height
-            );
+        iconGameObj.GetComponent<RectTransform>().sizeDelta = new Vector2(
+            config.ExpandAccessoriesButtonIconSize.Width,
+            config.ExpandAccessoriesButtonIconSize.Height
+        );
 
-            IuiPositioningHelpers.AnchorsCenterIn(iconGameObj, new Vector2(1, 0));
+        IuiPositioningHelpers.AnchorsCenterIn(iconGameObj, new Vector2(1, 0));
 
-            ImageUtils.SetRawImageTransparency(icon, 0.5f);
+        ImageUtils.SetRawImageTransparency(icon, 0.5f);
 
-            var cursorHandler = buttonGameObj.GetComponent<IuiPointerEventsHandler>();
-            cursorHandler.ActionOnPointerEnter.Add(eventData => ImageUtils.SetRawImageTransparency(icon, 1));
-            cursorHandler.ActionOnPointerExit.Add(eventData => ImageUtils.SetRawImageTransparency(icon, 0.5f));
+        var cursorHandler = buttonGameObj.GetComponent<IuiPointerEventsHandler>();
+        cursorHandler.ActionOnPointerEnter.Add(_ => ImageUtils.SetRawImageTransparency(icon, 1));
+        cursorHandler.ActionOnPointerExit.Add(_ => ImageUtils.SetRawImageTransparency(icon, 0.5f));
 
-            IuiPositioningHelpers.AnchorsCenterIn(buttonGameObj, config.ExpandAccessoriesButtonOffset);
-        }
+        IuiPositioningHelpers.AnchorsCenterIn(buttonGameObj, config.ExpandAccessoriesButtonOffset);
     }
 }
