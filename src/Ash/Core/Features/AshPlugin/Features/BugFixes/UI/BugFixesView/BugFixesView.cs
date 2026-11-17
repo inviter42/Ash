@@ -121,6 +121,14 @@ internal class BugFixesView
                     else FemaleHooks.ResetSpermMaterialsForAllFemales();
                 })
         );
+
+        GUILayout.Label($"Sperm opacity: {Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value:F2}");
+
+        var oldOpacityValue = Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value;
+        Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value, 0f, 1f);
+
+        if (!Mathf.Approximately(oldOpacityValue, Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value))
+            FemaleHooks.UpdateSpermMaterialsColorForAllFemales();
     }
 
     private void DrawFixFlushZFighting() {

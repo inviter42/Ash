@@ -57,6 +57,9 @@ internal class PersistentSettings
     internal Setting<bool> FixSpermZFighting = new(false);
 
     [JsonProperty]
+    internal Setting<float> ReplacedSpermMaterialOpacity = new(0.24f);
+
+    [JsonProperty]
     internal Setting<bool> FixFlushZFighting = new(false);
 
     [JsonProperty]

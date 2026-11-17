@@ -190,7 +190,7 @@ internal class FemaleHooks
         newMaterial.SetTextureScale("_MainTex", oldMaterial.GetTextureScale("_MainTex"));
         newMaterial.SetTextureOffset("_MainTex", oldMaterial.GetTextureOffset("_MainTex"));
 
-        newMaterial.SetColor(Color1, new Color(1, 1, 1, 0.45f));
+        newMaterial.SetColor(Color1, new Color(1, 1, 1, Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value));
         newMaterial.SetFloat(Metal, 0.2f);
         newMaterial.SetFloat(Roughness, 0.1f);
         newMaterial.SetFloat(Specularity, 1f);
@@ -257,6 +257,11 @@ internal class FemaleHooks
     internal static void ResetSpermMaterialsForAllFemales() {
         foreach (var female in SceneComponentRegistry.GetComponentsOfType<Female>())
             ResetSpermMaterials(female);
+    }
+
+    internal static void UpdateSpermMaterialsColorForAllFemales() {
+        foreach (var female in SceneComponentRegistry.GetComponentsOfType<Female>())
+            UpdateSpermMaterialsColor(female);
     }
 
     private static void ReplaceSpermMaterials(Female female) {
@@ -409,6 +414,43 @@ internal class FemaleHooks
             .ToArray();
 
         female.wears.ChangeBodyMaterial(female.body.rend_skin);
+    }
+
+    private static void UpdateSpermMaterialsColor(Female female) {
+        female.spermMat_face_lo.color = female.spermMat_face_lo.color with { a = Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value };
+        female.spermMat_face_hi.color = female.spermMat_face_hi.color with { a = Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value };
+        female.spermMat_bust_lo.color = female.spermMat_bust_lo.color with { a = Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value };
+        female.spermMat_bust_hi.color = female.spermMat_bust_hi.color with { a = Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value };
+        female.spermMat_back_lo.color = female.spermMat_back_lo.color with { a = Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value };
+        female.spermMat_back_hi.color = female.spermMat_back_hi.color with { a = Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value };
+        female.spermMat_crotch_lo.color = female.spermMat_crotch_lo.color with { a = Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value };
+        female.spermMat_crotch_hi.color = female.spermMat_crotch_hi.color with { a = Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value };
+        female.spermMat_hip_lo.color = female.spermMat_hip_lo.color with { a = Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value };
+        female.spermMat_hip_hi.color = female.spermMat_hip_hi.color with { a = Ash.PersistentSettings.ReplacedSpermMaterialOpacity.Value };
+
+        female.head.rend_skin.sharedMaterials = female.head.rend_skin.sharedMaterials
+            .Select(mat => {
+                if (mat.name.StartsWith(female.spermMat_face_lo.name)) return female.spermMat_face_lo;
+                if (mat.name.StartsWith(female.spermMat_face_hi.name)) return female.spermMat_face_hi;
+
+                return mat;
+            })
+            .ToArray();
+
+        female.body.rend_skin.sharedMaterials = female.body.rend_skin.sharedMaterials
+            .Select(mat => {
+                if (mat.name.StartsWith(female.spermMat_bust_lo.name)) return female.spermMat_bust_lo;
+                if (mat.name.StartsWith(female.spermMat_bust_hi.name)) return female.spermMat_bust_hi;
+                if (mat.name.StartsWith(female.spermMat_back_lo.name)) return female.spermMat_back_lo;
+                if (mat.name.StartsWith(female.spermMat_back_hi.name)) return female.spermMat_back_hi;
+                if (mat.name.StartsWith(female.spermMat_crotch_lo.name)) return female.spermMat_crotch_lo;
+                if (mat.name.StartsWith(female.spermMat_crotch_hi.name)) return female.spermMat_crotch_hi;
+                if (mat.name.StartsWith(female.spermMat_hip_lo.name)) return female.spermMat_hip_lo;
+                if (mat.name.StartsWith(female.spermMat_hip_hi.name)) return female.spermMat_hip_hi;
+
+                return mat;
+            })
+            .ToArray();
     }
 
     private static void ResetSpermMaterials(Female female) {
