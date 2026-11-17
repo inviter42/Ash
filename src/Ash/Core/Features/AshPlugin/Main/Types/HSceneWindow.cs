@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Ash.Core.Features.AshPlugin.Features.AhegaoFaces.UI.AhegaoFacesView;
 // ReSharper disable once RedundantUsingDirective
 using Ash.Core.Features.AshPlugin.Features.AnimationControls.UI.AnimationControlsView;
 using Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.BetterPenetrationSettingsView;
@@ -37,6 +38,7 @@ internal class HSceneWindow : AshWindow<HSceneWindow>
     private ItemsCoordinatorView ItemsCoordinatorViewInstance;
     private BetterPenetrationSettingsView BetterPenetrationSettingsViewInstance;
     private BugFixesView BugFixesViewInstance;
+    private AhegaoFacesView AhegaoFacesViewInstance;
 #if DEBUG
         private AnimationControlsView AnimationControlsViewInstance;
 #endif
@@ -51,6 +53,7 @@ internal class HSceneWindow : AshWindow<HSceneWindow>
         FemaleControlsViewInstance = new FemaleControlsView(this);
         HSceneCustomizationViewInstance = new HSceneCustomizationView(this);
         BetterPenetrationSettingsViewInstance = new BetterPenetrationSettingsView();
+        AhegaoFacesViewInstance = new AhegaoFacesView();
         BugFixesViewInstance = new BugFixesView();
 #if DEBUG
             AnimationControlsViewInstance = new AnimationControlsView();
@@ -65,6 +68,7 @@ internal class HSceneWindow : AshWindow<HSceneWindow>
             FemaleControlsView.HSceneControlsViewTabLabel,
             HSceneCustomizationView.HSceneSettingsViewTabLabel,
             BetterPenetrationSettingsView.AnimationControlsViewTabLabel,
+            AhegaoFacesView.AhegaoFacesViewTabLabel,
             BugFixesView.BugFixesViewTabLabel,
 #if DEBUG
                 AnimationControlsView.AnimationControlsViewTabLabel,
@@ -80,6 +84,7 @@ internal class HSceneWindow : AshWindow<HSceneWindow>
             FemaleControlsViewInstance.DrawView,
             HSceneCustomizationViewInstance.DrawView,
             BetterPenetrationSettingsViewInstance.DrawView,
+            AhegaoFacesViewInstance.DrawView,
             BugFixesViewInstance.DrawView,
 #if DEBUG
                 AnimationControlsViewInstance.DrawView,
