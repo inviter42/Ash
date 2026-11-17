@@ -5,85 +5,84 @@ using UnityEngine.UI;
 using static Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper.InGameUIAdjustments;
 using static Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper.InGameUIResets;
 
-namespace Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper
+namespace Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper;
+
+internal static class InGameUIManagementHelper
 {
-    internal static class InGameUIManagementHelper
-    {
-        private static readonly List<string> LeftMiddleMenuWhitelist = new List<string> {
-            "MaleShow",
-            "Map",
-            "Move",
-            "Light",
-            "Customs"
-        };
+    private static readonly List<string> LeftMiddleMenuWhitelist = new() {
+        "MaleShow",
+        "Map",
+        "Move",
+        "Light",
+        "Customs"
+    };
 
-        // UI MODES
-        internal static void SwitchToImmersiveUIMode() {
-            var hScene = SceneTypeTracker.Scene as H_Scene;
-            if (hScene == null)
-                return;
+    // UI MODES
+    internal static void SwitchToImmersiveUIMode() {
+        var hScene = SceneTypeTracker.Scene as H_Scene;
+        if (hScene == null)
+            return;
 
-            // left middle toggles
-            // scene.middleLeftCanvas.gameObject.SetActive(false); // todo: replace loop below with this when all ui's are done
-            var leftMiddleTogglesTransform = hScene.middleLeftCanvas.transform.Find("LeftMiddleToggles");
-            foreach (Transform child in leftMiddleTogglesTransform) {
-                if (LeftMiddleMenuWhitelist.Contains(child.gameObject.name))
-                    continue;
+        // left middle toggles
+        // scene.middleLeftCanvas.gameObject.SetActive(false); // todo: replace loop below with this when all ui's are done
+        var leftMiddleTogglesTransform = hScene.middleLeftCanvas.transform.Find("LeftMiddleToggles");
+        foreach (Transform child in leftMiddleTogglesTransform) {
+            if (LeftMiddleMenuWhitelist.Contains(child.gameObject.name))
+                continue;
 
-                child.gameObject.SetActive(false);
-            }
-
-            leftMiddleTogglesTransform.gameObject.SetActive(false);
-
-            hScene.uiCanvas.transform.Find("Badges").gameObject.SetActive(false);
-            hScene.uiCanvas.transform.Find("Swap").gameObject.SetActive(false);
-            hScene.uiCanvas.transform.Find("Talk").transform.GetComponent<Image>().enabled = false;
-
-            // left down buttons
-            var leftDownButtonsGameObj = hScene.uiCanvas.transform.Find("LeftDownButtons");
-            leftDownButtonsGameObj.transform.Find("Button_Config").gameObject.SetActive(false);
-            leftDownButtonsGameObj.transform.Find("Button_End").gameObject.SetActive(false);
-
-            AdjustGages(hScene.uiCanvas);
-            AdjustXtcLocks(hScene.uiCanvas);
-            AdjustPad(hScene.uiCanvas);
-            AdjustActButtons(hScene.uiCanvas);
-
-            AdjustLeftMiddleToggles(leftMiddleTogglesTransform.gameObject);
+            child.gameObject.SetActive(false);
         }
 
-        internal static void SwitchToDefaultUIMode() {
-            var hScene = SceneTypeTracker.Scene as H_Scene;
-            if (hScene == null)
-                return;
+        leftMiddleTogglesTransform.gameObject.SetActive(false);
 
-            // left middle toggles
-            // scene.middleLeftCanvas.gameObject.SetActive(true); // todo: replace loop below with this when all ui's are done
-            var leftMiddleTogglesTransform = hScene.middleLeftCanvas.transform.Find("LeftMiddleToggles");
-            foreach (Transform child in leftMiddleTogglesTransform) {
-                if (child.gameObject.name == "Sperm")
-                    continue;
+        hScene.uiCanvas.transform.Find("Badges").gameObject.SetActive(false);
+        hScene.uiCanvas.transform.Find("Swap").gameObject.SetActive(false);
+        hScene.uiCanvas.transform.Find("Talk").transform.GetComponent<Image>().enabled = false;
 
-                child.gameObject.SetActive(true);
-            }
+        // left down buttons
+        var leftDownButtonsGameObj = hScene.uiCanvas.transform.Find("LeftDownButtons");
+        leftDownButtonsGameObj.transform.Find("Button_Config").gameObject.SetActive(false);
+        leftDownButtonsGameObj.transform.Find("Button_End").gameObject.SetActive(false);
 
-            leftMiddleTogglesTransform.gameObject.SetActive(true);
+        AdjustGages(hScene.uiCanvas);
+        AdjustXtcLocks(hScene.uiCanvas);
+        AdjustPad(hScene.uiCanvas);
+        AdjustActButtons(hScene.uiCanvas);
 
-            hScene.uiCanvas.transform.Find("Badges").gameObject.SetActive(true);
-            hScene.uiCanvas.transform.Find("Swap").gameObject.SetActive(true);
-            hScene.uiCanvas.transform.Find("Talk").transform.GetComponent<Image>().enabled = true;
+        AdjustLeftMiddleToggles(leftMiddleTogglesTransform.gameObject);
+    }
 
-            // left down buttons
-            var leftDownButtonsGameObj = hScene.uiCanvas.transform.Find("LeftDownButtons");
-            leftDownButtonsGameObj.transform.Find("Button_Config").gameObject.SetActive(true);
-            leftDownButtonsGameObj.transform.Find("Button_End").gameObject.SetActive(true);
+    internal static void SwitchToDefaultUIMode() {
+        var hScene = SceneTypeTracker.Scene as H_Scene;
+        if (hScene == null)
+            return;
 
-            ResetGages(hScene.uiCanvas);
-            ResetXtcLocks(hScene.uiCanvas);
-            ResetPad(hScene.uiCanvas);
-            ResetActButtons(hScene.uiCanvas);
+        // left middle toggles
+        // scene.middleLeftCanvas.gameObject.SetActive(true); // todo: replace loop below with this when all ui's are done
+        var leftMiddleTogglesTransform = hScene.middleLeftCanvas.transform.Find("LeftMiddleToggles");
+        foreach (Transform child in leftMiddleTogglesTransform) {
+            if (child.gameObject.name == "Sperm")
+                continue;
 
-            ResetLeftMiddleToggles(leftMiddleTogglesTransform.gameObject);
+            child.gameObject.SetActive(true);
         }
+
+        leftMiddleTogglesTransform.gameObject.SetActive(true);
+
+        hScene.uiCanvas.transform.Find("Badges").gameObject.SetActive(true);
+        hScene.uiCanvas.transform.Find("Swap").gameObject.SetActive(true);
+        hScene.uiCanvas.transform.Find("Talk").transform.GetComponent<Image>().enabled = true;
+
+        // left down buttons
+        var leftDownButtonsGameObj = hScene.uiCanvas.transform.Find("LeftDownButtons");
+        leftDownButtonsGameObj.transform.Find("Button_Config").gameObject.SetActive(true);
+        leftDownButtonsGameObj.transform.Find("Button_End").gameObject.SetActive(true);
+
+        ResetGages(hScene.uiCanvas);
+        ResetXtcLocks(hScene.uiCanvas);
+        ResetPad(hScene.uiCanvas);
+        ResetActButtons(hScene.uiCanvas);
+
+        ResetLeftMiddleToggles(leftMiddleTogglesTransform.gameObject);
     }
 }

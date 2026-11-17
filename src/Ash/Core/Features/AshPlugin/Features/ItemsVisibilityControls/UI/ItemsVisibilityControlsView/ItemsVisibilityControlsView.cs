@@ -7,66 +7,65 @@ using Ash.Logging;
 using UnityEngine;
 using static Ash.Utility.GlobalUtils.ImGuiPrimitivesLib;
 
-namespace Ash.Core.Features.AshPlugin.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView
+namespace Ash.Core.Features.AshPlugin.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView;
+
+internal class ItemsVisibilityControlsView
 {
-    internal class ItemsVisibilityControlsView
-    {
-        internal static readonly AshLogger Logger = new AshLogger(LoggingSettings.LoggingModules.ItemsVisibilityControls);
+    internal static readonly AshLogger Logger = new(LoggingSettings.LoggingModules.ItemsVisibilityControls);
 
-        // Tab Label
-        internal const string ItemsVisibilityControlsTabLabel = "Item Visibility";
+    // Tab Label
+    internal const string ItemsVisibilityControlsTabLabel = "Item Visibility";
 
-        internal void DrawView() {
-            var activeFemale = GetActiveFemale();
-            if (activeFemale == null) {
-                Logger.LogWarning("Female is null");
-                Logger.LogWarning(Environment.StackTrace);
+    internal void DrawView() {
+        var activeFemale = GetActiveFemale();
+        if (activeFemale == null) {
+            Logger.LogWarning("Female is null");
+            Logger.LogWarning(Environment.StackTrace);
+            return;
+        }
+
+        using (new GUILayout.VerticalScope("box")) {
+            Title(activeFemale.heroineID.ToString());
+
+            FemaleSelectionComponent.Component(activeFemale, SetActiveFemale);
+
+            GUILayout.Space(12);
+
+            AllClothingVisibilitySelectionComponent.Component(activeFemale);
+            IndividualWearsVisibilitySelectionComponent.Component(activeFemale);
+
+            GUILayout.Space(12);
+
+            AllAccessoriesVisibilitySelectionComponent.Component(activeFemale);
+            IndividualAccessoriesVisibilitySelectionComponent.Component(activeFemale);
+        }
+    }
+
+    // ReSharper disable once MemberCanBeMadeStatic.Local
+    private Female GetActiveFemale() {
+        switch (WindowManager.Window) {
+            case EditSceneWindow editSceneWindow:
+                return editSceneWindow.ActiveFemale;
+            case HSceneWindow hSceneWindow:
+                return hSceneWindow.ActiveFemale;
+            default:
+                Logger.LogError($"View ItemsVisibilityControlsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
+                return null;
+        }
+    }
+
+    // ReSharper disable once MemberCanBeMadeStatic.Local
+    private void SetActiveFemale(Female female) {
+        switch (WindowManager.Window) {
+            case EditSceneWindow editSceneWindow:
+                editSceneWindow.ActiveFemale = female;
+                break;
+            case HSceneWindow hSceneWindow:
+                hSceneWindow.ActiveFemale = female;
+                break;
+            default:
+                Logger.LogError($"Component FemaleSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
                 return;
-            }
-
-            using (new GUILayout.VerticalScope("box")) {
-                Title(activeFemale.heroineID.ToString());
-
-                FemaleSelectionComponent.Component(activeFemale, SetActiveFemale);
-
-                GUILayout.Space(12);
-
-                AllClothingVisibilitySelectionComponent.Component(activeFemale);
-                IndividualWearsVisibilitySelectionComponent.Component(activeFemale);
-
-                GUILayout.Space(12);
-
-                AllAccessoriesVisibilitySelectionComponent.Component(activeFemale);
-                IndividualAccessoriesVisibilitySelectionComponent.Component(activeFemale);
-            }
-        }
-
-        // ReSharper disable once MemberCanBeMadeStatic.Local
-        private Female GetActiveFemale() {
-            switch (WindowManager.Window) {
-                case EditSceneWindow editSceneWindow:
-                    return editSceneWindow.ActiveFemale;
-                case HSceneWindow hSceneWindow:
-                    return hSceneWindow.ActiveFemale;
-                default:
-                    Logger.LogError($"View ItemsVisibilityControlsView is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
-                    return null;
-            }
-        }
-
-        // ReSharper disable once MemberCanBeMadeStatic.Local
-        private void SetActiveFemale(Female female) {
-            switch (WindowManager.Window) {
-                case EditSceneWindow editSceneWindow:
-                    editSceneWindow.ActiveFemale = female;
-                    break;
-                case HSceneWindow hSceneWindow:
-                    hSceneWindow.ActiveFemale = female;
-                    break;
-                default:
-                    Logger.LogError($"Component FemaleSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
-                    return;
-            }
         }
     }
 }

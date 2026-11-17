@@ -1,20 +1,19 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Types
+namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Types;
+
+internal class InterItemRuleSet
 {
-    internal class InterItemRuleSet
-    {
-        [JsonProperty("MasterItem")]
-        internal readonly BaseItem MasterItem;
+    [JsonProperty("MasterItem")]
+    internal readonly BaseItem MasterItem;
 
-        [JsonProperty("SlaveItems")]
-        internal readonly HashSet<SlaveItem> SlaveItems;
+    [JsonProperty("SlaveItems")]
+    internal readonly HashSet<SlaveItem> SlaveItems;
 
-        [JsonConstructor]
-        internal InterItemRuleSet(BaseItem masterItem, HashSet<SlaveItem> slaveItems) {
-            MasterItem = masterItem;
-            SlaveItems = slaveItems;
-        }
+    [JsonConstructor]
+    internal InterItemRuleSet(BaseItem masterItem, HashSet<SlaveItem> slaveItems) {
+        MasterItem = masterItem;
+        SlaveItems = slaveItems;
     }
 }

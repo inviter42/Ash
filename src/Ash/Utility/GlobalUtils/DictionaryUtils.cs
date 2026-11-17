@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace Ash.Utility.GlobalUtils
+namespace Ash.Utility.GlobalUtils;
+
+internal static class DictionaryUtils
 {
-    internal static class DictionaryUtils
-    {
-        internal static T GetValueOrDefaultValue<TS, T>(this Dictionary<TS, T> dictionary, TS key, T defaultValue) {
-            return dictionary.TryGetValue(key, out var value)
-                ? value
-                : defaultValue;
-        }
+    internal static T GetValueOrDefaultValue<TS, T>(this Dictionary<TS, T> dictionary, TS key, T defaultValue) {
+        return dictionary.TryGetValue(key, out var value)
+            ? value
+            : defaultValue;
     }
 }

@@ -1,19 +1,18 @@
 using System;
 using HarmonyLib;
 
-namespace Ash.Core.Features.BetterApplicables.SharedHooks._Male
-{
-    [HarmonyPatch]
-    internal class MaleHooks
-    {
-        internal static event Action<Male> MaleIsBeingApplied;
+namespace Ash.Core.Features.BetterApplicables.SharedHooks._Male;
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(Male), nameof(Male.Apply))]
-        // ReSharper disable once InconsistentNaming
-        internal static bool MaleApplyPrefix(Male __instance) {
-            MaleIsBeingApplied?.Invoke(__instance);
-            return true;
-        }
+[HarmonyPatch]
+internal class MaleHooks
+{
+    internal static event Action<Male> MaleIsBeingApplied;
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(Male), nameof(Male.Apply))]
+    // ReSharper disable once InconsistentNaming
+    internal static bool MaleApplyPrefix(Male __instance) {
+        MaleIsBeingApplied?.Invoke(__instance);
+        return true;
     }
 }

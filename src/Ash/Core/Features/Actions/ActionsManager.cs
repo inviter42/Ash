@@ -1,18 +1,24 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace Ash.Core.Features.Actions
+namespace Ash.Core.Features.Actions;
+
+internal class ActionsManager : MonoBehaviour
 {
-    internal class ActionsManager : MonoBehaviour
-    {
-        private DirtyTalkAction DirtyTalk;
+    private readonly List<AbstractAction> Actions = new();
 
-        private void Awake() {
-            DirtyTalk = new DirtyTalkAction();
-        }
+    private void Awake() {
+        Actions.AddRange(new AbstractAction[] {
+            new DirtyTalkAction(),
+            new LarTargetMouseControlAction(),
+            new AhegaoFaceAction()
+        });
+    }
 
-        private void Update() {
-            DirtyTalk.QueryInput();
-            DirtyTalk.Update();
-        }
+    private void Update() {
+        Actions.ForEach(action => {
+            action.QueryInput();
+            action.Update();
+        });
     }
 }

@@ -1,8 +1,7 @@
-namespace Ash.Core.Features.BetterApplicables.BaseComponents.Managers.Shared
+namespace Ash.Core.Features.BetterApplicables.BaseComponents.Managers.Shared;
+
+internal enum Part
 {
-    internal enum Part
-    {
-        Head,
-        Body,
-    }
+    Head,
+    Body,
 }

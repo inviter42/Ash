@@ -3,50 +3,47 @@ using Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorV
 using Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State;
 using UnityEngine;
 
-namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView
+namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView;
+
+internal class ItemsCoordinatorView
 {
-    internal class ItemsCoordinatorView
-    {
-        // Tab Label
-        internal const string ItemsVisibilityCoordinatorTabLabel = "Item Rules";
-        internal static string SelectedRuleType = HPosRuleItemSelectionComponent.HPosRuleTypeStateKey;
+    // Tab Label
+    internal const string ItemsVisibilityCoordinatorTabLabel = "Item Rules";
+    internal static string SelectedRuleType = HPosRuleItemSelectionComponent.HPosRuleTypeStateKey;
 
-        private HPosRuleForm HPosRuleForm;
-        private InterItemRuleForm InterItemRuleForm;
+    private HPosRuleForm HPosRuleForm;
+    private InterItemRuleForm InterItemRuleForm;
 
-        // ReSharper disable once MemberCanBeMadeStatic.Global
-        internal void DrawView() {
-            switch (SelectedRuleType) {
-                case HPosRuleItemSelectionComponent.HPosRuleTypeStateKey:
-                    if (HPosRuleForm == null)
-                        HPosRuleForm = new HPosRuleForm();
+    // ReSharper disable once MemberCanBeMadeStatic.Global
+    internal void DrawView() {
+        switch (SelectedRuleType) {
+            case HPosRuleItemSelectionComponent.HPosRuleTypeStateKey:
+                HPosRuleForm ??= new HPosRuleForm();
 
-                    if (HPosRuleItemSelectionComponent.IsHPosItemSelected(HPosRuleForm)) {
-                        HPosRuleDetailsComponent.DrawHPosRuleDetailsView(HPosRuleForm);
-                    }
-                    else {
-                        HPosRuleItemSelectionComponent.DrawHPosRuleItemSelectionComponent(HPosRuleForm);
-                        GUILayout.Space(10);
-                        HPosRulesListComponent.DrawHPosRulesList();
-                    }
-                    break;
-                case MasterItemSelectionComponent.InterItemRuleTypeStateKey:
-                    if (InterItemRuleForm == null)
-                        InterItemRuleForm = new InterItemRuleForm();
+                if (HPosRuleItemSelectionComponent.IsHPosItemSelected(HPosRuleForm)) {
+                    HPosRuleDetailsComponent.DrawHPosRuleDetailsView(HPosRuleForm);
+                }
+                else {
+                    HPosRuleItemSelectionComponent.DrawHPosRuleItemSelectionComponent(HPosRuleForm);
+                    GUILayout.Space(10);
+                    HPosRulesListComponent.DrawHPosRulesList();
+                }
+                break;
+            case MasterItemSelectionComponent.InterItemRuleTypeStateKey:
+                InterItemRuleForm ??= new InterItemRuleForm();
 
-                    if (MasterItemSelectionComponent.IsMasterItemSelected(InterItemRuleForm)) {
-                        InterItemRuleDetailsComponent.DrawInterItemRuleDetailsView(InterItemRuleForm);
-                    }
-                    else {
-                        MasterItemSelectionComponent.DrawMasterItemSelectionComponent(InterItemRuleForm);
-                        GUILayout.Space(10);
-                        InterItemRulesListComponent.DrawInterItemRulesList();
-                    }
-                    break;
-                default:
-                    ItemsCoordinator.Logger.LogWarning("Unknown Rule Type");
-                    break;
-            }
+                if (MasterItemSelectionComponent.IsMasterItemSelected(InterItemRuleForm)) {
+                    InterItemRuleDetailsComponent.DrawInterItemRuleDetailsView(InterItemRuleForm);
+                }
+                else {
+                    MasterItemSelectionComponent.DrawMasterItemSelectionComponent(InterItemRuleForm);
+                    GUILayout.Space(10);
+                    InterItemRulesListComponent.DrawInterItemRulesList();
+                }
+                break;
+            default:
+                ItemsCoordinator.Logger.LogWarning("Unknown Rule Type");
+                break;
         }
     }
 }

@@ -3,56 +3,55 @@ using Ash.Core.Features.ImmersiveUI;
 using Ash.Core.Tooling.SceneManagement;
 using UnityEngine;
 
-namespace Ash.Core.Features.AshPlugin.Main
+namespace Ash.Core.Features.AshPlugin.Main;
+
+internal class AshUI : MonoBehaviour
 {
-    internal class AshUI : MonoBehaviour
-    {
-        internal IuiMain IuiMain;
+    internal IuiMain IuiMain;
 
-        private void Awake() {
-            SceneTypeTracker.SceneLoaded += CreateImmersiveUI;
+    private void Awake() {
+        SceneTypeTracker.SceneLoaded += CreateImmersiveUI;
 
-            SceneTypeTracker.SceneUnloaded += WindowManager.UnloadWindow;
-            SceneTypeTracker.SceneUnloaded += DestroyImmersiveUI;
+        SceneTypeTracker.SceneUnloaded += WindowManager.UnloadWindow;
+        SceneTypeTracker.SceneUnloaded += DestroyImmersiveUI;
+    }
+
+    private void Update() {
+        AshUIStateControl.UpdateState();
+
+        // imgui plugin window
+        WindowManager.UpdateWindowVisibility();
+
+        // immersive ui
+        // ReSharper disable once InvertIf
+        if (IuiMain != null) {
+            IuiMain.StateControl.UpdateState();
+
+            foreach (var enumerator in IuiMain.StateControl.YieldPostStateUpdateRoutineIterators())
+                StartCoroutine(enumerator);
+        }
+    }
+
+    internal void CreateImmersiveUI() {
+        if (!IuiMain.IsLegalScene)
+            return;
+
+        if (!Ash.PersistentSettings.IsImmersiveUiEnabled.Value) {
+            Ash.Logger.LogDebug("Immersive UI is disabled - skip running constructor");
+            return;
         }
 
-        private void Update() {
-            AshUIStateControl.UpdateState();
+        if (IuiMain != null)
+            return;
 
-            // imgui plugin window
-            WindowManager.UpdateWindowVisibility();
+        IuiMain = new IuiMain();
+    }
 
-            // immersive ui
-            // ReSharper disable once InvertIf
-            if (IuiMain != null) {
-                IuiMain.StateControl.UpdateState();
+    internal void DestroyImmersiveUI() {
+        if (IuiMain == null)
+            return;
 
-                foreach (var enumerator in IuiMain.StateControl.YieldPostStateUpdateRoutineIterators())
-                    StartCoroutine(enumerator);
-            }
-        }
-
-        internal void CreateImmersiveUI() {
-            if (!IuiMain.IsLegalScene)
-                return;
-
-            if (!Ash.PersistentSettings.IsImmersiveUiEnabled.Value) {
-                Ash.Logger.LogDebug($"Immersive UI is disabled - skip running constructor");
-                return;
-            }
-
-            if (IuiMain != null)
-                return;
-
-            IuiMain = new IuiMain();
-        }
-
-        internal void DestroyImmersiveUI() {
-            if (IuiMain == null)
-                return;
-
-            DestroyImmediate(IuiMain.CanvasGameObj);
-            IuiMain = null;
-        }
+        DestroyImmediate(IuiMain.CanvasGameObj);
+        IuiMain = null;
     }
 }

@@ -5,258 +5,288 @@ using Ash.Core.Features.AshPlugin.Features.ItemsCoordinator;
 using Ash.Core.Tooling.SceneManagement;
 using Character;
 using MoreAccessoriesPH;
+using UnityEngine;
 using UObject = UnityEngine.Object;
 
-namespace Ash.Utility.GlobalUtils
+namespace Ash.Utility.GlobalUtils;
+
+internal static class SceneUtils
 {
-    internal static class SceneUtils
-    {
-        /// <summary>
-        /// Searches for all the objects of type Female and combines all found objects' HeroineID properties
-        /// into a string Array.
-        /// </summary>
-        /// <returns>string[](could be empty)</returns>
-        internal static string[] GetHeroineIDsInSceneAsStrings() {
-            return SceneComponentRegistry.GetComponentsOfType<Female>().ToArray()
-                .Select(obj => obj.HeroineID.ToString())
-                .ToArray();
+    /// <summary>
+    /// Searches for all the objects of type Female and combines all found objects' HeroineID properties
+    /// into a string Array.
+    /// </summary>
+    /// <returns>string[](could be empty)</returns>
+    internal static string[] GetHeroineIDsInSceneAsStrings() {
+        return SceneComponentRegistry.GetComponentsOfType<Female>().ToArray()
+            .Select(obj => obj.HeroineID.ToString())
+            .ToArray();
+    }
+
+    /// <summary>
+    /// Takes an ID from HeroineID enum as tries to find an instance with this name.
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <returns>Female|Null</returns>
+    internal static Female GetFemaleComponentByHeroineIDString(string identifier) {
+        return Array.Find(
+            UObject.FindObjectsOfType<Female>(),
+            female => female.HeroineID.ToString() == identifier
+        );
+    }
+
+    internal static void ChangeStateOfClothingItem(Female female, WEAR_SHOW_TYPE item, WEAR_SHOW state) {
+        if (female == null) {
+            Ash.Logger.LogWarning("Unabled to change the state of clothing item - female is null");
+            return;
         }
 
-        /// <summary>
-        /// Takes an ID from HeroineID enum as tries to find an instance with this name.
-        /// </summary>
-        /// <param name="identifier"></param>
-        /// <returns>Female|Null</returns>
-        internal static Female GetFemaleComponentByHeroineIDString(string identifier) {
-            return Array.Find(
-                UObject.FindObjectsOfType<Female>(),
-                female => female.HeroineID.ToString() == identifier
-            );
+        if (item == WEAR_SHOW_TYPE.NUM) {
+            // illegal wear type
+            return;
         }
 
-        internal static void ChangeStateOfClothingItem(Female female, WEAR_SHOW_TYPE item, WEAR_SHOW state) {
-            if (female == null) {
-                Ash.Logger.LogWarning("Unabled to change the state of clothing item - female is null");
-                return;
-            }
+        female.wears.ChangeShow(item, state);
+        female.wears.CheckShow();
+    }
 
-            if (item == WEAR_SHOW_TYPE.NUM) {
-                // illegal wear type
-                return;
-            }
+    internal static void ChangeStateOfAllClothingItems(Female female, WEAR_SHOW state) {
+        switch (state) {
+            case WEAR_SHOW.HIDE:
+                ItemsCoordinator.SkipRulesApplication = true;
 
-            female.wears.ChangeShow(item, state);
-            female.wears.CheckShow();
+                foreach (WEAR_SHOW_TYPE item in Enum.GetValues(typeof(WEAR_SHOW_TYPE))) {
+                    ChangeStateOfClothingItem(female, item, state);
+                }
+
+                ItemsCoordinator.SkipRulesApplication = false;
+                break;
+            case WEAR_SHOW.ALL:
+            case WEAR_SHOW.HALF:
+            default:
+                foreach (WEAR_SHOW_TYPE item in Enum.GetValues(typeof(WEAR_SHOW_TYPE))) {
+                    ChangeStateOfClothingItem(female, item, state);
+                }
+
+                ItemsCoordinator.ApplyRules(female, RulesManager.InterItemRuleSets);
+                break;
+        }
+    }
+
+    internal static WEAR_SHOW CycleStateOfWearItem(Female female, WEAR_SHOW_TYPE item, bool forward = true) {
+        if (female == null) {
+            Ash.Logger.LogWarning("Unabled to change the state of clothing item - female is null.");
+            return (WEAR_SHOW)(-1);
         }
 
-        internal static void ChangeStateOfAllClothingItems(Female female, WEAR_SHOW state) {
-            switch (state) {
-                case WEAR_SHOW.HIDE:
-                    ItemsCoordinator.SkipRulesApplication = true;
-
-                    foreach (WEAR_SHOW_TYPE item in Enum.GetValues(typeof(WEAR_SHOW_TYPE))) {
-                        ChangeStateOfClothingItem(female, item, state);
-                    }
-
-                    ItemsCoordinator.SkipRulesApplication = false;
-                    break;
-                case WEAR_SHOW.ALL:
-                case WEAR_SHOW.HALF:
-                default:
-                    foreach (WEAR_SHOW_TYPE item in Enum.GetValues(typeof(WEAR_SHOW_TYPE))) {
-                        ChangeStateOfClothingItem(female, item, state);
-                    }
-
-                    ItemsCoordinator.ApplyRules(female, RulesManager.InterItemRuleSets);
-                    break;
-            }
+        if (item == WEAR_SHOW_TYPE.NUM) {
+            Ash.Logger.LogWarning("Unabled to change the state of clothing item - illegal wear type.");
+            return (WEAR_SHOW)(-1);
         }
 
-        internal static WEAR_SHOW CycleStateOfWearItem(Female female, WEAR_SHOW_TYPE item, bool forward = true) {
-            if (female == null) {
-                Ash.Logger.LogWarning("Unabled to change the state of clothing item - female is null.");
-                return (WEAR_SHOW)(-1);
-            }
+        var visualState = female.wears.GetShow(item, true);
+        var logicalState = female.wears.GetShow(item, false);
 
-            if (item == WEAR_SHOW_TYPE.NUM) {
-                Ash.Logger.LogWarning("Unabled to change the state of clothing item - illegal wear type.");
-                return (WEAR_SHOW)(-1);
-            }
+        if (visualState == logicalState) {
+            // cycle to next state
+            var wearShowNum =
+                female.wears.GetWearShowNum(item); // this number is a last possible show state
+            var newState = wearShowNum == 1
+                ? logicalState == WEAR_SHOW.ALL ? WEAR_SHOW.HIDE : WEAR_SHOW.ALL
+                : forward
+                    ? EnumUtils.GetNextEnumValue(logicalState)
+                    : EnumUtils.GetPreviousEnumValue(logicalState);
 
-            var visualState = female.wears.GetShow(item, true);
-            var logicalState = female.wears.GetShow(item, false);
+            ChangeStateOfClothingItem(female, item, newState);
+        }
+        else {
+            var pairItem = Wears.GetWearShowTypePair(item);
 
-            if (visualState == logicalState) {
-                // cycle to next state
-                var wearShowNum =
-                    female.wears.GetWearShowNum(item); // this number is a last possible show state
-                var newState = wearShowNum == 1
-                    ? logicalState == WEAR_SHOW.ALL ? WEAR_SHOW.HIDE : WEAR_SHOW.ALL
-                    : forward
-                        ? EnumUtils.GetNextEnumValue(logicalState)
-                        : EnumUtils.GetPreviousEnumValue(logicalState);
-
-                ChangeStateOfClothingItem(female, item, newState);
-            }
-            else {
-                var pairItem = Wears.GetWearShowTypePair(item);
-
-                ChangeStateOfClothingItem(female, item, WEAR_SHOW.ALL);
-                ChangeStateOfClothingItem(female, pairItem, WEAR_SHOW.ALL);
-            }
-
-            return female.wears.GetShow(item, false);
+            ChangeStateOfClothingItem(female, item, WEAR_SHOW.ALL);
+            ChangeStateOfClothingItem(female, pairItem, WEAR_SHOW.ALL);
         }
 
-        internal static void ChangeStateOfAccessoryItem(Female female, int slotNo, bool itemState) {
-            female.accessories.SetShow(slotNo, itemState);
+        return female.wears.GetShow(item, false);
+    }
+
+    internal static void ChangeStateOfAccessoryItem(Female female, int slotNo, bool itemState) {
+        female.accessories.SetShow(slotNo, itemState);
+    }
+
+    internal static void CycleStateOfAccessoryItem(Female female, int slotNo) {
+        if (female == null) {
+            Ash.Logger.LogWarning("Unabled to change the state of accessory item - female is null.");
+            return;
         }
 
-        internal static void CycleStateOfAccessoryItem(Female female, int slotNo) {
-            if (female == null) {
-                Ash.Logger.LogWarning("Unabled to change the state of accessory item - female is null.");
-                return;
-            }
-
-            if (slotNo < 0) {
-                Ash.Logger.LogWarning("Unabled to change the state of accessory item - illegal slotNo.");
-            }
-
-            female.accessories.SetShow(slotNo, !GetAccessoryShow(female, slotNo));
+        if (slotNo < 0) {
+            Ash.Logger.LogWarning("Unabled to change the state of accessory item - illegal slotNo.");
         }
 
-        internal static void ChangeStateOfAllAccessoryItems(Female female, bool state) {
-            if (female == null) {
-                Ash.Logger.LogWarning("Unabled to change the state of accessory item - female is null.");
-                return;
-            }
+        female.accessories.SetShow(slotNo, !GetAccessoryShow(female, slotNo));
+    }
 
-            switch (state) {
-                case true:
-                    female.accessories.ChangeAllShow(true);
-                    ItemsCoordinator.ApplyRules(female, RulesManager.InterItemRuleSets);
-                    break;
-                case false:
-                    ItemsCoordinator.SkipRulesApplication = true;
-                    female.accessories.ChangeAllShow(false);
-                    ItemsCoordinator.SkipRulesApplication = false;
-                    break;
-            }
+    internal static void ChangeStateOfAllAccessoryItems(Female female, bool state) {
+        if (female == null) {
+            Ash.Logger.LogWarning("Unabled to change the state of accessory item - female is null.");
+            return;
         }
 
-        internal static bool GetAccessoryShow(Female female, int slotNo) {
-            if (slotNo < AccessoryCustom.SLOT_NUM) {
-                return female.accessories.acceObjs[slotNo]?.obj.activeSelf ?? false;
-            }
+        switch (state) {
+            case true:
+                female.accessories.ChangeAllShow(true);
+                ItemsCoordinator.ApplyRules(female, RulesManager.InterItemRuleSets);
+                break;
+            case false:
+                ItemsCoordinator.SkipRulesApplication = true;
+                female.accessories.ChangeAllShow(false);
+                ItemsCoordinator.SkipRulesApplication = false;
+                break;
+        }
+    }
 
-            if (Ash.MoreAccessoriesInstance == null)
-                return false;
-
-            var accessoryData = Ash.MoreAccessoriesInstance
-                .GetAdditionalData(female.customParam)
-                .accessories[slotNo - AccessoryCustom.SLOT_NUM];
-
-            if (accessoryData?.acceObj == null)
-                return false;
-
-            return ((Accessories.AcceObj)accessoryData.acceObj)
-                .obj
-                .activeSelf;
+    internal static bool GetAccessoryShow(Female female, int slotNo) {
+        if (slotNo < AccessoryCustom.SLOT_NUM) {
+            return female.accessories.acceObjs[slotNo]?.obj.activeSelf ?? false;
         }
 
-        internal static WEAR_SHOW_TYPE[] GetWearShowTypesOfEquippedItems(Female female) {
-            if (female == null)
-                return null;
+        if (Ash.MoreAccessoriesInstance == null)
+            return false;
 
-            return Enum.GetValues(typeof(WEAR_SHOW_TYPE))
-                .Cast<WEAR_SHOW_TYPE>()
-                .Where(wearShowType => wearShowType != WEAR_SHOW_TYPE.NUM)
-                .Where(e => female.wears.IsEquiped(female.customParam, e))
-                .ToArray();
+        var accessoryData = Ash.MoreAccessoriesInstance
+            .GetAdditionalData(female.customParam)
+            .accessories[slotNo - AccessoryCustom.SLOT_NUM];
+
+        if (accessoryData?.acceObj == null)
+            return false;
+
+        return ((Accessories.AcceObj)accessoryData.acceObj)
+            .obj
+            .activeSelf;
+    }
+
+    internal static WEAR_SHOW_TYPE[] GetWearShowTypesOfEquippedItems(Female female) {
+        if (female == null)
+            return null;
+
+        return Enum.GetValues(typeof(WEAR_SHOW_TYPE))
+            .Cast<WEAR_SHOW_TYPE>()
+            .Where(wearShowType => wearShowType != WEAR_SHOW_TYPE.NUM)
+            .Where(e => female.wears.IsEquiped(female.customParam, e))
+            .ToArray();
+    }
+
+    internal static List<Accessories.AcceObj> GetEquippedAccessoryObjects(Female female) {
+        return female.accessories.acceObjs
+            .Where(accessoryObj => accessoryObj != null)
+            .ToList();
+    }
+
+    internal static List<MoreAccessoriesPH.MoreAccessories.AdditionalData.AccessoryData> GetEquippedExtendedAccessoryData(Female female) {
+        return Ash.MoreAccessoriesInstance
+            .GetAdditionalData(female.customParam)
+            .accessories
+            .Where(accessoryData => accessoryData?.acceObj != null)
+            .ToList();
+    }
+
+    internal static ACCESSORY_ATTACH GetAccessoryAttachByIndex(Female female, int index) {
+        var mainModel = GetEquippedAccessoryObjects(female);
+        var extModel = GetEquippedExtendedAccessoryData(female);
+        var getAttachFromMainModel = new Func<int, ACCESSORY_ATTACH>(i => mainModel[i].acceParam.slot[mainModel[i].slot].nowAttach);
+        var getAttachFromExtModel = new Func<int, ACCESSORY_ATTACH>(i => extModel[i % mainModel.Count].accessoryCustom.nowAttach);
+        var getter = index < mainModel.Count
+            ? getAttachFromMainModel
+            : getAttachFromExtModel;
+
+        return getter(index);
+    }
+
+    internal static ACCESSORY_ATTACH GetAccessoryAttachByIndex(
+        List<Accessories.AcceObj> mainModel,
+        List<MoreAccessoriesPH.MoreAccessories.AdditionalData.AccessoryData> extModel,
+        int index
+    ) {
+        var getAttachFromMainModel = new Func<int, ACCESSORY_ATTACH>(i => mainModel[i].acceParam.slot[mainModel[i].slot].nowAttach);
+        var getAttachFromExtModel = new Func<int, ACCESSORY_ATTACH>(i => extModel[i % mainModel.Count].accessoryCustom.nowAttach);
+        var getter = index < mainModel.Count
+            ? getAttachFromMainModel
+            : getAttachFromExtModel;
+
+        return getter(index);
+    }
+
+    internal static ACCESSORY_TYPE GetAccessoryTypeByIndex(Female female, int index) {
+        var mainModel = GetEquippedAccessoryObjects(female);
+        var extModel = GetEquippedExtendedAccessoryData(female);
+        var getTypeFromMainModel = new Func<int, ACCESSORY_TYPE>(i => mainModel[i].acceParam.slot[mainModel[i].slot].type);
+        var getTypeFromExtModel = new Func<int, ACCESSORY_TYPE>(i => extModel[i % mainModel.Count].accessoryCustom.type);
+        var getter = index < mainModel.Count
+            ? getTypeFromMainModel
+            : getTypeFromExtModel;
+
+        return getter(index);
+    }
+
+    internal static ACCESSORY_TYPE GetAccessoryTypeByIndex(
+        List<Accessories.AcceObj> mainModel,
+        List<MoreAccessoriesPH.MoreAccessories.AdditionalData.AccessoryData> extModel,
+        int index
+    ) {
+        var getTypeFromMainModel = new Func<int, ACCESSORY_TYPE>(i => mainModel[i].acceParam.slot[mainModel[i].slot].type);
+        var getTypeFromExtModel = new Func<int, ACCESSORY_TYPE>(i => extModel[i % mainModel.Count].accessoryCustom.type);
+        var getter = index < mainModel.Count
+            ? getTypeFromMainModel
+            : getTypeFromExtModel;
+
+        return getter(index);
+    }
+
+    internal static Accessories.AcceObj GetAcceObjByIndex(Female female, int index) {
+        var mainModel = GetEquippedAccessoryObjects(female);
+        var extModel = GetEquippedExtendedAccessoryData(female);
+        return index < mainModel.Count
+            ? mainModel[index]
+            : (Accessories.AcceObj)extModel[index % mainModel.Count].acceObj;
+    }
+
+    internal static Accessories.AcceObj GetAcceObjByIndex(
+        List<Accessories.AcceObj> mainModel,
+        List<MoreAccessories.AdditionalData.AccessoryData> extModel,
+        int index
+    ) {
+        return index < mainModel.Count
+            ? mainModel[index]
+            : (Accessories.AcceObj)extModel[index % mainModel.Count].acceObj;
+    }
+
+    internal static bool IsMainFemale(Female female) {
+        return SceneTypeTracker.Scene is H_Scene hScene && hScene.mainMembers.females.Contains(female);
+    }
+
+    internal static bool IsVisitor(Female female) {
+        return !IsMainFemale(female);
+    }
+
+    internal static Transform GetVisitorDefaultLookTarget() {
+        return SceneTypeTracker.Scene is H_Scene hScene
+            ? hScene.mainMembers.visitorLookPos.transform
+            : null;
+    }
+
+    internal static Transform GetCameraTransform() {
+        // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+        switch (SceneTypeTracker.TypeOfCurrentScene) {
+            case SceneTypeTracker.SceneTypes.SelectScene:
+                if (SceneTypeTracker.Scene is SelectScene selectScene)
+                    return selectScene.cam ? selectScene.cam.transform : null;
+                break;
+            case SceneTypeTracker.SceneTypes.H:
+                if (SceneTypeTracker.Scene is H_Scene hScene)
+                    return hScene.camera ? hScene.camera.transform : null;
+                break;
         }
 
-        internal static List<Accessories.AcceObj> GetEquippedAccessoryObjects(Female female) {
-            return female.accessories.acceObjs
-                .Where(accessoryObj => accessoryObj != null)
-                .ToList();
-        }
-
-        internal static List<MoreAccessoriesPH.MoreAccessories.AdditionalData.AccessoryData> GetEquippedExtendedAccessoryData(Female female) {
-            return Ash.MoreAccessoriesInstance
-                .GetAdditionalData(female.customParam)
-                .accessories
-                .Where(accessoryData => accessoryData?.acceObj != null)
-                .ToList();
-        }
-
-        internal static ACCESSORY_ATTACH GetAccessoryAttachByIndex(Female female, int index) {
-            var mainModel = GetEquippedAccessoryObjects(female);
-            var extModel = GetEquippedExtendedAccessoryData(female);
-            var getAttachFromMainModel = new Func<int, ACCESSORY_ATTACH>(i => mainModel[i].acceParam.slot[mainModel[i].slot].nowAttach);
-            var getAttachFromExtModel = new Func<int, ACCESSORY_ATTACH>(i => extModel[i % mainModel.Count].accessoryCustom.nowAttach);
-            var getter = index < mainModel.Count
-                ? getAttachFromMainModel
-                : getAttachFromExtModel;
-
-            return getter(index);
-        }
-
-        internal static ACCESSORY_ATTACH GetAccessoryAttachByIndex(
-            List<Accessories.AcceObj> mainModel,
-            List<MoreAccessoriesPH.MoreAccessories.AdditionalData.AccessoryData> extModel,
-            int index
-        ) {
-            var getAttachFromMainModel = new Func<int, ACCESSORY_ATTACH>(i => mainModel[i].acceParam.slot[mainModel[i].slot].nowAttach);
-            var getAttachFromExtModel = new Func<int, ACCESSORY_ATTACH>(i => extModel[i % mainModel.Count].accessoryCustom.nowAttach);
-            var getter = index < mainModel.Count
-                ? getAttachFromMainModel
-                : getAttachFromExtModel;
-
-            return getter(index);
-        }
-
-        internal static ACCESSORY_TYPE GetAccessoryTypeByIndex(Female female, int index) {
-            var mainModel = GetEquippedAccessoryObjects(female);
-            var extModel = GetEquippedExtendedAccessoryData(female);
-            var getTypeFromMainModel = new Func<int, ACCESSORY_TYPE>(i => mainModel[i].acceParam.slot[mainModel[i].slot].type);
-            var getTypeFromExtModel = new Func<int, ACCESSORY_TYPE>(i => extModel[i % mainModel.Count].accessoryCustom.type);
-            var getter = index < mainModel.Count
-                ? getTypeFromMainModel
-                : getTypeFromExtModel;
-
-            return getter(index);
-        }
-
-        internal static ACCESSORY_TYPE GetAccessoryTypeByIndex(
-            List<Accessories.AcceObj> mainModel,
-            List<MoreAccessoriesPH.MoreAccessories.AdditionalData.AccessoryData> extModel,
-            int index
-        ) {
-            var getTypeFromMainModel = new Func<int, ACCESSORY_TYPE>(i => mainModel[i].acceParam.slot[mainModel[i].slot].type);
-            var getTypeFromExtModel = new Func<int, ACCESSORY_TYPE>(i => extModel[i % mainModel.Count].accessoryCustom.type);
-            var getter = index < mainModel.Count
-                ? getTypeFromMainModel
-                : getTypeFromExtModel;
-
-            return getter(index);
-        }
-
-        internal static Accessories.AcceObj GetAcceObjByIndex(Female female, int index) {
-            var mainModel = GetEquippedAccessoryObjects(female);
-            var extModel = GetEquippedExtendedAccessoryData(female);
-            return index < mainModel.Count
-                ? mainModel[index]
-                : (Accessories.AcceObj)extModel[index % mainModel.Count].acceObj;
-        }
-
-        internal static Accessories.AcceObj GetAcceObjByIndex(
-            List<Accessories.AcceObj> mainModel,
-            List<MoreAccessories.AdditionalData.AccessoryData> extModel,
-            int index
-        ) {
-            return index < mainModel.Count
-                ? mainModel[index]
-                : (Accessories.AcceObj)extModel[index % mainModel.Count].acceObj;
-        }
+        return null;
     }
 }

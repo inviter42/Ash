@@ -2,70 +2,69 @@
 using Newtonsoft.Json;
 using OneOf;
 
-namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Types
+namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.Types;
+
+public class BaseItem : IEquatable<BaseItem>
 {
-    public class BaseItem : IEquatable<BaseItem>
-    {
-        public int Id { get; }
+    public int Id { get; }
 
-        public string AssetbundleName { get; }
+    public string AssetbundleName { get; }
 
-        public string Prefab { get; }
+    public string Prefab { get; }
 
-        public string Name { get; }
+    public string Name { get; }
 
-        [JsonProperty("ItemData")]
-        public readonly OneOf<DataOfWearItem, DataOfAccessoryItem> ItemData;
+    [JsonProperty("ItemData")]
+    public readonly OneOf<DataOfWearItem, DataOfAccessoryItem> ItemData;
 
-        [JsonConstructor]
-        public BaseItem(int id, string assetbundleName, string prefab, string name,
-            OneOf<DataOfWearItem, DataOfAccessoryItem> data) {
-            Id = id;
-            AssetbundleName = assetbundleName;
-            Prefab = prefab;
-            Name = name;
-            ItemData = data;
-        }
+    [JsonConstructor]
+    public BaseItem(int id, string assetbundleName, string prefab, string name,
+        OneOf<DataOfWearItem, DataOfAccessoryItem> data) {
+        Id = id;
+        AssetbundleName = assetbundleName;
+        Prefab = prefab;
+        Name = name;
+        ItemData = data;
+    }
 
-        public bool Equals(BaseItem other) {
-            if (other is null)
-                return false;
+    public bool Equals(BaseItem other) {
+        if (other is null)
+            return false;
 
-            return Id == other.Id
-                   && Equals(AssetbundleName, other.AssetbundleName)
-                   && Equals(Prefab, other.Prefab)
-                   && Equals(ItemData, other.ItemData);
-        }
+        return Id == other.Id
+               && Equals(AssetbundleName, other.AssetbundleName)
+               && Equals(Prefab, other.Prefab)
+               && Equals(ItemData, other.ItemData);
+    }
 
-        public override bool Equals(object obj) {
-            return obj is BaseItem item && Equals(item);
-        }
+    public override bool Equals(object obj) {
+        return obj is BaseItem item && Equals(item);
+    }
 
-        public override int GetHashCode() {
-            var hash = 17;
-            hash = hash * 23 + Id.GetHashCode();
+    public override int GetHashCode() {
+        var hash = 17;
+        hash = hash * 23 + Id.GetHashCode();
 
-            if (AssetbundleName != null)
-                hash = hash * 23 + AssetbundleName.GetHashCode();
+        if (AssetbundleName != null)
+            hash = hash * 23 + AssetbundleName.GetHashCode();
 
-            if (Prefab != null)
-                hash = hash * 23 + Prefab.GetHashCode();
+        if (Prefab != null)
+            hash = hash * 23 + Prefab.GetHashCode();
 
-            if (!ReferenceEquals(ItemData.Value, null))
-                hash = hash * 23 + ItemData.GetHashCode();
+        if (!ReferenceEquals(ItemData.Value, null))
+            hash = hash * 23 + ItemData.GetHashCode();
 
-            return hash;
-        }
+        return hash;
+    }
 
-        public static bool operator ==(BaseItem left, BaseItem right) {
-            if (left is null)
-                return right is null;
+    public static bool operator ==(BaseItem left, BaseItem right) {
+        if (left is null)
+            return right is null;
 
-            return left.Equals(right);
-        }
+        return left.Equals(right);
+    }
 
-        public static bool operator !=(BaseItem left, BaseItem right) {
-            return !(left == right);
-        }
+    public static bool operator !=(BaseItem left, BaseItem right) {
+        return !(left == right);
     }
 }

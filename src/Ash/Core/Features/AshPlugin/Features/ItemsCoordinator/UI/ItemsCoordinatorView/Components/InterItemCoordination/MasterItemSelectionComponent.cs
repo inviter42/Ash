@@ -12,133 +12,132 @@ using static Ash.Utility.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.AshPlugin.Common.Misc.CommonLabels;
 using static Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView.State.InterItemRuleForm;
 
-namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.InterItemCoordination
+namespace Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView.Components.InterItemCoordination;
+
+internal static class MasterItemSelectionComponent
 {
-    internal static class MasterItemSelectionComponent
-    {
-        internal const string InterItemRuleTypeStateKey = "InterItemRuleType";
-        internal const string MasterItemFormDataKey = "MasterItemData";
+    internal const string InterItemRuleTypeStateKey = "InterItemRuleType";
+    internal const string MasterItemFormDataKey = "MasterItemData";
 
-        private const string NewRuleTitle = "New Rule";
+    private const string NewRuleTitle = "New Rule";
 
-        private const string NewRuleSubtitle = "Select Master item:";
+    private const string NewRuleSubtitle = "Select Master item:";
 
-        internal static bool IsMasterItemSelected(InterItemRuleForm form) =>
-            form.FormData.ContainsKey(MasterItemFormDataKey);
+    internal static bool IsMasterItemSelected(InterItemRuleForm form) =>
+        form.FormData.ContainsKey(MasterItemFormDataKey);
 
-        internal static void DrawMasterItemSelectionComponent(InterItemRuleForm form) {
-            var formData = form.FormData;
+    internal static void DrawMasterItemSelectionComponent(InterItemRuleForm form) {
+        var formData = form.FormData;
 
-            Title(NewRuleTitle);
+        Title(NewRuleTitle);
 
-            GUILayout.Space(8);
+        GUILayout.Space(8);
 
-            RuleTypeSelectionComponent.DrawRuleTypeSelection();
+        RuleTypeSelectionComponent.DrawRuleTypeSelection();
 
-            if (!formData.ContainsKey(FemaleFormDataKey))
-                formData[FemaleFormDataKey] = GetActiveFemale();
+        if (!formData.ContainsKey(FemaleFormDataKey))
+            formData[FemaleFormDataKey] = GetActiveFemale();
 
-            var activeFemale = GetActiveFemale();
-            if (activeFemale == null) {
-                ItemsCoordinator.Logger.LogWarning("Female is null");
-                ItemsCoordinator.Logger.LogWarning(Environment.StackTrace);
-                formData.Clear();
-                return;
-            }
+        var activeFemale = GetActiveFemale();
+        if (activeFemale == null) {
+            ItemsCoordinator.Logger.LogWarning("Female is null");
+            ItemsCoordinator.Logger.LogWarning(Environment.StackTrace);
+            formData.Clear();
+            return;
+        }
 
-            using (new GUILayout.VerticalScope("box")) {
-                FemaleSelectionComponent.Component(
-                    activeFemale,
-                    female => {
-                        formData[FemaleFormDataKey] = female;
-                        SetActiveFemale(female);
+        using (new GUILayout.VerticalScope("box")) {
+            FemaleSelectionComponent.Component(
+                activeFemale,
+                female => {
+                    formData[FemaleFormDataKey] = female;
+                    SetActiveFemale(female);
                 });
 
-                // MasterItem selection
-                Subtitle(NewRuleSubtitle);
+            // MasterItem selection
+            Subtitle(NewRuleSubtitle);
 
-                MasterWearSelection(form, activeFemale);
-                GUILayout.Space(12);
-                MasterAccessorySelection(form, activeFemale);
-            }
+            MasterWearSelection(form, activeFemale);
+            GUILayout.Space(12);
+            MasterAccessorySelection(form, activeFemale);
         }
+    }
 
-        // ReSharper disable once MemberCanBeMadeStatic.Local
-        private static Female GetActiveFemale() {
-            switch (WindowManager.Window) {
-                case EditSceneWindow editSceneWindow:
-                    return editSceneWindow.ActiveFemale;
-                case HSceneWindow hSceneWindow:
-                    return hSceneWindow.ActiveFemale;
-                default:
-                    ItemsCoordinator.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
-                    return null;
-            }
+    // ReSharper disable once MemberCanBeMadeStatic.Local
+    private static Female GetActiveFemale() {
+        switch (WindowManager.Window) {
+            case EditSceneWindow editSceneWindow:
+                return editSceneWindow.ActiveFemale;
+            case HSceneWindow hSceneWindow:
+                return hSceneWindow.ActiveFemale;
+            default:
+                ItemsCoordinator.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
+                return null;
         }
+    }
 
-        // ReSharper disable once MemberCanBeMadeStatic.Local
-        private static void SetActiveFemale(Female female) {
-            switch (WindowManager.Window) {
-                case EditSceneWindow editSceneWindow:
-                    editSceneWindow.ActiveFemale = female;
-                    break;
-                case HSceneWindow hSceneWindow:
-                    hSceneWindow.ActiveFemale = female;
-                    break;
-                default:
-                    ItemsCoordinator.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
-                    return;
-            }
-        }
-
-        private static void MasterWearSelection(InterItemRuleForm form, Female activeFemale) {
-            var formData = form.FormData;
-            var masterWearsModel = SceneUtils.GetWearShowTypesOfEquippedItems(activeFemale);
-            Flow(masterWearsModel, (itemPart, idx) => Button(
-                WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
-                () => {
-                    var wearData = activeFemale.wears.GetWearData(Wears.ShowToWearType[(int)itemPart]);
-                    formData[MasterItemFormDataKey] = new ItemWearFormData(itemPart, wearData);
-                })
-            );
-        }
-
-        private static void MasterAccessorySelection(InterItemRuleForm form, Female activeFemale) {
-            var formData = form.FormData;
-            var masterAccessoriesModel = activeFemale.accessories.acceObjs
-                .Where(accessoryObj => accessoryObj != null)
-                .ToArray();
-
-            Flow(masterAccessoriesModel, (accessoryObj, idx) => {
-                var accessoryData = activeFemale.accessories.GetAccessoryData(accessoryObj.acceParam, accessoryObj.slot);
-                Button(
-                    $"{accessoryObj.slot}: " +
-                    $"{AutoTranslatorIntegration.Translate(accessoryData.name)}",
-                    () => formData[MasterItemFormDataKey] =
-                        new ItemAccessoryFormData(accessoryObj.slot, accessoryObj.acceParam, accessoryData)
-                );
-            }, 3);
-
-            if (Ash.MoreAccessoriesInstance == null)
+    // ReSharper disable once MemberCanBeMadeStatic.Local
+    private static void SetActiveFemale(Female female) {
+        switch (WindowManager.Window) {
+            case EditSceneWindow editSceneWindow:
+                editSceneWindow.ActiveFemale = female;
+                break;
+            case HSceneWindow hSceneWindow:
+                hSceneWindow.ActiveFemale = female;
+                break;
+            default:
+                ItemsCoordinator.Logger.LogError($"Component MasterItemSelectionComponent is used inside of an unsupported window type {WindowManager.Window.GetType().Name}.");
                 return;
-
-            var extendedModel = Ash.MoreAccessoriesInstance
-                .GetAdditionalData(activeFemale.customParam)
-                .accessories
-                .Where(accessoryData => accessoryData?.acceObj != null)
-                .ToArray();
-
-            Flow(extendedModel, (maAccessoryData, idx) => {
-                var accessoryObj = (Accessories.AcceObj)maAccessoryData.acceObj;
-                var accessoryData =
-                    activeFemale.accessories.GetAccessoryData(accessoryObj.acceParam, accessoryObj.slot);
-                Button(
-                    $"{accessoryObj.slot}: " +
-                    $"{AutoTranslatorIntegration.Translate(accessoryData.name)}",
-                    () => formData[MasterItemFormDataKey] =
-                        new ItemAccessoryFormData(accessoryObj.slot, accessoryObj.acceParam, accessoryData)
-                );
-            }, 3);
         }
+    }
+
+    private static void MasterWearSelection(InterItemRuleForm form, Female activeFemale) {
+        var formData = form.FormData;
+        var masterWearsModel = SceneUtils.GetWearShowTypesOfEquippedItems(activeFemale);
+        Flow(masterWearsModel, (itemPart, idx) => Button(
+            WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
+            () => {
+                var wearData = activeFemale.wears.GetWearData(Wears.ShowToWearType[(int)itemPart]);
+                formData[MasterItemFormDataKey] = new ItemWearFormData(itemPart, wearData);
+            })
+        );
+    }
+
+    private static void MasterAccessorySelection(InterItemRuleForm form, Female activeFemale) {
+        var formData = form.FormData;
+        var masterAccessoriesModel = activeFemale.accessories.acceObjs
+            .Where(accessoryObj => accessoryObj != null)
+            .ToArray();
+
+        Flow(masterAccessoriesModel, (accessoryObj, idx) => {
+            var accessoryData = activeFemale.accessories.GetAccessoryData(accessoryObj.acceParam, accessoryObj.slot);
+            Button(
+                $"{accessoryObj.slot}: " +
+                $"{AutoTranslatorIntegration.Translate(accessoryData.name)}",
+                () => formData[MasterItemFormDataKey] =
+                    new ItemAccessoryFormData(accessoryObj.slot, accessoryObj.acceParam, accessoryData)
+            );
+        }, 3);
+
+        if (Ash.MoreAccessoriesInstance == null)
+            return;
+
+        var extendedModel = Ash.MoreAccessoriesInstance
+            .GetAdditionalData(activeFemale.customParam)
+            .accessories
+            .Where(accessoryData => accessoryData?.acceObj != null)
+            .ToArray();
+
+        Flow(extendedModel, (maAccessoryData, idx) => {
+            var accessoryObj = (Accessories.AcceObj)maAccessoryData.acceObj;
+            var accessoryData =
+                activeFemale.accessories.GetAccessoryData(accessoryObj.acceParam, accessoryObj.slot);
+            Button(
+                $"{accessoryObj.slot}: " +
+                $"{AutoTranslatorIntegration.Translate(accessoryData.name)}",
+                () => formData[MasterItemFormDataKey] =
+                    new ItemAccessoryFormData(accessoryObj.slot, accessoryObj.acceParam, accessoryData)
+            );
+        }, 3);
     }
 }

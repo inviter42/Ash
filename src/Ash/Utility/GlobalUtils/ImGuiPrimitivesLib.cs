@@ -4,104 +4,102 @@ using System.Linq;
 using Ash.Core.Features.AshPlugin.Common.Misc;
 using UnityEngine;
 
-namespace Ash.Utility.GlobalUtils
+namespace Ash.Utility.GlobalUtils;
+
+internal static class ImGuiPrimitivesLib
 {
-    internal static class ImGuiPrimitivesLib
-    {
-        internal static readonly GUIStyle VerticalTabsStyle = new GUIStyle(GUI.skin.button) {
-            padding = new RectOffset(18, 18, 6, 6),
-            alignment = TextAnchor.MiddleLeft,
-        };
+    internal static readonly GUIStyle VerticalTabsStyle = new(GUI.skin.button) {
+        padding = new RectOffset(18, 18, 6, 6),
+        alignment = TextAnchor.MiddleLeft,
+    };
 
 
-        private static readonly Color MatrixGreen = new Color(0.0f, 0.7f, 0.05f);
+    private static readonly Color MatrixGreen = new(0.0f, 0.7f, 0.05f);
 
-        private static readonly GUIStyle ButtonStyle = new GUIStyle(GUI.skin.button) {
-            padding = new RectOffset(12, 12, 4, 4)
-        };
+    private static readonly GUIStyle ButtonStyle = new(GUI.skin.button) {
+        padding = new RectOffset(12, 12, 4, 4)
+    };
 
 
-        internal static void Title(string text, GUIStyle style = null) {
-            var finalStyle = new GUIStyle(CommonImGuiStyles.TitleStyle);
+    internal static void Title(string text, GUIStyle style = null) {
+        var finalStyle = new GUIStyle(CommonImGuiStyles.TitleStyle);
 
-            if (style != null)
-                finalStyle = style;
+        if (style != null)
+            finalStyle = style;
 
-            GUILayout.BeginHorizontal();
+        GUILayout.BeginHorizontal();
+        GUILayout.Label(text, finalStyle);
+        GUILayout.EndHorizontal();
+    }
+
+    internal static void Subtitle(string text, GUIStyle style = null) {
+        var finalStyle = new GUIStyle(CommonImGuiStyles.SubtitleStyle);
+
+        if (style != null)
+            finalStyle = style;
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label(text, finalStyle);
+        GUILayout.EndHorizontal();
+    }
+
+    internal static void Info(string text, GUIStyle style = null) {
+        var finalStyle = new GUIStyle(CommonImGuiStyles.InfoStyle);
+
+        if (style != null)
+            finalStyle = style;
+
+        GUILayout.Space(2);
+        using (new GUILayout.HorizontalScope("box")) {
             GUILayout.Label(text, finalStyle);
-            GUILayout.EndHorizontal();
         }
 
-        internal static void Subtitle(string text, GUIStyle style = null) {
-            var finalStyle = new GUIStyle(CommonImGuiStyles.SubtitleStyle);
+        GUILayout.Space(2);
+    }
 
-            if (style != null)
-                finalStyle = style;
+    internal static void Button(string label, Action callback, params GUILayoutOption[] options) {
+        if (GUILayout.Button(label, ButtonStyle, options))
+            callback.Invoke();
+    }
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label(text, finalStyle);
-            GUILayout.EndHorizontal();
-        }
+    internal static void RadioButton(string label, bool isActive, Action callback, params GUILayoutOption[] options) {
+        var oldContentColor = GUI.contentColor;
 
-        internal static void Info(string text, GUIStyle style = null) {
-            var finalStyle = new GUIStyle(CommonImGuiStyles.InfoStyle);
+        if (isActive)
+            GUI.contentColor = MatrixGreen;
 
-            if (style != null)
-                finalStyle = style;
+        Button(label, callback, options);
 
-            GUILayout.Space(2);
-            using (new GUILayout.HorizontalScope("box")) {
-                GUILayout.Label(text, finalStyle);
+        GUI.contentColor = oldContentColor;
+    }
+
+    internal static void Flow<T>(T[] model, Action<T, int> action, int rowSize = 4) {
+        for (var i = 0; i < model.Length; i++) {
+            if (i % rowSize == 0) {
+                if (i > 0) GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
             }
 
-            GUILayout.Space(2);
+            action.Invoke(model[i], i);
+
+            if (i == model.Length - 1)
+                GUILayout.EndHorizontal();
         }
+    }
 
-        internal static void Button(string label, Action callback, params GUILayoutOption[] options) {
-            if (GUILayout.Button(label, ButtonStyle, options))
-                callback.Invoke();
-        }
+    internal static void Flow<T>(List<T> model, Action<T, int> action, int rowSize = 4) {
+        for (var i = 0; i < model.Count; i++) {
+            if (i % rowSize == 0) {
+                if (i > 0) GUILayout.EndHorizontal();
 
-        internal static void RadioButton(string label, bool isActive, Action callback,
-            params GUILayoutOption[] options) {
-            var oldContentColor = GUI.contentColor;
-
-            if (isActive)
-                GUI.contentColor = MatrixGreen;
-
-            Button(label, callback, options);
-
-            GUI.contentColor = oldContentColor;
-        }
-
-        internal static void Flow<T>(T[] model, Action<T, int> action, int rowSize = 4) {
-            for (var i = 0; i < model.Length; i++) {
-                if ((i % rowSize) == 0) {
-                    if (i > 0) GUILayout.EndHorizontal();
-
-                    GUILayout.BeginHorizontal();
-                }
-
-                action.Invoke(model[i], i);
-
-                if (i == model.Length - 1)
-                    GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
             }
-        }
 
-        internal static void Flow<T>(List<T> model, Action<T, int> action, int rowSize = 4) {
-            for (var i = 0; i < model.Count; i++) {
-                if ((i % rowSize) == 0) {
-                    if (i > 0) GUILayout.EndHorizontal();
+            action.Invoke(model.ElementAt(i), i);
 
-                    GUILayout.BeginHorizontal();
-                }
-
-                action.Invoke(model.ElementAt(i), i);
-
-                if (i == model.Count - 1)
-                    GUILayout.EndHorizontal();
-            }
+            if (i == model.Count - 1)
+                GUILayout.EndHorizontal();
         }
     }
 }
