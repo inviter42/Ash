@@ -4,11 +4,11 @@ using Ash.Core.Features.ImmersiveUI.Extras.Helpers.Interactive;
 using Ash.Core.Features.ImmersiveUI.Extras.Helpers.UiPositioning;
 using Ash.Core.Features.ImmersiveUI.Menus.GagMenu.Config;
 using Ash.Core.Features.ImmersiveUI.Menus.GagMenu.Textures;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using Character;
 using UnityEngine;
 using UnityEngine.UI;
-using static Ash.Core.Features.Common.Misc.CommonLabels;
+using static Ash.Core.Features.AshPlugin.Common.Misc.CommonLabels;
 
 namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu.Components
 {
@@ -90,7 +90,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu.Components
             var textComp = toggleLabelGameObj.GetComponent<Text>();
             textComp.text = GagItemLabels.GetValueOrDefaultValue(item, ErrorLabel);
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/corbel-regular.ttf");
             textComp.fontSize = Config.GagToggleLabelFontSize;
             textComp.fontStyle = FontStyle.Normal;

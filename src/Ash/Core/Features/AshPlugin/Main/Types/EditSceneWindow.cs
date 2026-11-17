@@ -1,0 +1,58 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView;
+using Ash.Core.Features.AshPlugin.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView;
+using Ash.Core.Tooling.SceneManagement;
+
+namespace Ash.Core.Features.AshPlugin.Main.Types
+{
+    internal class EditSceneWindow : AshWindow<EditSceneWindow>
+    {
+        internal Female ActiveFemale {
+            get {
+                if (_ActiveFemale == null)
+                    InitializeActiveFemale();
+
+                return _ActiveFemale;
+            }
+            set => _ActiveFemale = value;
+        }
+
+
+        private ItemsVisibilityControlsView ItemsVisibilityControlsViewInstance;
+        private ItemsCoordinatorView ItemsCoordinatorViewInstance;
+        // ReSharper disable once InconsistentNaming
+        private Female _ActiveFemale;
+
+        private void Awake() {
+            ItemsVisibilityControlsViewInstance = new ItemsVisibilityControlsView();
+            ItemsCoordinatorViewInstance = new ItemsCoordinatorView();
+        }
+
+        protected override string[] SetTabsModel() {
+            return new[] {
+                ItemsVisibilityControlsView.ItemsVisibilityControlsTabLabel,
+                ItemsCoordinatorView.ItemsVisibilityCoordinatorTabLabel
+            };
+        }
+
+        protected override List<Action> SetTabViewsModel() {
+            return new List<Action> {
+                ItemsVisibilityControlsViewInstance.DrawView,
+                ItemsCoordinatorViewInstance.DrawView
+            };
+        }
+
+        private void InitializeActiveFemale() {
+            var registeredFemales = SceneComponentRegistry.GetComponentsOfType<Female>().ToArray();
+
+            if (registeredFemales.Length == 0) {
+                Ash.Logger.LogError("Unable to find Female components in the SceneComponentRegistry");
+                return;
+            }
+
+            ActiveFemale = SceneComponentRegistry.GetComponentsOfType<Female>().ToArray()[0];
+        }
+    }
+}

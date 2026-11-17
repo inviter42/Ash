@@ -4,12 +4,12 @@ using Ash.Core.Features.ImmersiveUI.Extras.Helpers.UiPositioning;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Config;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Textures;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Utils;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using Character;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static Ash.Core.Features.Common.Misc.CommonLabels;
+using static Ash.Core.Features.AshPlugin.Common.Misc.CommonLabels;
 
 namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.Wears
 {
@@ -106,7 +106,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.Wears
             var textComp = textGameObj.GetComponent<Text>();
             textComp.text = WearShowTypeLabels.GetValueOrDefaultValue(showType, ErrorLabel);
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/corbel-regular.ttf");
             textComp.fontSize = 14;
             textComp.fontStyle = FontStyle.Normal;

@@ -6,8 +6,8 @@ using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.SwitchFemale;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Config;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.State;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Textures;
-using Ash.Core.SceneManagement;
-using Ash.GlobalUtils;
+using Ash.Core.Tooling.SceneManagement;
+using Ash.Utility.GlobalUtils;
 using Illusion.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
@@ -63,8 +63,8 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu
             CreateWearAndAccessoryButtonsContainer(WearsMenuRoot, hScene);
             CreateSwitchFemaleBlock(WearsMenuRoot, hScene);
 
-            AssetBundleManagement.AssetBundleManager.UnloadWearThumbnailAssetBundles();
-            AssetBundleManagement.AssetBundleManager.UnloadAccessoryThumbnailAssetBundles();
+            AssetBundleManager.UnloadWearThumbnailAssetBundles();
+            AssetBundleManager.UnloadAccessoryThumbnailAssetBundles();
 
             WearsMenuRoot.SetActive(false);
         }
@@ -283,17 +283,15 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu
 
 
         private GameObject CreateFrostedGlass(GameObject parent) {
-            var frostedGlassShader =
-                Ash.AshUI.ImmersiveUIShadersAssetBundle.LoadAsset<Shader>(
-                    "assets/frostedglass/shaders/frostedglass.shader");
+            var frostedGlassShader = GlobalPluginData.ShaderCache.GetValueOrDefaultValue(GlobalPluginData.ShaderName.FrostedGlass, null);
 
             if (frostedGlassShader == null) {
-                Ash.Logger.LogError($"{nameof(frostedGlassShader)} is null");
+                IuiMain.Logger.LogError($"{nameof(frostedGlassShader)} is null");
                 return null;
             }
 
             if (Textures.FrostedGlassAtlasMask == null) {
-                Ash.Logger.LogError($"{nameof(Textures.FrostedGlassAtlasMask)} is null");
+                IuiMain.Logger.LogError($"{nameof(Textures.FrostedGlassAtlasMask)} is null");
                 return null;
             }
 
@@ -336,9 +334,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu
             if (IconMaskMaterial != null)
                 return;
 
-            var circleMaskSdfShader =
-                Ash.AshUI.ImmersiveUIShadersAssetBundle.LoadAsset<Shader>(
-                    "assets/frostedglass/shaders/circlemasksdf.shader");
+            var circleMaskSdfShader = GlobalPluginData.ShaderCache.GetValueOrDefaultValue(GlobalPluginData.ShaderName.CircleMaskSdf, null);
 
             IconMaskMaterial = new Material(circleMaskSdfShader);
             IconMaskMaterial.SetFloat(Radius, WearsMenuConfig.IconMaskRadius);

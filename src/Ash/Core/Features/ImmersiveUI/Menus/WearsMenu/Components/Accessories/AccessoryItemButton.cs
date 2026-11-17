@@ -4,7 +4,7 @@ using Ash.Core.Features.ImmersiveUI.Extras.Helpers.UiPositioning;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Config;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Textures;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Utils;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using Character;
 using UnityEngine;
 using UnityEngine.UI;
@@ -102,7 +102,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.Accessories
             var textComp = textGameObj.GetComponent<Text>();
             textComp.text = name;
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/corbel-regular.ttf");
             textComp.fontSize = 14;
             textComp.fontStyle = FontStyle.Normal;

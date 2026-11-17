@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Ash.Core.Features.ImmersiveUI.Extras.Extensions;
-using Ash.Core.SceneManagement;
+using Ash.Core.Tooling.SceneManagement;
 using Character;
 
 namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu.State
@@ -32,7 +32,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu.State
 
             var hScene = SceneTypeTracker.Scene as H_Scene;
             if (hScene == null) {
-                Ash.Logger.LogError($"Unable to cast Scene to H_Scene.");
+                IuiMain.Logger.LogError($"Unable to cast Scene to H_Scene.");
                 return;
             }
 
@@ -59,12 +59,12 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu.State
 
         private void ShowUI() {
             if (!Ash.AshUI.IuiMain.CanvasGameObj) {
-                Ash.Logger.LogError("Unable to toggle Gag Menu visibility - CanvasGameObj not found.");
+                IuiMain.Logger.LogError("Unable to toggle Gag Menu visibility - CanvasGameObj not found.");
                 return;
             }
 
             if (!GagMenuMain.GagMenuRootGameObj) {
-                Ash.Logger.LogError("Unable to toggle Gag Menu visibility - GagMenuRootGameObj not found.");
+                IuiMain.Logger.LogError("Unable to toggle Gag Menu visibility - GagMenuRootGameObj not found.");
                 return;
             }
 
@@ -73,12 +73,12 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu.State
 
         private void HideUI() {
             if (!Ash.AshUI.IuiMain.CanvasGameObj) {
-                Ash.Logger.LogError("Unable to toggle Gag Menu visibility - Canvas not found.");
+                IuiMain.Logger.LogError("Unable to toggle Gag Menu visibility - Canvas not found.");
                 return;
             }
 
             if (!GagMenuMain.GagMenuRootGameObj) {
-                Ash.Logger.LogError("Unable to toggle Gag Menu visibility - GagMenuRootGameObj not found.");
+                IuiMain.Logger.LogError("Unable to toggle Gag Menu visibility - GagMenuRootGameObj not found.");
                 return;
             }
 
@@ -88,13 +88,13 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.GagMenu.State
         internal void OnUpdateGagItem(GAG_ITEM item, bool isVisitor) {
             var hScene = SceneTypeTracker.Scene as H_Scene;
             if (hScene == null) {
-                Ash.Logger.LogError($"Unable to cast Scene to H_Scene.");
+                IuiMain.Logger.LogError($"Unable to cast Scene to H_Scene.");
                 return;
             }
 
             if (isVisitor) {
                 if (Visitor == null) {
-                    Ash.Logger.LogDebug($"Unable to update gag item - Visitor is null");
+                    IuiMain.Logger.LogDebug($"Unable to update gag item - Visitor is null");
                     return;
                 }
 

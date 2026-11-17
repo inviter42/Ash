@@ -7,11 +7,11 @@ using Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.Config;
 using Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.InputHandler;
 using Ash.Core.Features.ImmersiveUI.Menus.StylesMenu;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu;
-using Ash.Core.SceneManagement;
-using Ash.GlobalUtils;
+using Ash.Core.Tooling.SceneManagement;
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 using UnityEngine.UI;
-using static Ash.Core.Features.Common.Misc.CommonLabels;
+using static Ash.Core.Features.AshPlugin.Common.Misc.CommonLabels;
 
 namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.State
 {
@@ -104,7 +104,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.State
                         ActivateActionByName(GetIconNameByIndex(SelectedIndex));
                     }
                     catch (Exception e) {
-                        Ash.Logger.LogError(e);
+                        IuiMain.Logger.LogError(e);
                     }
                 }
             }
@@ -115,7 +115,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.State
             }
 
             if (!Ash.PersistentSettings.IsImmersiveUiEnabled.Value) {
-                Ash.Logger.LogDebug($"Immersive UI is disabled");
+                IuiMain.Logger.LogDebug($"Immersive UI is disabled");
                 return;
             }
 
@@ -133,12 +133,12 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.State
 
         private void ShowUI() {
             if (!CanvasGameObj) {
-                Ash.Logger.LogError("Unable to toggle Radial Menu visibility - Canvas not found.");
+                IuiMain.Logger.LogError("Unable to toggle Radial Menu visibility - Canvas not found.");
                 return;
             }
 
             if (!RadialMenuMain.RadialMenuRootGameObject) {
-                Ash.Logger.LogError("Unable to toggle Radial Menu visibility - RadialMenuRootGameObject not found.");
+                IuiMain.Logger.LogError("Unable to toggle Radial Menu visibility - RadialMenuRootGameObject not found.");
                 return;
             }
 
@@ -152,12 +152,12 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.State
 
         private void HideUI(bool isHotkeyHeld, bool isCanceled) {
             if (!CanvasGameObj) {
-                Ash.Logger.LogError("Unable to toggle Radial Menu visibility - Canvas not found.");
+                IuiMain.Logger.LogError("Unable to toggle Radial Menu visibility - Canvas not found.");
                 return;
             }
 
             if (!RadialMenuMain.RadialMenuRootGameObject) {
-                Ash.Logger.LogError("Unable to toggle Radial Menu visibility - RadialMenuRootGameObject not found.");
+                IuiMain.Logger.LogError("Unable to toggle Radial Menu visibility - RadialMenuRootGameObject not found.");
                 return;
             }
 

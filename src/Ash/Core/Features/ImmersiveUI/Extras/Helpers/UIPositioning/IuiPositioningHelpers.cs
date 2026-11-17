@@ -148,7 +148,7 @@ namespace Ash.Core.Features.ImmersiveUI.Extras.Helpers.UiPositioning
 
         internal static void RotateToIconAtIndex(List<string> iconPathsFromBundle, int index, RectTransform rt) {
             if (index < 0 || index >= iconPathsFromBundle.Count) {
-                Ash.Logger.LogDebug("Icon index is out of range.");
+                IuiMain.Logger.LogDebug("Icon index is out of range.");
                 return;
             }
 

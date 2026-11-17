@@ -1,6 +1,6 @@
 using Ash.Core.Features.ImmersiveUI.Components.Config;
 using Ash.Core.Features.ImmersiveUI.Extras.Helpers.Textures;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 
 namespace Ash.Core.Features.ImmersiveUI.Components.Textures

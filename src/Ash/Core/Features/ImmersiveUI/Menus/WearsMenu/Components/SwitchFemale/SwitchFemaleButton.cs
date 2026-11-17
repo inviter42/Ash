@@ -55,7 +55,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.SwitchFemale
             var textComp = labelGameObj.GetComponent<Text>();
             textComp.text = SwitchButtonLabel;
             textComp.font =
-                Ash.AshUI.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
+                GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                     "assets/frostedglass/fonts/corbel-regular.ttf");
             textComp.fontSize = config.SwitchFemaleButtonLabelFontSize;
             textComp.fontStyle = FontStyle.Normal;

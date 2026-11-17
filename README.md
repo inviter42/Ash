@@ -11,6 +11,12 @@ The plugin has a separate tab that provides visibility controls for all the item
 ### Immersive UI™
 Complete re-imagining of the h-scene UI, designed and implemented completely from scratch to provide you with the most immersive h-scene experience.
 
+### Better Applicables
+Improved tattoos, moles and makeup for both main game and studio. Now they can be scaled, moved and even stacked on top of each other, with ten tattoo layers available for both face and body.
+
+### Better Penetration
+Replaces penis IK squishing behavior. A flat bone structure offers a little better compatibility with settings/sliders in certain cases, compared to the cascading one of the original.
+
 ### H-Scene Controls
 Controls for bodily fluids, as well as neck and eyes targets.
 
@@ -19,8 +25,12 @@ Quality of life features and bug fixes.
 
 ## Installation
 Download and install: 
-1. Download and install the dependent versions of [BepInEx](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.22), [Bepis Plugins](https://github.com/IllusionMods/BepisPlugins/releases/tag/r21.1.2) and [ModdingAPI](https://github.com/IllusionMods/IllusionModdingAPI/releases/tag/v1.45.1)  
+1. Download and install the dependent versions of [BepInEx](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.22), [Bepis Plugins](https://github.com/IllusionMods/BepisPlugins/releases/tag/r21.1.2), [ModdingAPI](https://github.com/IllusionMods/IllusionModdingAPI/releases/tag/v1.45.1) and [MaterialEditor](https://github.com/IllusionMods/KK_Plugins/releases) from KK_Plugins.
 1. Download the [latest release](https://github.com/inviter42/Ash/releases), unzip the archive, drag and drop the contents into the game directory.
+
+The plugin has a MoreAccessories dependency.
+
+It is highly recommended to use a BetterRepack, as the new releases are getting tested against it.
 
 ## How to Use
 The main plugin window is bound by default to a backquote `` ` `` key. In a non-English keyboard layouts, this key might have a different charcode associated with it. The hotkey can be changed in the BepInEx `Plugin/mod settings` menu (`F1` > `Plugin Settings` tab).
@@ -53,6 +63,11 @@ The H-Pose rules are controlling the auto-stripping behavior, when the pose is s
 1. Go to the `UI Settings` tab
 1. _(Optional)_ If you are a Better Repack user, you have an option to turn on `Remove background from thumbnails` feature, that will remove the background from Clothing and Accessory item icons. Note, that this will only work if the thumbnail background is a one single solid color 
 1. In the `Immersive UI` category turn on `Immersive UI` mode (expect a small lag upon pressing the button, while UI is being generated)
+1. While in H-Scene press and hold `Middle mouse button` (`Mouse wheel`) to summon the Radial Menu. Hotkey can be changed in the BepInEx `Plugin/mod settings` menu
+1. Move the mouse to select the desired option and release `Middle mouse button` to confirm your selection
+1. Opened menu can be closed via `Escape` or by pressing the x-close button
+
+_Note that a half-ring in the Clothing and Accessories menu is in fact interactive and can be dragged to rotate it. If your character has a lot of accessories, which do not fit on the screen, you can rotate the half-ring to bring them into the view. There is a teoretical upper limit on how many accessories can physically fit on the full ring, but I doubt anyone would reasonably have that many._
 
 ### QoL and Bug Fixes
 `H-Scene Settings` tab provides a variety of QoL features and bug fixes. Feel free to experiment to create your best Play Home experience!

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Ash.Core.SceneManagement;
+using Ash.Core.Tooling.SceneManagement;
 using Character;
 using H;
 using UnityEngine;
@@ -89,7 +89,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.Data
                         PettingStyles.Add(hStyleData);
                         break;
                     default:
-                        Ash.Logger.LogWarning($"Invalid style type {hStyleData.type}");
+                        IuiMain.Logger.LogWarning($"Invalid style type {hStyleData.type}");
                         break;
                 }
             }
@@ -110,7 +110,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.Data
                     hStyleDataList = PettingStyles;
                     break;
                 default:
-                    Ash.Logger.LogError($"Invalid style type {selectedStyleType}");
+                    IuiMain.Logger.LogError($"Invalid style type {selectedStyleType}");
                     return;
             }
 
@@ -123,7 +123,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.Data
         private bool IsStyleValid(H_StyleData styleData, H_StyleData.STATE selectedStyleState) {
             var scene = SceneTypeTracker.Scene as H_Scene;
             if (scene == null) {
-                Ash.Logger.LogError($"Invalid scene type - H_Scene expected");
+                IuiMain.Logger.LogError($"Invalid scene type - H_Scene expected");
                 return false;
             }
 

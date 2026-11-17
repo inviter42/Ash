@@ -1,4 +1,4 @@
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 using UnityEngine.UI;
 

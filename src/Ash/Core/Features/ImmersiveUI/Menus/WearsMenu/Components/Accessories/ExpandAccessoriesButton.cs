@@ -2,7 +2,7 @@ using Ash.Core.Features.ImmersiveUI.Extras.Helpers.Interactive;
 using Ash.Core.Features.ImmersiveUI.Extras.Helpers.UiPositioning;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Config;
 using Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Textures;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,7 +50,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.WearsMenu.Components.Accessories
             iconGameObj.transform.SetParent(buttonGameObj.transform, false);
 
             var icon = iconGameObj.GetComponent<RawImage>();
-            icon.texture = Ash.AshUI.ImmersiveUIIconsAssetBundle.LoadAsset<Texture2D>(
+            icon.texture = GlobalPluginData.ImmersiveUIIconsAssetBundle.LoadAsset<Texture2D>(
                 "assets/frostedglass/icons/small-arrow-right.png");
 
             iconGameObj.GetComponent<RectTransform>().sizeDelta = new Vector2(

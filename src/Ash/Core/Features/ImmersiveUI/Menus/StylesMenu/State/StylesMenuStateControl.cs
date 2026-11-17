@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Ash.Core.Features.ImmersiveUI.Extras.Extensions;
 using Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.Data;
-using Ash.Core.SceneManagement;
-using Ash.GlobalUtils;
+using Ash.Core.Tooling.SceneManagement;
+using Ash.Utility.GlobalUtils;
 using H;
 using UnityEngine;
 using UnityEngine.UI;
@@ -73,7 +73,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.State
 
             if (texture == null) {
                 thumbnailRawImage.enabled = false;
-                Ash.Logger.LogDebug($"Unable to find thumbnail for {styleData.id}");
+                IuiMain.Logger.LogDebug($"Unable to find thumbnail for {styleData.id}");
                 return;
             }
 
@@ -98,7 +98,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.State
         internal void OnStyleSelected(string id) {
             var scene = SceneTypeTracker.Scene as H_Scene;
             if (scene == null) {
-                Ash.Logger.LogError($"Invalid scene type - H_Scene expected");
+                IuiMain.Logger.LogError($"Invalid scene type - H_Scene expected");
                 return;
             }
 
@@ -110,12 +110,12 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.State
 
         private void ShowUI() {
             if (!Ash.AshUI.IuiMain.CanvasGameObj) {
-                Ash.Logger.LogError("Unable to toggle Styles Menu visibility - Canvas not found.");
+                IuiMain.Logger.LogError("Unable to toggle Styles Menu visibility - Canvas not found.");
                 return;
             }
 
             if (!StylesMenuMain.StylesMenuRootGameObj) {
-                Ash.Logger.LogError("Unable to toggle Styles Menu visibility - StylesMenuRootGameObj not found.");
+                IuiMain.Logger.LogError("Unable to toggle Styles Menu visibility - StylesMenuRootGameObj not found.");
                 return;
             }
 
@@ -124,12 +124,12 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.State
 
         private void HideUI() {
             if (!Ash.AshUI.IuiMain.CanvasGameObj) {
-                Ash.Logger.LogError("Unable to toggle Styles Menu visibility - Canvas not found.");
+                IuiMain.Logger.LogError("Unable to toggle Styles Menu visibility - Canvas not found.");
                 return;
             }
 
             if (!StylesMenuMain.StylesMenuRootGameObj) {
-                Ash.Logger.LogError("Unable to toggle Styles Menu visibility - StylesMenuRootGameObj not found.");
+                IuiMain.Logger.LogError("Unable to toggle Styles Menu visibility - StylesMenuRootGameObj not found.");
                 return;
             }
 
@@ -139,7 +139,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.StylesMenu.State
         private void UpdateFemaleStateFromSceneData() {
             var hScene = SceneTypeTracker.Scene as H_Scene;
             if (hScene == null) {
-                Ash.Logger.LogError($"Unable to cast Scene to H_Scene.");
+                IuiMain.Logger.LogError($"Unable to cast Scene to H_Scene.");
                 return;
             }
 

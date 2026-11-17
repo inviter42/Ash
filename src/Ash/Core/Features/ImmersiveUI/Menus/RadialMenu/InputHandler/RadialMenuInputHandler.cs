@@ -1,4 +1,5 @@
 using System;
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 
 namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.InputHandler
@@ -19,7 +20,7 @@ namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.InputHandler
         }
 
         internal bool IsHotkeyReleased() {
-            return GlobalUtils.HotkeyUtils.HotkeyIsUp(Ash.ConfigEntryToggleImmersiveUIHotkey.Value.MainKey);
+            return HotkeyUtils.HotkeyIsUp(Ash.ConfigEntryToggleImmersiveUIHotkey.Value.MainKey);
         }
 
         internal bool IsCanceled() {

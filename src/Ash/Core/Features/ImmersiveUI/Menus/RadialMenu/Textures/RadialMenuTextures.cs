@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Ash.Core.Features.ImmersiveUI.Extras.Helpers.Textures;
 using Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.Config;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 
 namespace Ash.Core.Features.ImmersiveUI.Menus.RadialMenu.Textures

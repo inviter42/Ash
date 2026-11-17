@@ -1,5 +1,5 @@
 using Ash.Core.Features.ImmersiveUI.Extras.Helpers.UiPositioning;
-using Ash.GlobalUtils;
+using Ash.Utility.GlobalUtils;
 using UnityEngine;
 using UnityEngine.UI;
 

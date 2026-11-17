@@ -1,44 +1,73 @@
-﻿using Ash.Core.SceneManagement;
-using Ash.Core.Settings;
-using Ash.Core.UI;
-using Ash.GlobalUtils;
-using Ash.HarmonyHooks;
-using Ash.HarmonyHooks._H;
-using Ash.HarmonyHooks._H._HState;
-using Ash.HarmonyHooks._Human;
-using Ash.HarmonyHooks._Menus;
-using Ash.HarmonyHooks._Scene;
-using Ash.HarmonyHooks._Wearables;
+using System.Reflection;
+using Ash.Core;
+using Ash.Core.Features.Actions;
+using Ash.Core.Features.AshPlugin.Features.HSceneCustomization._MaterialEditor;
+using Ash.Core.Features.AshPlugin.Main;
+// ReSharper disable once RedundantUsingDirective
+using Ash.Core.Features.AshPlugin.Main.Hooks;
+using Ash.Core.Features.AshPlugin.Settings;
+using Ash.Core.Features.BetterApplicables.BetterCheekShadows.Extensions;
+using Ash.Core.Features.BetterApplicables.BetterCheekShadows.Managers;
+using Ash.Core.Features.BetterApplicables.BetterEyeShadows.Extensions;
+using Ash.Core.Features.BetterApplicables.BetterEyeShadows.Managers;
+using Ash.Core.Features.BetterApplicables.BetterMoles.Extensions;
+using Ash.Core.Features.BetterApplicables.BetterMoles.Managers;
+using Ash.Core.Features.BetterApplicables.BetterTattoos.Extensions;
+using Ash.Core.Features.BetterApplicables.BetterTattoos.Managers;
+using Ash.Core.Features.BetterPenetration;
+using Ash.Core.Tooling.SceneManagement;
+using Ash.Logging;
+using Ash.Utility.GlobalUtils;
 using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.Logging;
 using HarmonyLib;
 using KKAPI;
 using UnityEngine;
 using BepInEx.Bootstrap;
+using KK_Plugins.MaterialEditor;
 using MoreAccessoriesPH;
 
 namespace Ash
 {
     [BepInPlugin(GUID, PluginName, Version)]
     [BepInDependency(KoikatuAPI.GUID, KoikatuAPI.VersionConst)]
+    [BepInDependency(MaterialEditorPlugin.PluginGUID, MaterialEditorPlugin.PluginVersion)]
     public class Ash : BaseUnityPlugin
     {
         public const string PluginName = "Ash";
+
         // ReSharper disable once InconsistentNaming
         // ReSharper disable once MemberCanBePrivate.Global
         public const string GUID = "inviter42.anotherscenehelper";
-        public const string Version = "1.3.0";
+        public const string Version = "1.5.7";
 
-        internal new static ManualLogSource Logger;
+        internal static Ash Instance { get; private set; }
+        internal new static AshLogger Logger;
 
         internal static ConfigEntry<KeyboardShortcut> ConfigEntryToggleWindowHotkey { get; private set; }
         internal static ConfigEntry<KeyboardShortcut> ConfigEntryToggleImmersiveUIHotkey { get; private set; }
+        internal static ConfigEntry<KeyboardShortcut> ConfigEntryTriggerDirtyTalk { get; private set; }
+        internal static ConfigEntry<bool> ConfigEntrySkipToTitleSceneEnabled { get; private set; }
 
         internal static PersistentSettings PersistentSettings { get; private set; }
 
         internal static GameObject AshGameObj;
         internal static AshUI AshUI;
+
+        internal static BetterTattooMakerExtensionHead BetterTattooMakerExtensionHead;
+        internal static BetterTattooMakerExtensionBody BetterTattooMakerExtensionBody;
+        internal static BetterTattooDataManager BetterTattooDataManager;
+
+        internal static BetterEyeShadowMakerExtensionHead BetterEyeShadowMakerExtensionHead;
+        internal static BetterEyeShadowDataManager BetterEyeShadowDataManager;
+
+        internal static BetterCheekShadowMakerExtensionHead BetterCheekShadowMakerExtensionHead;
+        internal static BetterCheekShadowDataManager BetterCheekShadowDataManager;
+
+        internal static BetterMoleMakerExtensionHead BetterMoleMakerExtensionHead;
+        internal static BetterMoleDataManager BetterMoleDataManager;
+
+        internal static BoneInjector BoneInjector;
 
         internal static MoreAccessories MoreAccessoriesInstance;
 
@@ -48,16 +77,89 @@ namespace Ash
         private static Harmony Harmony;
 
         private void Awake() {
+            if (Application.productName != "PlayHome") {
+                base.Logger.LogWarning($"Ash plugin is main game only, loading has been interrupted.");
+                return;
+            }
+
             InitializePlugin();
         }
 
         private void InitializePlugin() {
-            Logger = base.Logger;
+            Instance = this;
+            Logger = new AshLogger(LoggingSettings.LoggingModules.Global);
             Harmony = new Harmony($"{GUID}.harmony");
 
             PersistentSettings = IO.Load<PersistentSettings>(IO.SettingsFileName);
 
-            // Setup hotkey binding
+            SetupBepInExConfigShortcutsBinds();
+
+            // Register hooks
+            Harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            MaterialEditorInjector.InjectProperties();
+
+            GlobalPluginData.PerformShaderCacheWarmup();
+
+            CreateRootObjAndAttachComponents();
+
+            // initialize MoreAccessories pointer
+            MoreAccessoriesInstance = GetMoreAccessoriesInstance();
+        }
+
+        // ReSharper disable once MemberCanBeMadeStatic.Local
+        private void CreateRootObjAndAttachComponents() {
+            AshGameObj = new GameObject(
+                "Ash",
+                typeof(AshUI),
+                typeof(SceneTypeTracker),
+                typeof(ActionsManager),
+                typeof(BetterTattooMakerExtensionHead),
+                typeof(BetterTattooMakerExtensionBody),
+                typeof(BetterTattooDataManager),
+                typeof(BetterEyeShadowMakerExtensionHead),
+                typeof(BetterEyeShadowDataManager),
+                typeof(BetterCheekShadowMakerExtensionHead),
+                typeof(BetterCheekShadowDataManager),
+                typeof(BetterMoleMakerExtensionHead),
+                typeof(BetterMoleDataManager),
+                typeof(BoneInjector)
+#if DEBUG
+                ,typeof(DevHooks.AnimationBaker)
+#endif
+            );
+
+            AshUI = AshGameObj.GetComponent<AshUI>();
+
+            BetterTattooMakerExtensionHead = AshGameObj.GetComponent<BetterTattooMakerExtensionHead>();
+            BetterTattooMakerExtensionBody = AshGameObj.GetComponent<BetterTattooMakerExtensionBody>();
+            BetterTattooDataManager = AshGameObj.GetComponent<BetterTattooDataManager>();
+
+            BetterEyeShadowMakerExtensionHead = AshGameObj.GetComponent<BetterEyeShadowMakerExtensionHead>();
+            BetterEyeShadowDataManager = AshGameObj.GetComponent<BetterEyeShadowDataManager>();
+
+            BetterCheekShadowMakerExtensionHead = AshGameObj.GetComponent<BetterCheekShadowMakerExtensionHead>();
+            BetterCheekShadowDataManager = AshGameObj.GetComponent<BetterCheekShadowDataManager>();
+
+            BetterMoleMakerExtensionHead = AshGameObj.GetComponent<BetterMoleMakerExtensionHead>();
+            BetterMoleDataManager = AshGameObj.GetComponent<BetterMoleDataManager>();
+
+            BoneInjector = AshGameObj.GetComponent<BoneInjector>();
+
+            DontDestroyOnLoad(AshGameObj);
+
+            SceneTypeTracker.SceneUnloaded += GlobalPluginData.InvalidateTextureCache;
+        }
+
+        // ReSharper disable once MemberCanBeMadeStatic.Local
+        private MoreAccessories GetMoreAccessoriesInstance() {
+            if (!Chainloader.PluginInfos.TryGetValue(MoreAccessoriesGUID, out var pluginInfo))
+                return null;
+
+            return pluginInfo.Instance as MoreAccessories;
+        }
+
+        private void SetupBepInExConfigShortcutsBinds() {
             ConfigEntryToggleWindowHotkey = Config.Bind(
                 "Shortcuts",
                 "Open/Close Window",
@@ -70,46 +172,17 @@ namespace Ash
                 new KeyboardShortcut(KeyCode.Mouse2)
             );
 
-            // Register hooks
-#if DEBUG
-            Harmony.PatchAll(typeof(DevHooks));
-#endif
-            Harmony.PatchAll(typeof(FemaleHooks));
-            Harmony.PatchAll(typeof(WearsHooks));
-            Harmony.PatchAll(typeof(AccessoriesHooks));
-            Harmony.PatchAll(typeof(HMembersHooks));
-            Harmony.PatchAll(typeof(IllusionCameraHooks));
-            Harmony.PatchAll(typeof(SceneControlHooks));
-            Harmony.PatchAll(typeof(PauseMenueHooks));
-            Harmony.PatchAll(typeof(HStateLoopHooks));
-            Harmony.PatchAll(typeof(HStatePreInsertWaitHooks));
-            Harmony.PatchAll(typeof(HStatePreTouchWaitHooks));
-            Harmony.PatchAll(typeof(HStateInsertedWaitHooks));
-            Harmony.PatchAll(typeof(HStateStartHooks));
-            Harmony.PatchAll(typeof(HStateExitHooks));
-            Harmony.PatchAll(typeof(HSceneHooks));
-            Harmony.PatchAll(typeof(ConfigMenuHooks));
+            ConfigEntryTriggerDirtyTalk = Config.Bind(
+                "Shortcuts",
+                "Trigger dirty talk",
+                new KeyboardShortcut(KeyCode.T)
+            );
 
-            // Initialize UI
-            InitPluginUI();
-
-            // initialize MoreAccessories pointer
-            MoreAccessoriesInstance = GetMoreAccessoriesInstance();
-        }
-
-        // ReSharper disable once MemberCanBeMadeStatic.Local
-        private void InitPluginUI() {
-            AshGameObj = new GameObject("Ash", typeof(AshUI), typeof(SceneTypeTracker));
-            AshUI = AshGameObj.GetComponent<AshUI>();
-            DontDestroyOnLoad(AshGameObj);
-        }
-
-        // ReSharper disable once MemberCanBeMadeStatic.Local
-        private MoreAccessories GetMoreAccessoriesInstance() {
-            if (!Chainloader.PluginInfos.TryGetValue(MoreAccessoriesGUID, out var pluginInfo))
-                return null;
-
-            return pluginInfo.Instance as MoreAccessories;
+            ConfigEntrySkipToTitleSceneEnabled = Config.Bind(
+                "Global Settings",
+                "Enable intro skip",
+                false
+            );
         }
     }
 }
