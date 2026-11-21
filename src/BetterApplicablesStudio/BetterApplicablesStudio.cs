@@ -21,7 +21,7 @@ public class BetterApplicablesStudio : BaseUnityPlugin
     // ReSharper disable once MemberCanBePrivate.Global
     public const string GUID = "inviter42.betterapplicablesstudio";
     public const string AshGuid = "inviter42.anotherscenehelper";
-    public const string Version = "1.1.2";
+    public const string Version = "1.1.2.1";
 
     internal new static ManualLogSource Logger;
 
