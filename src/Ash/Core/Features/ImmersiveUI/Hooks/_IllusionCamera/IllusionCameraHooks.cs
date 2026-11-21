@@ -10,7 +10,7 @@ internal class IllusionCameraHooks
     [HarmonyPatch(typeof(IllusionCamera), nameof(IllusionCamera.LateUpdate))]
     // ReSharper disable once InconsistentNaming
     internal static bool LateUpdatePrefix(IllusionCamera __instance) {
-        return Ash.AshUI.IuiMain != null && !Ash.AshUI.IuiMain.IsRadialMenuVisible
-               || Ash.AshUI.IuiMain == null;
+        return Ash.AshUI != null && (Ash.AshUI.IuiMain != null && !Ash.AshUI.IuiMain.IsRadialMenuVisible
+                                     || Ash.AshUI.IuiMain == null);
     }
 }

@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Ash.Core.Features.AshPlugin.Features.AhegaoFaces.UI.AhegaoFacesView;
-// ReSharper disable once RedundantUsingDirective
-using Ash.Core.Features.AshPlugin.Features.AnimationControls.UI.AnimationControlsView;
 using Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.BetterPenetrationSettingsView;
 using Ash.Core.Features.AshPlugin.Features.BugFixes.UI.BugFixesView;
 using Ash.Core.Features.AshPlugin.Features.FemaleControls.UI.FemaleControlsView;
-using Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.GameUIControlsView;
+using Ash.Core.Features.AshPlugin.Features.FemaleSettings.UI.FemaleSettingsView;
 using Ash.Core.Features.AshPlugin.Features.HSceneCustomization.UI.HSceneCustomizationView;
 using Ash.Core.Features.AshPlugin.Features.ItemsCoordinator.UI.ItemsCoordinatorView;
 using Ash.Core.Features.AshPlugin.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView;
+using Ash.Core.Features.AshPlugin.Features.MaleSettings.UI.MaleSettingsView;
+using Ash.Core.Features.AshPlugin.Features.UISettings.UI.UISettingsView;
 using Ash.Core.Tooling.SceneManagement;
+#if DEBUG
+using Ash.Core.Features.AshPlugin.Features.DebuggingTesting.UI.DebugView;
+#endif
 
 namespace Ash.Core.Features.AshPlugin.Main.Types;
 
@@ -27,79 +29,91 @@ internal class HSceneWindow : AshWindow<HSceneWindow>
         set => _ActiveFemale = value;
     }
 
+    internal Male ActiveMale {
+        get {
+            if (_ActiveMale == null)
+                InitializeActiveMale();
+
+            return _ActiveMale;
+        }
+        set => _ActiveMale = value;
+    }
     // ReSharper disable once MemberCanBeMadeStatic.Global
     internal H_Scene HScene => (H_Scene)SceneTypeTracker.Scene;
 
 
-    private GameUIControlsView GameUIControlsViewInstance;
-    private FemaleControlsView FemaleControlsViewInstance;
-    private HSceneCustomizationView HSceneCustomizationViewInstance;
+    private UISettingsView UISettingsViewInstance;
     private ItemsVisibilityControlsView ItemsVisibilityControlsViewInstance;
     private ItemsCoordinatorView ItemsCoordinatorViewInstance;
+    private FemaleControlsView FemaleControlsViewInstance;
     private BetterPenetrationSettingsView BetterPenetrationSettingsViewInstance;
-    private BugFixesView BugFixesViewInstance;
     private AhegaoFacesView AhegaoFacesViewInstance;
+    private BugFixesView BugFixesViewInstance;
+    private HSceneCustomizationView HSceneCustomizationViewInstance;
+    private FemaleSettingsView FemaleSettingsViewInstance;
+    private MaleSettingsView MaleSettingsViewInstance;
 #if DEBUG
-        private AnimationControlsView AnimationControlsViewInstance;
+    private DebugView DebugViewInstance;
 #endif
 
     // ReSharper disable once InconsistentNaming
     private Female _ActiveFemale;
+    // ReSharper disable once InconsistentNaming
+    private Male _ActiveMale;
 
     private void Awake() {
-        GameUIControlsViewInstance = new GameUIControlsView();
+        UISettingsViewInstance = new UISettingsView();
         ItemsVisibilityControlsViewInstance = new ItemsVisibilityControlsView();
         ItemsCoordinatorViewInstance = new ItemsCoordinatorView();
         FemaleControlsViewInstance = new FemaleControlsView(this);
-        HSceneCustomizationViewInstance = new HSceneCustomizationView(this);
         BetterPenetrationSettingsViewInstance = new BetterPenetrationSettingsView();
         AhegaoFacesViewInstance = new AhegaoFacesView();
         BugFixesViewInstance = new BugFixesView();
+        HSceneCustomizationViewInstance = new HSceneCustomizationView();
+        FemaleSettingsViewInstance = new FemaleSettingsView(this);
+        MaleSettingsViewInstance = new MaleSettingsView(this);
 #if DEBUG
-            AnimationControlsViewInstance = new AnimationControlsView();
+        DebugViewInstance = new DebugView(this);
 #endif
-    }
 
-    protected override string[] SetTabsModel() {
-        return new[] {
-            GameUIControlsView.UIControlsLabel,
-            ItemsCoordinatorView.ItemsVisibilityCoordinatorTabLabel,
-            ItemsVisibilityControlsView.ItemsVisibilityControlsTabLabel,
-            FemaleControlsView.HSceneControlsViewTabLabel,
-            HSceneCustomizationView.HSceneSettingsViewTabLabel,
-            BetterPenetrationSettingsView.AnimationControlsViewTabLabel,
-            AhegaoFacesView.AhegaoFacesViewTabLabel,
-            BugFixesView.BugFixesViewTabLabel,
+        WindowData = new Dictionary<string, Dictionary<string, Action>> {
+            ["Scene"] = new() {
+                    [FemaleControlsView.FemaleControlsViewTabLabel] = FemaleControlsViewInstance.DrawView,
+                    [HSceneCustomizationView.HSceneCustomizationViewTabLabel] = HSceneCustomizationViewInstance.DrawView,
+                    [AhegaoFacesView.AhegaoFacesViewTabLabel] = AhegaoFacesViewInstance.DrawView,
+            },
+            ["Items"] = new() {
+                [ItemsCoordinatorView.ItemsVisibilityCoordinatorTabLabel] = ItemsCoordinatorViewInstance.DrawView,
+                [ItemsVisibilityControlsView.ItemsVisibilityControlsTabLabel] = ItemsVisibilityControlsViewInstance.DrawView,
+            },
+            ["Settings"] = new() {
+                [FemaleSettingsView.FemaleSettingsViewTabLabel] = FemaleSettingsViewInstance.DrawView,
+                [MaleSettingsView.MaleSettingsViewTabLabel] = MaleSettingsViewInstance.DrawView,
+                [BetterPenetrationSettingsView.BetterPenetrationViewTabLabel] = BetterPenetrationSettingsViewInstance.DrawView,
+                [UISettingsView.UISettingsLabel] = UISettingsViewInstance.DrawView,
+            },
+            ["Other"] = new() {
+                [BugFixesView.BugFixesViewTabLabel] = BugFixesViewInstance.DrawView,
+            },
 #if DEBUG
-                AnimationControlsView.AnimationControlsViewTabLabel,
-#endif
-        };
-    }
-
-    protected override List<Action> SetTabViewsModel() {
-        return new List<Action> {
-            GameUIControlsViewInstance.DrawView,
-            ItemsCoordinatorViewInstance.DrawView,
-            ItemsVisibilityControlsViewInstance.DrawView,
-            FemaleControlsViewInstance.DrawView,
-            HSceneCustomizationViewInstance.DrawView,
-            BetterPenetrationSettingsViewInstance.DrawView,
-            AhegaoFacesViewInstance.DrawView,
-            BugFixesViewInstance.DrawView,
-#if DEBUG
-                AnimationControlsViewInstance.DrawView,
+            ["Debug"] = new() {
+                [DebugView.DebugViewTabLabel] = DebugViewInstance.DrawView,
+            },
 #endif
         };
     }
 
     private void InitializeActiveFemale() {
-        var registeredFemales = SceneComponentRegistry.GetComponentsOfType<Female>().ToArray();
-
-        if (registeredFemales.Length == 0) {
-            Ash.Logger.LogError("Unable to find Female components in the SceneComponentRegistry");
+        if (SceneTypeTracker.Scene is not H_Scene hScene)
             return;
-        }
 
-        ActiveFemale = registeredFemales[0];
+        ActiveFemale = hScene.mainMembers.GetFemale(0);
+    }
+
+    private void InitializeActiveMale() {
+        if (SceneTypeTracker.Scene is not H_Scene hScene)
+            return;
+
+        ActiveMale = hScene.mainMembers.GetMale(0);
     }
 }

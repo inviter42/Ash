@@ -19,28 +19,33 @@ internal class EditSceneWindow : AshWindow<EditSceneWindow>
         set => _ActiveFemale = value;
     }
 
+    internal Male ActiveMale {
+        get {
+            if (_ActiveMale == null)
+                InitializeActiveMale();
+
+            return _ActiveMale;
+        }
+        set => _ActiveMale = value;
+    }
+
 
     private ItemsVisibilityControlsView ItemsVisibilityControlsViewInstance;
     private ItemsCoordinatorView ItemsCoordinatorViewInstance;
     // ReSharper disable once InconsistentNaming
     private Female _ActiveFemale;
+    // ReSharper disable once InconsistentNaming
+    private Male _ActiveMale;
 
     private void Awake() {
         ItemsVisibilityControlsViewInstance = new ItemsVisibilityControlsView();
         ItemsCoordinatorViewInstance = new ItemsCoordinatorView();
-    }
 
-    protected override string[] SetTabsModel() {
-        return new[] {
-            ItemsVisibilityControlsView.ItemsVisibilityControlsTabLabel,
-            ItemsCoordinatorView.ItemsVisibilityCoordinatorTabLabel
-        };
-    }
-
-    protected override List<Action> SetTabViewsModel() {
-        return new List<Action> {
-            ItemsVisibilityControlsViewInstance.DrawView,
-            ItemsCoordinatorViewInstance.DrawView
+        WindowData = new Dictionary<string, Dictionary<string, Action>> {
+            [string.Empty] = new() {
+                [ItemsVisibilityControlsView.ItemsVisibilityControlsTabLabel] = ItemsVisibilityControlsViewInstance.DrawView,
+                [ItemsCoordinatorView.ItemsVisibilityCoordinatorTabLabel] = ItemsCoordinatorViewInstance.DrawView,
+            }
         };
     }
 
@@ -52,6 +57,17 @@ internal class EditSceneWindow : AshWindow<EditSceneWindow>
             return;
         }
 
-        ActiveFemale = SceneComponentRegistry.GetComponentsOfType<Female>().ToArray()[0];
+        ActiveFemale = registeredFemales[0];
+    }
+
+    private void InitializeActiveMale() {
+        var registeredMales = SceneComponentRegistry.GetComponentsOfType<Male>().ToArray();
+
+        if (registeredMales.Length == 0) {
+            Ash.Logger.LogError("Unable to find Male components in the SceneComponentRegistry");
+            return;
+        }
+
+        ActiveMale = registeredMales[0];
     }
 }

@@ -10,7 +10,7 @@ namespace Ash.Core.Features.AshPlugin.Features.BetterPenetrationSettings.UI.Bett
 
 internal class BetterPenetrationSettingsView
 {
-    internal const string AnimationControlsViewTabLabel = "BetterPenetration settings";
+    internal const string BetterPenetrationViewTabLabel = "BetterPenetration settings";
 
     private static readonly AshLogger Logger = new(LoggingSettings.LoggingModules.BetterPenetration);
 

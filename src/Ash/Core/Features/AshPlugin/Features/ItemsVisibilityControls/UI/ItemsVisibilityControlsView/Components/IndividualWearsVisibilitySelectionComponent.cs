@@ -11,7 +11,7 @@ internal static class IndividualWearsVisibilitySelectionComponent
     internal static void Component(Female activeFemale) {
         Subtitle(IndividualClothingSubtitle);
         var wearsModel = SceneUtils.GetWearShowTypesOfEquippedItems(activeFemale);
-        Flow(wearsModel, (item, idx) => Button(
+        Flow(wearsModel, (item, _) => Button(
             WearShowTypeLabels.GetValueOrDefaultValue(item, ErrorLabel),
             () => SceneUtils.CycleStateOfWearItem(activeFemale, item))
         );

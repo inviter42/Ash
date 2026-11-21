@@ -61,7 +61,7 @@ internal class WearButtonsContainer
     }
 
     private GameObject CreateWearItemButton(GameObject root, Female female, WEAR_SHOW_TYPE wearShowType) {
-        var name = wearShowType.ToString().ToLower().ToTitleCase();
+        var name = wearShowType.ToString().ToLowerInvariant().ToTitleCase();
         var wearType = g_Wears.ShowToWearType[(int)wearShowType];
         var wearData = female.wears.GetWearData(wearType);
         var prefab = wearData.prefab;

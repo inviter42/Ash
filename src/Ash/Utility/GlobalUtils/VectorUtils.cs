@@ -1,3 +1,4 @@
+using System.Globalization;
 using UnityEngine;
 
 namespace Ash.Utility.GlobalUtils;
@@ -9,10 +10,10 @@ internal static class VectorUtils
     }
 
     internal static string Vec(Vector3 vector, string format="F6") {
-        return $"({vector.x.ToString(format)}, {vector.y.ToString(format)}, {vector.z.ToString(format)})";
+        return $"({vector.x.ToString(format, CultureInfo.InvariantCulture)}, {vector.y.ToString(format, CultureInfo.InvariantCulture)}, {vector.z.ToString(format, CultureInfo.InvariantCulture)})";
     }
 
     internal static string Rot(Quaternion quaternion, string format="F6") {
-        return $"({quaternion.x.ToString(format)}, {quaternion.y.ToString(format)}, {quaternion.z.ToString(format)}, {quaternion.w.ToString(format)})";
+        return $"({quaternion.x.ToString(format, CultureInfo.InvariantCulture)}, {quaternion.y.ToString(format, CultureInfo.InvariantCulture)}, {quaternion.z.ToString(format, CultureInfo.InvariantCulture)}, {quaternion.w.ToString(format, CultureInfo.InvariantCulture)})";
     }
 }

@@ -29,7 +29,7 @@ internal class WearAndAccessoryButtonsContainer: IDisposable
     ) {
         HeroineId = female.HeroineID;
 
-        Root = new GameObject(HeroineId.ToString().ToLower().ToTitleCase(), typeof(RectTransform));
+        Root = new GameObject(HeroineId.ToString().ToLowerInvariant().ToTitleCase(), typeof(RectTransform));
         Root.transform.SetParent(root.transform, false);
 
         WearButtonsContainer = new WearButtonsContainer(

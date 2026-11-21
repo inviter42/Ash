@@ -1,26 +1,29 @@
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace Ash.Core.Features.Ahegao.Hooks._Female;
+namespace Ash.Core.Features.AshPlugin.Features.AhegaoFaces.Hooks._Female;
 
 [HarmonyPatch]
 internal class FemaleHooks
 {
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(Female), nameof(Female.ChangeShowGag), typeof(bool))]
-    // ReSharper disable once InconsistentNaming
-    internal static void ChangeShowGagPrefix(Female __instance, bool flag) {
-        __instance.gagShow = flag;
-        var reset = false;
+    [HarmonyTranspiler]
+    [HarmonyPatch(typeof(Female), nameof(Female.ChangeShowGag))]
+    internal static IEnumerable<CodeInstruction> ChangeShowGagTranspiler(IEnumerable<CodeInstruction> instructions) {
+        var setHold = AccessTools.PropertySetter(typeof(AnimeLipSync), nameof(AnimeLipSync.Hold));
+        var isPresetActive = AccessTools.Method(
+            typeof(GlobalGameData),
+            nameof(GlobalGameData.IsCustomMouthExpressionPresetActive),
+            new[] { typeof(Female) }
+        );
 
-        if (__instance.gagItem != null && __instance.gagItem.obj != null) {
-            __instance.gagItem.obj.SetActive(__instance.gagShow);
-            reset = __instance.gagShow;
-        }
-
-        if (__instance.lipSync != null)
-            __instance.lipSync.Hold = !GlobalGameData.IsCustomMouthExpressionPresetActive(__instance) && reset;
-
-        __instance.head?.ResetMouth(reset);
-        __instance.RePlayMouthExpression();
+        return new CodeMatcher(instructions)
+            .MatchStartForward(new CodeMatch(i => i.Calls(setHold)))
+            .ThrowIfInvalid("Human.lipSync.Hold setter call not found")
+            .InsertAndAdvance(
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Call, isPresetActive),
+                new CodeInstruction(OpCodes.Or))
+            .InstructionEnumeration();
     }
 }

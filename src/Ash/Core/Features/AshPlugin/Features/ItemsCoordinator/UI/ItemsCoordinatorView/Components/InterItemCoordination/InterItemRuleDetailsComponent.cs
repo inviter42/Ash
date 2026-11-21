@@ -208,7 +208,7 @@ internal static class InterItemRuleDetailsComponent
             })
             .ToArray();
 
-        Flow(slaveItemWearsModelFiltered, (itemPart, idx) => {
+        Flow(slaveItemWearsModelFiltered, (itemPart, _) => {
             var slaveWearData = activeFemale.wears.GetWearData(Wears.ShowToWearType[(int)itemPart]);
             RadioButton(
                 WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
@@ -237,7 +237,7 @@ internal static class InterItemRuleDetailsComponent
             })
             .ToArray();
 
-        Flow(slaveItemAccessoriesModel, (accessoryObj, idx) => {
+        Flow(slaveItemAccessoriesModel, (accessoryObj, _) => {
             var accessoryData = activeFemale.accessories.GetAccessoryData(accessoryObj.acceParam, accessoryObj.slot);
             RadioButton(
                 $"{accessoryObj.slot}: " +
@@ -275,7 +275,7 @@ internal static class InterItemRuleDetailsComponent
             })
             .ToArray();
 
-        Flow(extendedModel, (maAccessoryData, idx) => {
+        Flow(extendedModel, (maAccessoryData, _) => {
             var accessoryObj = (Accessories.AcceObj)maAccessoryData.acceObj;
             var accessoryData =
                 activeFemale.accessories.GetAccessoryData(accessoryObj.acceParam, accessoryObj.slot);

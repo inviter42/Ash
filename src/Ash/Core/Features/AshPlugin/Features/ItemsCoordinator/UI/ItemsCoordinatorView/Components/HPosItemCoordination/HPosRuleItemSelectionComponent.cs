@@ -52,7 +52,8 @@ internal static class HPosRuleItemSelectionComponent
                 female => {
                     formData[FemaleFormDataKey] = female;
                     SetActiveFemale(female);
-                });
+                }
+            );
 
             // HPosItem selection
             HPosRuleItemSelection(form, activeFemale);
@@ -78,7 +79,7 @@ internal static class HPosRuleItemSelectionComponent
 
         Subtitle(NewRuleSubtitle1);
         model = model.Intersect(strippedTypes).ToArray();
-        Flow(model, (itemPart, idx) => Button(
+        Flow(model, (itemPart, _) => Button(
             WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
             () => {
                 var wearData = activeFemale.wears.GetWearData(Wears.ShowToWearType[(int)itemPart]);
@@ -95,7 +96,7 @@ internal static class HPosRuleItemSelectionComponent
         GUILayout.Space(4);
 
         Subtitle(NewRuleSubtitle2);
-        Flow(model, (itemPart, idx) => Button(
+        Flow(model, (itemPart, _) => Button(
             WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
             () => formData[HPosRuleItemFormDataKey] = itemPart)
         );

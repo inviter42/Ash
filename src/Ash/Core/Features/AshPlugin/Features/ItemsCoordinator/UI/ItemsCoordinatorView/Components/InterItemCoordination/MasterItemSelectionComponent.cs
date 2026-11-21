@@ -94,7 +94,7 @@ internal static class MasterItemSelectionComponent
     private static void MasterWearSelection(InterItemRuleForm form, Female activeFemale) {
         var formData = form.FormData;
         var masterWearsModel = SceneUtils.GetWearShowTypesOfEquippedItems(activeFemale);
-        Flow(masterWearsModel, (itemPart, idx) => Button(
+        Flow(masterWearsModel, (itemPart, _) => Button(
             WearShowTypeLabels.GetValueOrDefaultValue(itemPart, ErrorLabel),
             () => {
                 var wearData = activeFemale.wears.GetWearData(Wears.ShowToWearType[(int)itemPart]);
@@ -109,7 +109,7 @@ internal static class MasterItemSelectionComponent
             .Where(accessoryObj => accessoryObj != null)
             .ToArray();
 
-        Flow(masterAccessoriesModel, (accessoryObj, idx) => {
+        Flow(masterAccessoriesModel, (accessoryObj, _) => {
             var accessoryData = activeFemale.accessories.GetAccessoryData(accessoryObj.acceParam, accessoryObj.slot);
             Button(
                 $"{accessoryObj.slot}: " +
@@ -128,7 +128,7 @@ internal static class MasterItemSelectionComponent
             .Where(accessoryData => accessoryData?.acceObj != null)
             .ToArray();
 
-        Flow(extendedModel, (maAccessoryData, idx) => {
+        Flow(extendedModel, (maAccessoryData, _) => {
             var accessoryObj = (Accessories.AcceObj)maAccessoryData.acceObj;
             var accessoryData =
                 activeFemale.accessories.GetAccessoryData(accessoryObj.acceParam, accessoryObj.slot);

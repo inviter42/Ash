@@ -15,7 +15,7 @@ internal static class IndividualAccessoriesVisibilitySelectionComponent
             .Where(accessoryObj => accessoryObj != null)
             .ToArray();
 
-        Flow(accessoriesModel, (accessoryObj, idx) => {
+        Flow(accessoriesModel, (accessoryObj, _) => {
             var accessoryData =
                 activeFemale.accessories.GetAccessoryData(accessoryObj.acceParam, accessoryObj.slot);
             Button(
@@ -34,7 +34,7 @@ internal static class IndividualAccessoriesVisibilitySelectionComponent
             .Where(accessoryData => accessoryData?.acceObj != null)
             .ToArray();
 
-        Flow(extendedModel, (maAccessoryData, idx) => {
+        Flow(extendedModel, (maAccessoryData, _) => {
             var accessoryObj = (Accessories.AcceObj)maAccessoryData.acceObj;
             var accessoryData =
                 activeFemale.accessories.GetAccessoryData(accessoryObj.acceParam, accessoryObj.slot);

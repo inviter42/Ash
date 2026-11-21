@@ -123,7 +123,7 @@ internal static class HPosRuleDetailsComponent
                 return;
         }
 
-        Flow(hStylesModel, (type, idx) => RadioButton(
+        Flow(hStylesModel, (type, _) => RadioButton(
             HStylesLabels.GetValueOrDefaultValue(type, ErrorLabel),
             formData.ContainsKey(HPosStyleFormDataKey)
             && formData[HPosStyleFormDataKey].IsT2
@@ -131,7 +131,7 @@ internal static class HPosRuleDetailsComponent
             () => formData[HPosStyleFormDataKey] = type
         ));
 
-        Flow(hStyleDetailModel, (hStyleDetail, idx) => RadioButton(
+        Flow(hStyleDetailModel, (hStyleDetail, _) => RadioButton(
             HStylesExtendedLabels.GetValueOrDefaultValue(hStyleDetail, ErrorLabel),
             formData.ContainsKey(HPosStyleFormDataKey)
             && formData[HPosStyleFormDataKey].IsT4

@@ -1,11 +1,11 @@
 using Ash.Logging;
 using UnityEngine;
 
-namespace Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper;
+namespace Ash.Core.Features.AshPlugin.Features.UISettings.UI.Helpers.InGameUIManagementHelper;
 
 internal static class InGameUIAdjustments
 {
-    private static readonly AshLogger Logger = new(LoggingSettings.LoggingModules.GameUIControls);
+    private static readonly AshLogger Logger = new(LoggingSettings.LoggingModules.UISettings);
 
     internal static void AdjustGages(Canvas canvas) {
         var maleGage = canvas.transform.Find("MaleGage");

@@ -41,7 +41,7 @@ public class Ash : BaseUnityPlugin
     // ReSharper disable once InconsistentNaming
     // ReSharper disable once MemberCanBePrivate.Global
     public const string GUID = "inviter42.anotherscenehelper";
-    public const string Version = "1.5.8";
+    public const string Version = "1.5.9";
 
     internal static Ash Instance { get; private set; }
     internal new static AshLogger Logger;
@@ -50,28 +50,31 @@ public class Ash : BaseUnityPlugin
     internal static ConfigEntry<KeyboardShortcut> ConfigEntryToggleImmersiveUIHotkey { get; private set; }
     internal static ConfigEntry<KeyboardShortcut> ConfigEntryTriggerDirtyTalk { get; private set; }
     internal static ConfigEntry<KeyboardShortcut> ConfigEntryTriggerAhegaoFace { get; private set; }
+    internal static ConfigEntry<KeyboardShortcut> ConfigEntryTriggerMaleEmitter { get; private set; }
     internal static ConfigEntry<bool> ConfigEntrySkipToTitleSceneEnabled { get; private set; }
 
-    internal static ConfigEntry<LogLevel> ConfigEntryGlobalModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryItemsCoordinatorModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryExtDataTattoosModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryExtDataEyeShadowsModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryExtDataCheekShadowsModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryExtDataMolesModuleLogLevel { get; private set; }
     internal static ConfigEntry<LogLevel> ConfigEntryActionsModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryGameUIControlsModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryHSceneControlsModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryHSceneSettingsModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryBugFixesModuleLogLevel { get; private set; }
     internal static ConfigEntry<LogLevel> ConfigEntryAnimationControlsModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryImmersiveUIModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryItemsVisibilityControlsModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntrySceneManagementModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryHMembersHooksModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryHumanHooksModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryWearablesHooksModuleLogLevel { get; private set; }
-    internal static ConfigEntry<LogLevel> ConfigEntryBetterPenetrationModuleLogLevel { get; private set; }
     internal static ConfigEntry<LogLevel> ConfigEntryApplicablesMigrationsModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryBetterPenetrationModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryBugFixesModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryDebugModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryExtDataCheekShadowsModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryExtDataEyeShadowsModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryExtDataMolesModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryExtDataTattoosModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryFemaleSettingsModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryGlobalModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryHMembersHooksModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryHSceneSettingsModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryHumanHooksModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryImmersiveUIModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryItemsCoordinatorModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryItemsVisibilityControlsModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryMaleSettingsModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntrySceneManagementModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryUISettingsModuleLogLevel { get; private set; }
+    internal static ConfigEntry<LogLevel> ConfigEntryWearablesHooksModuleLogLevel { get; private set; }
 
     internal static PersistentSettings PersistentSettings { get; private set; }
 
@@ -209,6 +212,12 @@ public class Ash : BaseUnityPlugin
             new KeyboardShortcut(KeyCode.F)
         );
 
+        ConfigEntryTriggerMaleEmitter = Config.Bind(
+            "Shortcuts",
+            "Trigger male emitter",
+            new KeyboardShortcut(KeyCode.V)
+        );
+
         ConfigEntrySkipToTitleSceneEnabled = Config.Bind(
             "Global Settings",
             "Enable intro skip",
@@ -228,18 +237,21 @@ public class Ash : BaseUnityPlugin
         ConfigEntryExtDataCheekShadowsModuleLogLevel = Config.Bind("Logging", "ExtDataCheekShadows", LogLevel.All, logLevelConfigDescription);
         ConfigEntryExtDataMolesModuleLogLevel = Config.Bind("Logging", "ExtDataMoles", LogLevel.All, logLevelConfigDescription);
         ConfigEntryActionsModuleLogLevel = Config.Bind("Logging", "Actions", LogLevel.All, logLevelConfigDescription);
-        ConfigEntryGameUIControlsModuleLogLevel = Config.Bind("Logging", "GameUIControls", LogLevel.All, logLevelConfigDescription);
-        ConfigEntryHSceneControlsModuleLogLevel = Config.Bind("Logging", "HSceneControls", LogLevel.All, logLevelConfigDescription);
+        ConfigEntryUISettingsModuleLogLevel = Config.Bind("Logging", "GameUIControls", LogLevel.All, logLevelConfigDescription);
         ConfigEntryHSceneSettingsModuleLogLevel = Config.Bind("Logging", "HSceneSettings", LogLevel.All, logLevelConfigDescription);
         ConfigEntryBugFixesModuleLogLevel = Config.Bind("Logging", "BugFixes", LogLevel.All, logLevelConfigDescription);
         ConfigEntryAnimationControlsModuleLogLevel = Config.Bind("Logging", "AnimationControls", LogLevel.All, logLevelConfigDescription);
         ConfigEntryImmersiveUIModuleLogLevel = Config.Bind("Logging", "ImmersiveUI", LogLevel.All, logLevelConfigDescription);
         ConfigEntryItemsVisibilityControlsModuleLogLevel = Config.Bind("Logging", "ItemsVisibilityControls", LogLevel.All, logLevelConfigDescription);
+        ConfigEntryMaleSettingsModuleLogLevel = Config.Bind("Logging", "MaleSettings", LogLevel.All, logLevelConfigDescription);
         ConfigEntrySceneManagementModuleLogLevel = Config.Bind("Logging", "SceneManagement", LogLevel.All, logLevelConfigDescription);
         ConfigEntryHMembersHooksModuleLogLevel = Config.Bind("Logging", "HMembersHooks", LogLevel.All, logLevelConfigDescription);
         ConfigEntryHumanHooksModuleLogLevel = Config.Bind("Logging", "HumanHooks", LogLevel.All, logLevelConfigDescription);
         ConfigEntryWearablesHooksModuleLogLevel = Config.Bind("Logging", "WearablesHooks", LogLevel.All, logLevelConfigDescription);
         ConfigEntryBetterPenetrationModuleLogLevel = Config.Bind("Logging", "BetterPenetration", LogLevel.All, logLevelConfigDescription);
         ConfigEntryApplicablesMigrationsModuleLogLevel = Config.Bind("Logging", "ApplicablesMigrations", LogLevel.All, logLevelConfigDescription);
+        ConfigEntryFemaleSettingsModuleLogLevel = Config.Bind("Logging", "FemaleSettings", LogLevel.All, logLevelConfigDescription);
+        ConfigEntryDebugModuleLogLevel = Config.Bind("Logging", "Debug", LogLevel.All, logLevelConfigDescription);
+
     }
 }

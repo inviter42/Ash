@@ -12,9 +12,18 @@ internal static class ImGuiPrimitivesLib
         padding = new RectOffset(18, 18, 6, 6),
         alignment = TextAnchor.MiddleLeft,
     };
+    internal static readonly GUIStyle VerticalTabSectionStyle = new(GUI.skin.label) {
+        fontSize = 13,
+        fontStyle = FontStyle.Bold,
+        padding = new RectOffset(0, 0, 2, 2),
+        alignment = TextAnchor.MiddleCenter
+    };
 
-
-    private static readonly Color MatrixGreen = new(0.0f, 0.7f, 0.05f);
+    internal static Color AccentColor = new(
+        Ash.PersistentSettings.PluginUIColorRedValue.Value,
+        Ash.PersistentSettings.PluginUIColorGreenValue.Value,
+        Ash.PersistentSettings.PluginUIColorBlueValue.Value
+    );
 
     private static readonly GUIStyle ButtonStyle = new(GUI.skin.button) {
         padding = new RectOffset(12, 12, 4, 4)
@@ -66,7 +75,7 @@ internal static class ImGuiPrimitivesLib
         var oldContentColor = GUI.contentColor;
 
         if (isActive)
-            GUI.contentColor = MatrixGreen;
+            GUI.contentColor = AccentColor;
 
         Button(label, callback, options);
 

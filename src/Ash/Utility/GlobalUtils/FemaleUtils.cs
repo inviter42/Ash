@@ -48,7 +48,14 @@ internal static class FemaleUtils
 
     internal static void ResetEyeRotation(Female female, float transition = 0.1f) {
         LookAtRotatorHooks.ClearPresetOverride(female.eyeLook);
-        female.ChangeEyeLook(LookAtRotator.TYPE.TARGET, SceneUtils.GetVisitorDefaultLookTarget(), false);
+
+        female.ChangeEyeLook(
+            LookAtRotator.TYPE.TARGET,
+            SceneUtils.IsVisitor(female)
+                ? SceneUtils.GetVisitorDefaultLookTarget()
+                : null,
+            false
+        );
 
         GlobalGameData.CustomEyesActive[female] = AhegaoFaceAction.EyePreset.None;
     }

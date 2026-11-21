@@ -180,7 +180,7 @@ internal class InteractableRing
 
     private GameObject CreateAccessoryItemButton(GameObject root, Female female, g_Accessories.AcceObj acceObj,
         AccessoryData accessoryData, int index) {
-        var name = AutoTranslatorIntegration.Translate(accessoryData.name).ToLower().ToTitleCase();
+        var name = AutoTranslatorIntegration.Translate(accessoryData.name).ToLowerInvariant().ToTitleCase();
         var prefab = accessoryData.prefab_F;
 
         // ReSharper disable once ConvertToLocalFunction
@@ -207,7 +207,7 @@ internal class InteractableRing
     }
 
     private GameObject CreateAccessorySectionText(GameObject buttonsRootGameObj, ACCESSORY_ATTACH currentAttach) {
-        var name = currentAttach.ToString().ToLower().ToTitleCase();
+        var name = currentAttach.ToString().ToLowerInvariant().ToTitleCase();
         var textGameObj = new GameObject($"Section__{name}", typeof(RectTransform), typeof(Text));
         textGameObj.transform.SetParent(buttonsRootGameObj.transform, false);
 

@@ -1,111 +1,114 @@
-using System.Linq;
-using Character;
-using H;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using HarmonyLib;
-using UnityEngine;
 
-namespace Ash.Core.Features.Ahegao.Hooks._HExpressionData;
+namespace Ash.Core.Features.AshPlugin.Features.AhegaoFaces.Hooks._HExpressionData;
 
 [HarmonyPatch]
 internal class HExpressionDataHooks
 {
-    [HarmonyPrefix]
+    [HarmonyTranspiler]
     [HarmonyPatch(typeof(H_ExpressionData), nameof(H_ExpressionData.ChangeExpression), typeof(Human), typeof(string), typeof(H_Parameter), typeof(float))]
-    // ReSharper disable InconsistentNaming
-    internal static bool ChangeExpressionPrefix(H_ExpressionData __instance, Human human, string voiceFile, H_Parameter param, float duration, ref H_ExpressionData.Data __result) {
-        if (!__instance.voice_datas.TryGetValue(voiceFile, out var voiceData)) {
-            __result = null;
-            return false;
-        }
+    internal static IEnumerable<CodeInstruction> ChangeExpressionTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+        var skipEyesLabel = il.DefineLabel();
+        var isEyesPresetActive = AccessTools.Method(typeof(GlobalGameData), nameof(GlobalGameData.IsCustomEyesExpressionPresetActive), new[] { typeof(Female) });
+        var expressionPlay = AccessTools.Method(typeof(Human), nameof(Human.ExpressionPlay), new[] { typeof(int), typeof(string), typeof(float) });
 
-        var no = Random.Range(0, voiceData.Count);
-        H_ExpressionData.Data data = voiceData[no];
-        if (data != null) {
-            if (!GlobalGameData.IsCustomEyesExpressionPresetActive((Female)human)) {
-                human.ExpressionPlay(0, data.eyeType, duration);
-                human.blink.LimitMax = data.eyeOpen * 0.01f;
-            }
-
-            if (!GlobalGameData.IsCustomMouthExpressionPresetActive((Female)human)) {
-                human.lipSync.RelaxOpen = data.mouthOpen * 0.01f;
-                var flag = param.UseMouth(human.sex);
-                var name = H_ExpressionData.MouthNo(human, data, param);
-                human.ExpressionPlay(1, name, duration);
-                human.lipSync.Hold = flag || human.Gag;
-                human.head.ResetMouth(flag || human.Gag);
-                var type = !flag ? TONGUE_TYPE.FACE : TONGUE_TYPE.BODY;
-                human.SetTongueType(type);
-            }
-        }
-
-        __result = data;
-
-        return false;
-    }
-
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(H_ExpressionData), nameof(H_ExpressionData.ChangeExpression), typeof(Human), typeof(H_Expression.TYPE), typeof(H_Parameter), typeof(float))]
-    // ReSharper disable InconsistentNaming
-    internal static bool ChangeExpressionPrefix(H_ExpressionData __instance, Human human, H_Expression.TYPE type, H_Parameter param, float duration, ref H_ExpressionData.Data __result) {
-        H_ExpressionData.Data data = null;
-        var state1 = (H_Expression.STATE)0;
-        var state2 = (H_Expression.STATE)0;
-        if (human.sex == SEX.FEMALE) {
-            if (human is Female female) {
-                state1 = !female.IsFloped() ? H_Expression.STATE.RESIST : H_Expression.STATE.FLIP;
-                state2 = state1;
-                if (female.personality.ahe)
-                    state2 = H_Expression.STATE.AHE;
-                else if (female.personality.weakness)
-                    state2 = H_Expression.STATE.WEAKNESS;
-                else if (param.style is { type: H_StyleData.TYPE.INSERT }) {
-                    if ((param.style.detailFlag & 16 /*0x10*/) != 0 && female.personality.vaginaVirgin)
-                        state2 |= H_Expression.STATE.PAIN;
-                    if ((param.style.detailFlag & 32 /*0x20*/) != 0 && female.personality.analVirgin)
-                        state2 |= H_Expression.STATE.PAIN;
-                }
-            }
-        }
-
-        var dataList = __instance.type_datas
-            .Where(typeData => typeData.state == state2 && typeData.type == type)
-            .Cast<H_ExpressionData.Data>()
-            .ToList();
-
-        if (state2 != state1 && dataList.Count == 0)
-            dataList.AddRange(
-                __instance.type_datas
-                    .Where(typeData => typeData.state == state1 && typeData.type == type)
-                    .Cast<H_ExpressionData.Data>()
+        var matcher = new CodeMatcher(instructions, il);
+        matcher.MatchStartForward(
+                new CodeMatch(OpCodes.Ldarg_1),
+                new CodeMatch(OpCodes.Ldc_I4_0),
+                new CodeMatch(i => i.IsLdloc()),
+                new CodeMatch(OpCodes.Ldfld),
+                new CodeMatch(i => i.IsLdarg()),
+                new CodeMatch(i => i.Calls(expressionPlay))
+            )
+            .ThrowIfInvalid("Could not find start of eyes block")
+            .InsertAndAdvance(
+                new CodeInstruction(OpCodes.Ldarg_1),
+                new CodeInstruction(OpCodes.Castclass, typeof(Female)),
+                new CodeInstruction(OpCodes.Call, isEyesPresetActive),
+                new CodeInstruction(OpCodes.Brtrue, skipEyesLabel)
             );
 
-        if (dataList.Count > 0) {
-            var index = Random.Range(0, dataList.Count);
-            data = dataList[index];
-        }
+        var skipMouthLabel = il.DefineLabel();
+        var getLipSync = AccessTools.PropertyGetter(typeof(Human), nameof(Human.lipSync));
+        var setTongueType = AccessTools.Method(typeof(Human), nameof(Human.SetTongueType));
+        var isMouthPresetActive = AccessTools.Method(typeof(GlobalGameData), nameof(GlobalGameData.IsCustomMouthExpressionPresetActive), new[] { typeof(Female) });
 
-        if (data != null) {
-            if (!GlobalGameData.IsCustomEyesExpressionPresetActive((Female)human)) {
-                human.ExpressionPlay(0, data.eyeType, duration);
-                human.blink.LimitMax = data.eyeOpen * 0.01f;
-            }
+        matcher.MatchStartForward(
+                new CodeMatch(OpCodes.Ldarg_1),
+                new CodeMatch(i => i.Calls(getLipSync)),
+                new CodeMatch(i => i.IsLdloc()),
+                new CodeMatch(OpCodes.Ldfld),
+                new CodeMatch(OpCodes.Ldc_R4, 0.01f)
+            )
+            .ThrowIfInvalid("Could not find start of mouth block")
+            .InsertAndAdvance(
+                new CodeInstruction(OpCodes.Ldarg_1).WithLabels(skipEyesLabel),
+                new CodeInstruction(OpCodes.Castclass, typeof(Female)),
+                new CodeInstruction(OpCodes.Call, isMouthPresetActive),
+                new CodeInstruction(OpCodes.Brtrue, skipMouthLabel)
+            );
 
-            if (!GlobalGameData.IsCustomMouthExpressionPresetActive((Female)human)) {
-                human.lipSync.RelaxOpen = data.mouthOpen * 0.01f;
-                var flag = param.UseMouth(human.sex);
-                var name = H_ExpressionData.MouthNo(human, data, param);
-                human.ExpressionPlay(1, name, duration);
-                human.lipSync.Hold = flag || human.Gag;
-                human.head.ResetMouth(flag || human.Gag);
-                var type1 = !flag ? TONGUE_TYPE.FACE : TONGUE_TYPE.BODY;
-                human.SetTongueType(type1);
-            }
-        } else {
-            Debug.LogError("ふさわしい表情がなかった:" + state2);
-        }
+        matcher.MatchEndForward(new CodeMatch(i => i.Calls(setTongueType)))
+            .ThrowIfInvalid("Could not find SetTongueType call")
+            .AddLabelsAt(matcher.Pos + 1, new[] { skipMouthLabel });
 
-        __result = data;
+        return matcher.InstructionEnumeration();
+    }
 
-        return false;
+    [HarmonyTranspiler]
+    [HarmonyPatch(typeof(H_ExpressionData), nameof(H_ExpressionData.ChangeExpression), typeof(Human), typeof(H_Expression.TYPE), typeof(H_Parameter), typeof(float))]
+    public static IEnumerable<CodeInstruction> ChangeExpression2Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+        var skipEyesLabel = il.DefineLabel();
+        var isEyesPresetActive = AccessTools.Method(typeof(GlobalGameData), nameof(GlobalGameData.IsCustomEyesExpressionPresetActive), new[] { typeof(Female) });
+        var expressionPlay = AccessTools.Method(typeof(Human), nameof(Human.ExpressionPlay), new[] { typeof(int), typeof(string), typeof(float) });
+        var matcher = new CodeMatcher(instructions, il);
+
+        matcher.MatchStartForward(
+                new CodeMatch(OpCodes.Ldarg_1),
+                new CodeMatch(OpCodes.Ldc_I4_0),
+                new CodeMatch(i => i.IsLdloc()),
+                new CodeMatch(OpCodes.Ldfld),
+                new CodeMatch(i => i.IsLdarg()),
+                new CodeMatch(i => i.Calls(expressionPlay))
+            )
+            .ThrowIfInvalid("Could not find start of eyes block")
+            .InsertAndAdvance(
+                new CodeInstruction(OpCodes.Ldarg_1),
+                new CodeInstruction(OpCodes.Castclass, typeof(Female)),
+                new CodeInstruction(OpCodes.Call, isEyesPresetActive),
+                new CodeInstruction(OpCodes.Brtrue, skipEyesLabel)
+            );
+
+        var skipMouthLabel = il.DefineLabel();
+        var isMouthPresetActive = AccessTools.Method(typeof(GlobalGameData), nameof(GlobalGameData.IsCustomMouthExpressionPresetActive), new[] { typeof(Female) });
+        var getLipSync = AccessTools.PropertyGetter(typeof(Human), nameof(Human.lipSync));
+        var setTongueType = AccessTools.Method(typeof(Human), nameof(Human.SetTongueType));
+
+        matcher.MatchStartForward(
+                new CodeMatch(OpCodes.Ldarg_1),
+                new CodeMatch(i => i.Calls(getLipSync)),
+                new CodeMatch(i => i.IsLdloc()),
+                new CodeMatch(OpCodes.Ldfld),
+                new CodeMatch(OpCodes.Ldc_R4, 0.01f)
+            )
+            .ThrowIfInvalid("Could not find start of mouth block")
+            .InsertAndAdvance(
+                new CodeInstruction(OpCodes.Ldarg_1).WithLabels(skipEyesLabel),
+                new CodeInstruction(OpCodes.Castclass, typeof(Female)),
+                new CodeInstruction(OpCodes.Call, isMouthPresetActive),
+                new CodeInstruction(OpCodes.Brtrue, skipMouthLabel)
+            );
+
+        matcher.MatchEndForward(
+                new CodeMatch(i => i.Calls(setTongueType)),
+                new CodeMatch(i => i.Branches(out _))
+            )
+            .ThrowIfInvalid("Could not find end of if block after SetTongueType")
+            .AddLabels(new[] { skipMouthLabel });
+
+        return matcher.InstructionEnumeration();
     }
 }
