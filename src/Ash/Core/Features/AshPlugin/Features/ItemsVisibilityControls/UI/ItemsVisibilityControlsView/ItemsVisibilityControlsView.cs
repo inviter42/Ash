@@ -1,5 +1,4 @@
-﻿using System;
-using Ash.Core.Features.AshPlugin.Common.Components;
+﻿using Ash.Core.Features.AshPlugin.Common.Components;
 using Ash.Core.Features.AshPlugin.Features.ItemsVisibilityControls.UI.ItemsVisibilityControlsView.Components;
 using Ash.Core.Features.AshPlugin.Main;
 using Ash.Core.Features.AshPlugin.Main.Types;
@@ -16,28 +15,28 @@ internal class ItemsVisibilityControlsView
     // Tab Label
     internal const string ItemsVisibilityControlsTabLabel = "Item Visibility";
 
+    internal Female ActiveFemale => GetActiveFemale();
+
     internal void DrawView() {
-        var activeFemale = GetActiveFemale();
-        if (activeFemale == null) {
-            Logger.LogWarning("Female is null");
-            Logger.LogWarning(Environment.StackTrace);
+        if (ActiveFemale == null) {
+            GUILayout.Label("No active female");
             return;
         }
 
         using (new GUILayout.VerticalScope("box")) {
-            Title(activeFemale.heroineID.ToString());
+            Title(ActiveFemale.heroineID.ToString());
 
-            FemaleSelectionComponent.Component(activeFemale, SetActiveFemale);
-
-            GUILayout.Space(12);
-
-            AllClothingVisibilitySelectionComponent.Component(activeFemale);
-            IndividualWearsVisibilitySelectionComponent.Component(activeFemale);
+            FemaleSelectionComponent.Component(ActiveFemale, SetActiveFemale);
 
             GUILayout.Space(12);
 
-            AllAccessoriesVisibilitySelectionComponent.Component(activeFemale);
-            IndividualAccessoriesVisibilitySelectionComponent.Component(activeFemale);
+            AllClothingVisibilitySelectionComponent.Component(ActiveFemale);
+            IndividualWearsVisibilitySelectionComponent.Component(ActiveFemale);
+
+            GUILayout.Space(12);
+
+            AllAccessoriesVisibilitySelectionComponent.Component(ActiveFemale);
+            IndividualAccessoriesVisibilitySelectionComponent.Component(ActiveFemale);
         }
     }
 

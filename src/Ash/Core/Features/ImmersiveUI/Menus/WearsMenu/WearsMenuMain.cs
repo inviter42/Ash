@@ -345,7 +345,7 @@ internal class WearsMenuMain
         return female
             .heroineID
             .ToString()
-            .ToLower()
+            .ToLowerInvariant()
             .ToTitleCase();
     }
 }

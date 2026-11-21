@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Ash.Core.Features.AshPlugin.Common.Misc;
 using Ash.Utility.GlobalUtils;
 using KKAPI.Utilities;
@@ -9,15 +10,15 @@ namespace Ash.Core.Features.AshPlugin.Main.Types;
 
 internal abstract class AshWindow<T> : ImguiWindow<T> where T : AshWindow<T>
 {
+    protected Dictionary<string, Dictionary<string, Action>> WindowData { get; set; }
+
     private int SelectedTabIndex { get; set; }
-    private string[] ToolbarTabs { get; set; } = { };
+    private string[] FlatTabs { get; set; }
+    private Action[] FlatTabViews { get; set; }
 
     public float windowWidth = 980;
     public float windowHeight = 600;
 
-    protected abstract string[] SetTabsModel();
-
-    protected abstract List<Action> SetTabViewsModel();
 
     protected new virtual void OnGUI() {
         CommonImGuiStyles.InitializeStyles();
@@ -71,25 +72,36 @@ internal abstract class AshWindow<T> : ImguiWindow<T> where T : AshWindow<T>
     }
 
     protected override void DrawContents() {
-        ToolbarTabs = SetTabsModel();
-
-        var tabViewsModel = SetTabViewsModel();
-        if (tabViewsModel.Count == 0) {
-            GUILayout.Label("No views found.");
+        if (WindowData == null || WindowData.Count == 0) {
+            GUILayout.Label("No window data found.");
             return;
         }
 
         GUILayout.BeginHorizontal();
 
+        // separator
+        GUILayout.Space(6);
+
+        // tabs
         GUILayout.BeginVertical(GUILayout.Width(windowWidth * 0.25f));
-        SelectedTabIndex = GUILayout.SelectionGrid(SelectedTabIndex, ToolbarTabs, 1, ImGuiPrimitivesLib.VerticalTabsStyle);
+
+        FlatTabs ??= WindowData.SelectMany(data => data.Value.Keys).ToArray();
+        FlatTabViews ??= WindowData.SelectMany(data => data.Value.Values).ToArray();
+
+        if (WindowData.Count == 1) {
+            DrawSelectionGrid();
+        } else {
+            DrawSectionedTabs();
+        }
+
         GUILayout.EndVertical();
 
-        GUILayout.BeginVertical(GUILayout.Width(10));
-        GUILayout.EndVertical();
+        // separator
+        GUILayout.Space(4);
 
+        // current view
         GUILayout.BeginVertical();
-        tabViewsModel[SelectedTabIndex].Invoke();
+        FlatTabViews[SelectedTabIndex].Invoke();
         GUILayout.EndVertical();
 
         GUILayout.EndHorizontal();
@@ -126,5 +138,23 @@ internal abstract class AshWindow<T> : ImguiWindow<T> where T : AshWindow<T>
         tex.Apply();
         DontDestroyOnLoad(tex);
         return tex;
+    }
+
+    private void DrawSelectionGrid() {
+        SelectedTabIndex = GUILayout.SelectionGrid(SelectedTabIndex, FlatTabs, 1, ImGuiPrimitivesLib.VerticalTabsStyle);
+    }
+
+    // ReSharper disable Unity.PerformanceAnalysis false positive perf trigger
+    private void DrawSectionedTabs() {
+        foreach (var data in WindowData) {
+            GUILayout.Label(data.Key, ImGuiPrimitivesLib.VerticalTabSectionStyle);
+
+            foreach (var tab in data.Value) {
+                if (GUILayout.Toggle(SelectedTabIndex == Array.IndexOf(FlatTabs, tab.Key), tab.Key, ImGuiPrimitivesLib.VerticalTabsStyle))
+                    SelectedTabIndex = Array.IndexOf(FlatTabs, tab.Key);
+            }
+
+            GUILayout.Space(16);
+        }
     }
 }

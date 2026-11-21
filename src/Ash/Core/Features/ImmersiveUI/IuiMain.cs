@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper;
+using Ash.Core.Features.AshPlugin.Features.UISettings.UI.Helpers.InGameUIManagementHelper;
 using Ash.Core.Features.ImmersiveUI.Components.Config;
 using Ash.Core.Features.ImmersiveUI.Components.Generic;
 using Ash.Core.Features.ImmersiveUI.Components.Textures;

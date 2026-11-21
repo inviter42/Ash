@@ -2,7 +2,7 @@ using Ash.Core.Features.Actions;
 using H;
 using HarmonyLib;
 
-namespace Ash.Core.Features.Ahegao.Hooks.HStates._HStateXtcWIn;
+namespace Ash.Core.Features.AshPlugin.Features.AhegaoFaces.Hooks.HStates._HStateXtcWin;
 
 [HarmonyPatch]
 internal class HStateXtcWinHooks

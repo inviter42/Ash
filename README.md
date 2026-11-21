@@ -18,7 +18,13 @@ Improved tattoos, moles and makeup for both main game and studio. Now they can b
 Replaces penis IK squishing behavior. A flat bone structure offers a little better compatibility with settings/sliders in certain cases, compared to the cascading one of the original.
 
 ### H-Scene Customization
-Controls for bodily fluids, voice settings, neck and eyes targets and face expressions. Improved neck and eyes rotation calculations and customizable rotation limits.
+Voice lines settings and custom scene interactivity.
+
+### Female controls
+Controls for bodily fluids, voice settings, neck and eyes targets and face expressions. 
+
+### Female and Male settings
+Improved neck and eyes rotation calculations and customizable rotation limits, as well as settings for particle systems.
 
 ### Ahegao Faces
 Custom presets for ahegao face expressions, triggered manually or automatically during climax, with many sliders available to personalize your experience.
@@ -31,7 +37,7 @@ Quality of life features and bug fixes.
 
 ## Installation
 Download and install: 
-1. Download and install the dependent versions of [BepInEx](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.22), [Bepis Plugins](https://github.com/IllusionMods/BepisPlugins/releases/tag/r21.1.2), [ModdingAPI](https://github.com/IllusionMods/IllusionModdingAPI/releases/tag/v1.45.1) and [MaterialEditor](https://github.com/IllusionMods/KK_Plugins/releases) from KK_Plugins.
+1. Download and install the dependent versions of [BepInEx](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.22), [Bepis Plugins](https://github.com/IllusionMods/BepisPlugins/releases/tag/r21.1.4.1), [ModdingAPI](https://github.com/IllusionMods/IllusionModdingAPI/releases/tag/v1.48.1) and [MaterialEditor](https://github.com/IllusionMods/KK_Plugins/releases/tag/v272) from KK_Plugins.
 1. Download the [latest release](https://github.com/inviter42/Ash/releases), unzip the archive, drag and drop the contents into the game directory.
 
 The plugin has a MoreAccessories dependency.

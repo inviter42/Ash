@@ -3,7 +3,7 @@ using H;
 using HarmonyLib;
 using UnityEngine;
 
-namespace Ash.Core.Features.Ahegao.Hooks._HMembers;
+namespace Ash.Core.Features.AshPlugin.Features.AhegaoFaces.Hooks._HMembers;
 
 [HarmonyPatch]
 internal class HMembersHooks

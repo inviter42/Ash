@@ -4,6 +4,7 @@ using Ash.Core.Tooling.SceneManagement;
 using Ash.Logging;
 using Ash.Utility.Extensions;
 using Ash.Utility.GlobalUtils;
+using Character;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -99,34 +100,44 @@ internal class AhegaoFaceAction : AbstractAction
         if (!Ash.PersistentSettings.AhegaoFacesEnabled.Value)
             return;
 
+        if (SceneTypeTracker.Scene is not H_Scene hScene)
+            return;
+
         if (!forceActivation) {
-            var current = AhegaoTriggerProbabilities.GetValueOrDefaultValue(
+            var probabilityToTrigger = AhegaoTriggerProbabilities.GetValueOrDefaultValue(
                 female, Ash.PersistentSettings.AhegaoClimaxTriggerBaseProbabilityValue.Value);
+            var threshold = 1 - probabilityToTrigger;
 
             var roll = Random.Range(0f, 1f);
-            if (roll > current) {
-                //increase
-                AhegaoTriggerProbabilities[female] = Mathf.Clamp01(current + Ash.PersistentSettings.AhegaoClimaxTriggerProbabilityIncrementValue.Value);
-                Logger.LogDebug($"Rolled {roll:F4} against {current:F4} - failed. Increasing to {AhegaoTriggerProbabilities[female]}");
+            var baseStr = $"[Ahegao] Rolled '{roll:F4}' and at least '{threshold:F4}' was required. Roll had {probabilityToTrigger * 100}% probability to succeed. Result: ";
+            if (roll > threshold) {
+                Logger.LogInfo(baseStr + "SUCCESS");
+            } else {
+                AhegaoTriggerProbabilities[female] = Mathf.Clamp01(probabilityToTrigger + Ash.PersistentSettings.AhegaoClimaxTriggerProbabilityIncrementValue.Value);
+                Logger.LogInfo(baseStr + $"FAILURE -> Increasing probability to {AhegaoTriggerProbabilities[female] * 100}%");
                 return;
             }
-
-            Logger.LogDebug($"Rolled {roll:F4} against {current:F4} - passed");
         }
+
+        var mouthBusy = hScene.mainMembers.param.UseMouth(SEX.FEMALE);
 
         // weight down selected by X%
         RandomUtils.WeightedRandomWithChoiceDecay(EyePresetsWeights, decay).Deconstruct(out var eyeIndex, out EyePresetsWeights);
         RandomUtils.WeightedRandomWithChoiceDecay(EyesExpressionPresetsWeights, decay).Deconstruct(out var eyesExpressionIndex, out EyesExpressionPresetsWeights);
-        RandomUtils.WeightedRandomWithChoiceDecay(MouthExpressionPresetsWeights, decay).Deconstruct(out var mouthIndex, out MouthExpressionPresetsWeights);
-
 
         var eyesPreset = EyePresets.ElementAt(eyeIndex);
         var eyesExpressionPreset = EyesExpressionPresets.ElementAt(eyesExpressionIndex);
-        var mouthExpressionPreset = MouthExpressionPresets.ElementAt(mouthIndex);
 
         FemaleUtils.ApplyEyeRotation(female, eyesPreset, Random.Range(0.15f, 0.25f));
         FemaleUtils.ApplyEyesExpression(female, eyesExpressionPreset, Random.Range(0.15f, 0.25f));
-        FemaleUtils.ApplyMouthExpression(female, mouthExpressionPreset, Random.Range(0.15f, 0.25f));
+
+        KeyValuePair<MouthExpressionPreset, int> mouthExpressionPreset = default;
+        if (!mouthBusy) {
+            RandomUtils.WeightedRandomWithChoiceDecay(MouthExpressionPresetsWeights, decay).Deconstruct(out var mouthIndex, out MouthExpressionPresetsWeights);
+            mouthExpressionPreset = MouthExpressionPresets.ElementAt(mouthIndex);
+
+            FemaleUtils.ApplyMouthExpression(female, mouthExpressionPreset, Random.Range(0.15f, 0.25f));
+        }
 
         Logger.LogDebug(
             $"Play EyePreset [{eyesPreset.Key.ToString()}], "

@@ -220,7 +220,7 @@ internal class GagMenuMain
         layoutElement.minHeight = Config.HeaderFontSize;
 
         var textComp = textGameObj.GetComponent<Text>();
-        textComp.text = female.heroineID.ToString().ToLower().ToTitleCase();
+        textComp.text = female.heroineID.ToString().ToLowerInvariant().ToTitleCase();
         textComp.font =
             GlobalPluginData.ImmersiveUIFontsAssetBundle.LoadAsset<Font>(
                 "assets/frostedglass/fonts/myriadpro-regular.otf");

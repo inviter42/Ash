@@ -1,87 +1,164 @@
+using System.Collections.Generic;
 using System.Linq;
-using Character;
+using System.Reflection.Emit;
 using HarmonyLib;
-using UnityEngine;
 
-namespace Ash.Core.Features.Ahegao.Hooks._HVisitorExpressionData;
+namespace Ash.Core.Features.AshPlugin.Features.AhegaoFaces.Hooks._HVisitorExpressionData;
 
 [HarmonyPatch]
 internal class HVisitorExpressionDataHooks
 {
-    [HarmonyPrefix]
+    [HarmonyTranspiler]
     [HarmonyPatch(typeof(H_VisitorExpressionData), nameof(H_VisitorExpressionData.ChangeExpression), typeof(Human), typeof(string), typeof(float))]
-    // ReSharper disable InconsistentNaming
-    internal static bool ChangeExpressionVisitorPrefix(H_VisitorExpressionData __instance, Human human, string voiceFile, float duration, ref H_VisitorExpressionData.Data __result) {
-        if (!__instance.voice_datas.TryGetValue(voiceFile, out var voiceData)) {
-            __result = null;
-            return false;
-        }
+    internal static IEnumerable<CodeInstruction> ChangeExpressionTranspiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+        var instructionsList = instructions.ToList();
+        var matcher = new CodeMatcher(instructionsList, il);
 
-        var no = Random.Range(0, voiceData.Count);
-        H_VisitorExpressionData.Data data = voiceData[no];
-        if (data != null) {
-            if (!GlobalGameData.IsCustomEyesExpressionPresetActive((Female)human)) {
-                human.ExpressionPlay(0, data.eyeType, duration);
-                human.blink.LimitMax = data.eyeOpen * 0.01f;
-            }
+        matcher.MatchForward(false,
+            new CodeMatch(i => i.IsLdloc()),
+            new CodeMatch(i => i.opcode == OpCodes.Brfalse || i.opcode == OpCodes.Brfalse_S),
+            new CodeMatch(OpCodes.Ldarg_1)
+        );
 
-            if (!GlobalGameData.IsCustomMouthExpressionPresetActive((Female)human)) {
-                human.lipSync.RelaxOpen = data.mouthOpen * 0.01f;
-                var mouthType = data.mouthType;
-                human.ExpressionPlay(1, mouthType, duration);
-                human.lipSync.Hold = human.Gag;
-                human.head.ResetMouth(human.Gag);
-                const TONGUE_TYPE type = TONGUE_TYPE.FACE;
-                human.SetTongueType(type);
-            }
-        }
+        if (matcher.IsInvalid)
+            return instructionsList;
 
-        __result = data;
+        matcher.Advance(2);
 
-        return false;
+        var skipEyesLabel = il.DefineLabel();
+        var labelsA = matcher.Labels;
+        var isCustomEyesActive = AccessTools.Method(typeof(GlobalGameData), nameof(GlobalGameData.IsCustomEyesExpressionPresetActive), new[] { typeof(Female) });
+
+        matcher.Labels = new List<Label>();
+
+        matcher.Insert(
+            new CodeInstruction(OpCodes.Ldarg_1) { labels = labelsA },
+            new CodeInstruction(OpCodes.Isinst, typeof(Female)),
+            new CodeInstruction(OpCodes.Call, isCustomEyesActive),
+            new CodeInstruction(OpCodes.Brtrue, skipEyesLabel)
+        ).Advance(4);
+
+        var setBlinkLimitMax = AccessTools.PropertySetter(typeof(AnimeParamBlink), nameof(AnimeParamBlink.LimitMax));
+
+        matcher.MatchForward(false,
+            new CodeMatch(i => i.Calls(setBlinkLimitMax)),
+            new CodeMatch(OpCodes.Ldarg_1)
+        );
+
+        if (matcher.IsInvalid)
+            return instructionsList;
+
+        var skipMouthLabel = il.DefineLabel();
+        var isCustomMouthActive = AccessTools.Method(typeof(GlobalGameData), nameof(GlobalGameData.IsCustomMouthExpressionPresetActive), new[] { typeof(Female) });
+
+        matcher.Advance(1)
+            .Insert(
+                new CodeInstruction(OpCodes.Ldarg_1) { labels = new List<Label> { skipEyesLabel } },
+                new CodeInstruction(OpCodes.Isinst, typeof(Female)),
+                new CodeInstruction(OpCodes.Call, isCustomMouthActive),
+                new CodeInstruction(OpCodes.Brtrue, skipMouthLabel)
+            )
+            .Advance(4);
+
+        var setTongueType = AccessTools.Method(typeof(Human), nameof(Human.SetTongueType));
+
+        matcher.MatchForward(false,
+            new CodeMatch(i => i.Calls(setTongueType))
+        );
+
+        if (matcher.IsInvalid)
+            return instructionsList;
+
+        matcher.Advance(1)
+            .Insert(new CodeInstruction(OpCodes.Nop) { labels = new List<Label> { skipMouthLabel } });
+
+        return matcher.InstructionEnumeration();
     }
 
-    [HarmonyPrefix]
+    [HarmonyTranspiler]
     [HarmonyPatch(typeof(H_VisitorExpressionData), nameof(H_VisitorExpressionData.ChangeExpression), typeof(Human), typeof(H_VisitorExpression.TYPE), typeof(float))]
-    // ReSharper disable InconsistentNaming
-    internal static bool ChangeExpressionVisitorPrefix(H_VisitorExpressionData __instance, Human human, H_VisitorExpression.TYPE type, float duration, ref H_VisitorExpressionData.Data __result) {
-        if (human is not Female female)
-            return false;
+    internal static IEnumerable<CodeInstruction> ChangeExpression2Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il) {
+        var instructionsList = instructions.ToList();
+        var matcher = new CodeMatcher(instructionsList, il);
 
-        H_VisitorExpressionData.Data data = null;
-        var state = (H_VisitorExpression.STATE) 0;
-        if (female.sex == SEX.FEMALE)
-            state = !female.IsFloped() ? H_VisitorExpression.STATE.RESIST : H_VisitorExpression.STATE.FLIP;
+        matcher.MatchForward(false,
+            new CodeMatch(OpCodes.Ldloc_0),
+            new CodeMatch(i => i.opcode == OpCodes.Brfalse || i.opcode == OpCodes.Brfalse_S),
+            new CodeMatch(OpCodes.Ldarg_1)
+        );
 
-        var dataList = __instance.type_datas
-            .Where(typeData => (typeData.state & state) != 0 && typeData.type == type)
-            .Cast<H_VisitorExpressionData.Data>()
-            .ToList();
+        if (matcher.IsInvalid)
+            return instructionsList;
 
-        if (dataList.Count > 0) {
-            var index = Random.Range(0, dataList.Count);
-            data = dataList[index];
-        }
+        matcher.Advance(2);
 
-        if (data != null) {
-            if (!GlobalGameData.IsCustomEyesExpressionPresetActive(female)) {
-                human.ExpressionPlay(0, data.eyeType, duration);
-                human.blink.LimitMax = data.eyeOpen * 0.01f;
-            }
+        var skipCb1Label = il.DefineLabel();
+        var labelsA = matcher.Labels;
+        matcher.Labels = new List<Label>();
+        var isCustomMouthActive = AccessTools.Method(typeof(GlobalGameData), nameof(GlobalGameData.IsCustomMouthExpressionPresetActive), new[] { typeof(Female) });
 
-            if (!GlobalGameData.IsCustomMouthExpressionPresetActive(female)) {
-                human.lipSync.Hold = human.Gag;
-                human.head.ResetMouth(human.Gag);
-                human.SetTongueType(TONGUE_TYPE.FACE);
-                human.lipSync.RelaxOpen = data.mouthOpen * 0.01f;
-                human.ExpressionPlay(1, data.mouthType, duration);
-            }
-        }
-        else
-            Debug.LogError("ふさわしい表情がなかった:" + state);
+        matcher.Insert(
+            new CodeInstruction(OpCodes.Ldarg_1) { labels = labelsA },
+            new CodeInstruction(OpCodes.Isinst, typeof(Female)),
+            new CodeInstruction(OpCodes.Call, isCustomMouthActive),
+            new CodeInstruction(OpCodes.Brtrue, skipCb1Label)
+        ).Advance(4);
 
-        __result = data;
+        var setTongueType = AccessTools.Method(typeof(Human), nameof(Human.SetTongueType));
 
-        return false;
+        matcher.MatchForward(false,
+            new CodeMatch(OpCodes.Callvirt, setTongueType),
+            new CodeMatch(OpCodes.Ldarg_1)
+        );
+
+        if (matcher.IsInvalid)
+            return instructionsList;
+
+        var skipCb2Label = il.DefineLabel();
+        var isCustomEyesActive = AccessTools.Method(typeof(GlobalGameData), nameof(GlobalGameData.IsCustomEyesExpressionPresetActive), new[] { typeof(Female) });
+
+        matcher.Advance(1)
+            .Insert(
+                new CodeInstruction(OpCodes.Ldarg_1) { labels = new List<Label> { skipCb1Label } },
+                new CodeInstruction(OpCodes.Isinst, typeof(Female)),
+                new CodeInstruction(OpCodes.Call, isCustomEyesActive),
+                new CodeInstruction(OpCodes.Brtrue, skipCb2Label)
+            )
+            .Advance(4);
+
+        var setBlinkLimitMax = AccessTools.PropertySetter(typeof(AnimeParamBlink), nameof(AnimeParamBlink.LimitMax));
+
+        matcher.MatchForward(false,
+            new CodeMatch(i => i.Calls(setBlinkLimitMax)),
+            new CodeMatch(OpCodes.Ldarg_1)
+        );
+
+        if (matcher.IsInvalid)
+            return instructionsList;
+
+        var skipCb3Label = il.DefineLabel();
+
+        matcher.Advance(1)
+            .Insert(
+                new CodeInstruction(OpCodes.Ldarg_1) { labels = new List<Label> { skipCb2Label } },
+                new CodeInstruction(OpCodes.Isinst, typeof(Female)),
+                new CodeInstruction(OpCodes.Call, isCustomMouthActive),
+                new CodeInstruction(OpCodes.Brtrue, skipCb3Label)
+            )
+            .Advance(4);
+
+        var expressionPlay = AccessTools.Method(typeof(Human), nameof(Human.ExpressionPlay));
+
+        matcher.MatchForward(false,
+            new CodeMatch(OpCodes.Callvirt, expressionPlay)
+        );
+
+        if (matcher.IsInvalid)
+            return instructionsList;
+
+        matcher.Advance(1)
+            .Insert(new CodeInstruction(OpCodes.Nop) { labels = new List<Label> { skipCb3Label } });
+
+        return matcher.InstructionEnumeration();
     }
 }

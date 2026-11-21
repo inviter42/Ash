@@ -36,6 +36,11 @@ internal static class RandomUtils
         return (int)value;
     }
 
+    internal static T RandomFromList<T>(List<T> list) {
+        lock (Random)
+            return list[Random.Next(0, list.Count)];
+    }
+
     public static KeyValuePair<int, float[]> WeightedRandomWithChoiceDecay(float[] weights, float decay) {
         if (weights == null)
             throw new ArgumentNullException(nameof(weights));

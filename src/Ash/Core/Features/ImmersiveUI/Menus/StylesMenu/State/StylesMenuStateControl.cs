@@ -69,7 +69,7 @@ internal class StylesMenuStateControl
 
     internal void UpdateThumbnailImage(H_StyleData styleData, RawImage thumbnailRawImage) {
         var texture = StylesMenuMain.Thumbnails.ThumbnailsDictionary.GetValueOrDefaultValue(
-            styleData.id.ToLower(), null);
+            styleData.id.ToLowerInvariant(), null);
 
         if (texture == null) {
             thumbnailRawImage.enabled = false;

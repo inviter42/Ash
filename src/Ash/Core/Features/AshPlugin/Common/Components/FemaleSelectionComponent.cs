@@ -15,8 +15,8 @@ internal static class FemaleSelectionComponent
         Subtitle(ChooseFemaleSubtitle);
         Flow(
             SceneComponentRegistry.GetComponentsOfType<Female>().ToArray(),
-            (female, idx) => RadioButton(
-                female.HeroineID.ToString().ToLower().ToTitleCase(),
+            (female, _) => RadioButton(
+                female.HeroineID.ToString().ToLowerInvariant().ToTitleCase(),
                 activeFemale.heroineID == female.heroineID,
                 () => callback(female))
         );

@@ -2,7 +2,7 @@ using Ash.Core.Features.Actions;
 using H;
 using HarmonyLib;
 
-namespace Ash.Core.Features.Ahegao.Hooks.HStates._HStateInXtcAfterWait;
+namespace Ash.Core.Features.AshPlugin.Features.AhegaoFaces.Hooks.HStates._HStateInXtcAfterWait;
 
 [HarmonyPatch]
 internal class HStateInXtcAfterWaitHooks

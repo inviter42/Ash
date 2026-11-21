@@ -92,16 +92,14 @@
     <Reference Include="OneOf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\OneOf.3.0.271\lib\net35\OneOf.dll</HintPath>
     </Reference>
-    <Reference Include="PHAPI, Version=1.45.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IllusionModdingAPI.PHAPI.1.45.1\lib\net35\PHAPI.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="PHAPI, Version=1.48.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IllusionModdingAPI.PHAPI.1.48.1\lib\net35\PHAPI.dll</HintPath>
     </Reference>
-    <Reference Include="PH_ExtensibleSaveFormat, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ExtensibleSaveFormat.PlayHome.21.1.2\lib\net35\PH_ExtensibleSaveFormat.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="PH_ExtensibleSaveFormat, Version=21.1.4.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExtensibleSaveFormat.PlayHome.21.1.4.1\lib\net35\PH_ExtensibleSaveFormat.dll</HintPath>
     </Reference>
-    <Reference Include="PH_MaterialEditor, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MaterialEditor.PlayHome.5.0.0\lib\net35\PH_MaterialEditor.dll</HintPath>
+    <Reference Include="PH_MaterialEditor, Version=4.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MaterialEditor.PlayHome.4.0.4\lib\net35\PH_MaterialEditor.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -146,22 +144,25 @@
     <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_Female\FemaleHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_HExpressionData\H_ExpressionDataHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_HMembers\HMembersHooks.cs" />
-    <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_Human\HumanHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_HVisitorExpressionData\HVisitorExpressionDataHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\Hooks\_HVoice\HVoiceHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\AhegaoFaces\UI\AhegaoFacesView\AhegaoFacesView.cs" />
-    <Compile Include="Core\Features\AshPlugin\Features\AnimationControls\Hooks\_MixController\MixControllerHooks.cs" />
-    <Compile Include="Core\Features\AshPlugin\Features\AnimationControls\UI\AnimationControlsView\AnimationControlsView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\BetterPenetrationSettings\UI\BetterPenetrationSettingsView\BetterPenetrationSettingsView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\BugFixes\Hooks\_Female\FemaleHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\BugFixes\Hooks\_HMember\HMembersHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\BugFixes\Hooks\_LookAtRotator\LookAtRotatorHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\BugFixes\UI\BugFixesView\BugFixesView.cs" />
-    <Compile Include="Core\Features\AshPlugin\Features\FemaleControls\Hooks\_Female\FemaleHooks.cs" />
-    <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\GameUIControlsView\GameUIControlsView.cs" />
-    <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIAdjustments.cs" />
-    <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIManagementHelper.cs" />
-    <Compile Include="Core\Features\AshPlugin\Features\GameUIControls\UI\Helpers\InGameUIManagementHelper\InGameUIResets.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\DebuggingTesting\Hooks\_MixController\MixControllerHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\DebuggingTesting\UI\DebugView\DebugView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\FemaleSettings\Hooks\_Female\FemaleHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\FemaleSettings\UI\FemaleSettingsView\FemaleSettingsView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\HSceneCustomization\Hooks\_HState\HStateVomit.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\MaleSettings\Hooks\_RigidEmitter\RigidEmitterHooks.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\MaleSettings\UI\MaleSettingsView\MaleSettingsView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\UISettings\UI\UISettingsView\UISettingsView.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\UISettings\UI\Helpers\InGameUIManagementHelper\InGameUIAdjustments.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\UISettings\UI\Helpers\InGameUIManagementHelper\InGameUIManagementHelper.cs" />
+    <Compile Include="Core\Features\AshPlugin\Features\UISettings\UI\Helpers\InGameUIManagementHelper\InGameUIResets.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\FemaleControls\UI\FemaleControlsView\FemaleControlsView.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\HSceneCustomization\Hooks\_HMember\HMemberHooks.cs" />
     <Compile Include="Core\Features\AshPlugin\Features\HSceneCustomization\Hooks\_HState\HStateExitHooks.cs" />
@@ -354,7 +355,7 @@
   <ItemGroup>
     <Analyzer Include="..\packages\BepInEx.Analyzers.1.0.8\analyzers\dotnet\cs\BepInEx.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\BepInEx.Analyzers.1.0.8\analyzers\dotnet\cs\BepInEx.Analyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.Unity.Analyzers.1.25.0\analyzers\dotnet\cs\Microsoft.Unity.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.Unity.Analyzers.1.28.0\analyzers\dotnet\cs\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\immersive_ui_fonts" />

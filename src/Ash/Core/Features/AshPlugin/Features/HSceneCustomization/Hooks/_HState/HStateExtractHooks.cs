@@ -28,18 +28,14 @@ internal class HStateExtractHooks
         foreach (var female in females) {
             if (female.personality.spermInCntV > 0 && flag1) {
                 female.personality.spermInCntV = 0;
-                if (!Ash.PersistentSettings.DisableFemaleSpermDripAfterExtract.Value) {
-                    ParticleSystemsUtils.AdjustFemaleSpermDripParticleSystemSettings(female.dripParticleVagina);
-                    female.dripParticleVagina.Play();
-                }
+                ParticleSystemsUtils.AdjustFemaleSpermDripParticleSystemSettings(female.dripParticleVagina);
+                female.dripParticleVagina.Play();
             }
 
             if (female.personality.spermInCntA > 0 && flag2) {
                 female.personality.spermInCntA = 0;
-                if (!Ash.PersistentSettings.DisableFemaleSpermDripAfterExtract.Value) {
-                    ParticleSystemsUtils.AdjustFemaleSpermDripParticleSystemSettings(female.dripParticleAnus);
-                    female.dripParticleAnus.Play();
-                }
+                ParticleSystemsUtils.AdjustFemaleSpermDripParticleSystemSettings(female.dripParticleAnus);
+                female.dripParticleAnus.Play();
             }
         }
 

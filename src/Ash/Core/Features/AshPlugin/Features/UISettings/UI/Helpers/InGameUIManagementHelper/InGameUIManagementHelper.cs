@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using Ash.Core.Tooling.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
-using static Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper.InGameUIAdjustments;
-using static Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper.InGameUIResets;
+using static Ash.Core.Features.AshPlugin.Features.UISettings.UI.Helpers.InGameUIManagementHelper.InGameUIAdjustments;
+using static Ash.Core.Features.AshPlugin.Features.UISettings.UI.Helpers.InGameUIManagementHelper.InGameUIResets;
 
-namespace Ash.Core.Features.AshPlugin.Features.GameUIControls.UI.Helpers.InGameUIManagementHelper;
+namespace Ash.Core.Features.AshPlugin.Features.UISettings.UI.Helpers.InGameUIManagementHelper;
 
 internal static class InGameUIManagementHelper
 {

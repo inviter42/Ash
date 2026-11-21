@@ -2,7 +2,7 @@ using H;
 using HarmonyLib;
 using UnityEngine;
 
-namespace Ash.Core.Features.Ahegao.Hooks._HVoice;
+namespace Ash.Core.Features.AshPlugin.Features.AhegaoFaces.Hooks._HVoice;
 
 [HarmonyPatch]
 internal class HVoiceHooks

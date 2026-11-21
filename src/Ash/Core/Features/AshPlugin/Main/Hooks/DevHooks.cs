@@ -9,7 +9,6 @@ using Character;
 using H;
 using HarmonyLib;
 using UnityEngine;
-using Utility;
 
 namespace Ash.Core.Features.AshPlugin.Main.Hooks;
 #if DEBUG
@@ -72,6 +71,19 @@ internal class DevHooks
         return true;
     }
 */
+
+    // [HarmonyPrefix]
+    // [HarmonyPatch(typeof(AnimeLipSync), "Hold", MethodType.Setter)]
+    // // ReSharper disable once InconsistentNaming
+    // private static void Prefix(AnimeLipSync __instance, bool value) {
+    //     if (SceneTypeTracker.Scene is not H_Scene scene)
+    //         return;
+    //
+    //     if (scene.mainMembers?.GetFemale(0)?.lipSync != __instance)
+    //         return;
+    //
+    //     Ash.Logger.LogDebug($"Hold is going to be set to {value}'\n" + Environment.StackTrace);
+    // }
 
     #endregion
 
@@ -281,7 +293,7 @@ internal class DevHooks
             ExecuteRdp(keys, 0, keys.Count - 1, tolerance, ref keepFlags);
 
             // Rebuild the optimized collection based on the surviving flags
-            return keys.Where((t, i) => keepFlags[i]).ToList();
+            return keys.Where((_, i) => keepFlags[i]).ToList();
         }
 
         private static void ExecuteRdp(List<Keyframe> keys, int startIdx, int endIdx, float tolerance,

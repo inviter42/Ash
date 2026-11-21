@@ -1,4 +1,6 @@
+using Ash.Core.Features.AshPlugin.Common.Components;
 using Ash.Core.Features.AshPlugin.Main.Hooks;
+using Ash.Core.Features.AshPlugin.Main.Types;
 using Ash.Core.Tooling.SceneManagement;
 using Ash.Logging;
 using Ash.Utility.GlobalUtils;
@@ -8,28 +10,49 @@ using UnityEngine;
 using static Ash.Utility.GlobalUtils.ImGuiPrimitivesLib;
 using static Ash.Core.Features.AshPlugin.Common.Misc.CommonLabels;
 
-namespace Ash.Core.Features.AshPlugin.Features.AnimationControls.UI.AnimationControlsView;
+namespace Ash.Core.Features.AshPlugin.Features.DebuggingTesting.UI.DebugView;
 
-internal class AnimationControlsView
+internal class DebugView
 {
-    internal const string AnimationControlsViewTabLabel = "Animation Controls";
+    internal const string DebugViewTabLabel = "Debug";
 
-    private static readonly AshLogger Logger = new(LoggingSettings.LoggingModules.AnimationControls);
+    private static readonly AshLogger Logger = new(LoggingSettings.LoggingModules.DebuggingTesting);
 
+    private const string VectorTargetTitle = "Debug";
     private const string SettingsTitle = "Settings";
     private const string PlaybackDataTitle = "Playback data";
 
     private const string RemoveAnimationMinSpeedCapSubtitle = "Remove animation min speed cap:";
 
+    private const string ActivateVectorTargetSubtitle = "Activate vector target:";
+    private const string ChooseTargetTypeSubtitle = "Choose target type:";
+    private const string ChooseEyeIndexSubtitle = "Choose eye index:";
+
+    private Female ActiveFemale => ParentWindow.ActiveFemale;
+
+    private readonly HSceneWindow ParentWindow;
+
     private Vector2 ScrollPosition;
 
-    // ReSharper disable once MemberCanBeMadeStatic.Global
+    internal DebugView(HSceneWindow parentWindow) {
+        ParentWindow = parentWindow;
+    }
+
+
     internal void DrawView() {
+        if (ActiveFemale == null) {
+            GUILayout.Label("No active female.");
+            return;
+        }
+
         ScrollPosition = GUILayout.BeginScrollView(ScrollPosition, GUILayout.ExpandWidth(true),
             GUILayout.ExpandHeight(true));
 
         using (new GUILayout.VerticalScope("box", GUILayout.ExpandWidth(true))) {
-            DrawAnimationSettings();
+            FemaleSelectionComponent.Component(ActiveFemale, female => ParentWindow.ActiveFemale = female);
+
+            DrawVectorTargetSection(ActiveFemale);
+            DrawAnimationSettingsSection();
             DrawAnimationControlsSection();
             DrawAnimationBakingSection();
         }
@@ -37,7 +60,16 @@ internal class AnimationControlsView
         GUILayout.EndScrollView();
     }
 
-    private void DrawAnimationSettings() {
+
+    private void DrawVectorTargetSection(Female female) {
+        GUILayout.Space(20);
+
+        Title(VectorTargetTitle);
+
+        DrawSetVectorTarget(female);
+    }
+
+    private void DrawAnimationSettingsSection() {
         GUILayout.Space(20);
 
         Title(SettingsTitle);
@@ -63,6 +95,98 @@ internal class AnimationControlsView
     }
 
 
+    /// <summary>
+    /// Vector target debugging section
+    /// </summary>
+    private static bool IsVectorTargetActive;
+
+    private static TargetTypes TargetType = TargetTypes.Neck;
+
+    private static Vector3 NeckVectorTarget = Vector3.zero;
+    private static Vector3 Eye0VectorTarget = Vector3.zero;
+    private static Vector3 Eye1VectorTarget = Vector3.zero;
+
+    private static int EyeIndex;
+
+    private enum TargetTypes
+    {
+        Neck,
+        Eyes,
+    }
+
+    private void DrawSetVectorTarget(Female female) {
+        Subtitle(ActivateVectorTargetSubtitle);
+        Flow(
+            new[] { true, false },
+            (state, _) => RadioButton(
+                ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
+                IsVectorTargetActive == state,
+                () => IsVectorTargetActive = state
+            )
+        );
+
+        if (!IsVectorTargetActive)
+            return;
+
+        Subtitle(ChooseTargetTypeSubtitle);
+        Flow(
+            new[] { TargetTypes.Neck, TargetTypes.Eyes },
+            (state, _) => RadioButton(
+                state == TargetTypes.Neck ? "Neck" : "Eyes",
+                TargetType == state,
+                () => TargetType = state)
+        );
+
+        if (TargetType == TargetTypes.Eyes) {
+            Subtitle(ChooseEyeIndexSubtitle);
+            Flow(
+                new[] { 0, 1 },
+                (state, idx) => RadioButton(
+                    idx == 0 ? "Left" : "Right",
+                    EyeIndex == state,
+                    () => EyeIndex = state)
+            );
+        }
+
+        ref var activeVector = ref TargetType == TargetTypes.Neck
+            ? ref NeckVectorTarget
+            : ref EyeIndex == 0
+                ? ref Eye0VectorTarget
+                : ref Eye1VectorTarget;
+
+        GUILayout.Label($"X {activeVector.x:F2}");
+        activeVector = activeVector with {
+            x = GUILayout.HorizontalSlider(activeVector.x, -180f, 180f)
+        };
+
+        GUILayout.Label($"Y {activeVector.y:F2}");
+        activeVector = activeVector with {
+            y = GUILayout.HorizontalSlider(activeVector.y, -180f, 180f)
+        };
+
+        GUILayout.Label($"Z {activeVector.z:F2}");
+        activeVector = activeVector with {
+            z = GUILayout.HorizontalSlider(activeVector.z, -180f, 180f)
+        };
+
+        if (TargetType == TargetTypes.Neck) {
+            female.ChangeNeckLook(LookAtRotator.TYPE.TARGET, activeVector, false);
+        } else {
+            female.eyeLookType = female.eyeLook.calcType = LookAtRotator.TYPE.NO;
+            female.eyeLookTarget = female.eyeLook.target = null;
+            female.eyeLookForce = false;
+            female.eyeLook.noRate = 0f;
+            female.eyeLook.targetPos = Vector3.zero;
+
+            female.eyeLook.rotateBones[EyeIndex].bone.localRotation = Quaternion.Euler(activeVector);
+        }
+    }
+
+
+    /// <summary>
+    /// Animation baking
+    /// </summary>
+    ///
     private void DrawRemoveAnimationMinSpeedCap() {
         Subtitle(RemoveAnimationMinSpeedCapSubtitle);
         Flow(

@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using Ash.Core.Features.Actions;
 using Ash.Core.Features.AshPlugin.Common.Components;
-using Ash.Core.Features.AshPlugin.Features.FemaleControls.Hooks._Female;
 using Ash.Core.Features.AshPlugin.Main.Types;
-#if DEBUG
-using Ash.Core.Tooling.SceneManagement;
-#endif
 using Ash.Logging;
 using Ash.Utility.GlobalUtils;
 using UnityEngine;
@@ -17,29 +13,23 @@ namespace Ash.Core.Features.AshPlugin.Features.FemaleControls.UI.FemaleControlsV
 
 internal class FemaleControlsView
 {
-    internal const string HSceneControlsViewTabLabel = "Female Controls";
+    internal const string FemaleControlsViewTabLabel = "Female Controls";
 
-    private static readonly AshLogger Logger = new(LoggingSettings.LoggingModules.HSceneControls);
+    private static readonly AshLogger Logger = new(LoggingSettings.LoggingModules.FemaleControls);
 
     private const string NeckAndEyesControlsTitle = "Neck and Eyes controls";
     private const string FluidsControlsTitle = "Fluids controls";
     private const string ExpressionControlsTitle = "Expression controls";
-    private const string GlobalSettingsTitle = "Global settings";
 
     private const string FluidsControlsSubtitle = "Fluids Controls";
     private const string RemoveSpermButtonLabel = "Remove sperm";
     private const string ToggleVirginBloodButtonLabel = "Toggle blood";
     private const string FemaleNeckTargetLabel = "Female neck follows:";
     private const string FemaleLookTargetLabel = "Female eyes follow:";
-    private const string ApplyQuaternionCalculationForLarLabel = "Use quaternion LookAtRotator calculation:";
-    private const string NeckRotatorOverridesSubtitle = "Neck LookAtRotator overrides:";
-    private const string EyesRotatorOverridesSubtitle = "Eyes LookAtRotator overrides:";
 
     private Female ActiveFemale => ParentWindow.ActiveFemale;
-    private H_Scene HScene => ParentWindow.HScene;
 
     private readonly HSceneWindow ParentWindow;
-
 
     private Vector2 ScrollPosition;
 
@@ -50,8 +40,7 @@ internal class FemaleControlsView
     // ReSharper disable once MemberCanBeMadeStatic.Global
     internal void DrawView() {
         if (ActiveFemale == null) {
-            Logger.LogWarning("Female is null");
-            Logger.LogWarning(Environment.StackTrace);
+            GUILayout.Label("No active female.");
             return;
         }
 
@@ -64,7 +53,6 @@ internal class FemaleControlsView
             DrawFluidsControlsSection(ActiveFemale);
             DrawNeckAndEyesControlsSection(ActiveFemale);
             DrawExpressionControlsSection(ActiveFemale);
-            DrawGlobalSettingsSection(ActiveFemale);
         }
 
         GUILayout.EndScrollView();
@@ -106,27 +94,6 @@ internal class FemaleControlsView
         GUILayout.Space(22);
     }
 
-    private void DrawGlobalSettingsSection(Female female) {
-        GUILayout.Space(20);
-
-        Title(GlobalSettingsTitle);
-
-        DrawApplyQuaternionCalculationForLar();
-
-        GUILayout.Space(12);
-
-        DrawNeckRotatorOverrides();
-
-        GUILayout.Space(12);
-
-        DrawEyesRotatorOverrides();
-#if DEBUG
-        GUILayout.Space(12);
-
-        DrawSetVectorTarget(female);
-#endif
-    }
-
 
     /// <summary>
     /// Fluids control
@@ -154,17 +121,34 @@ internal class FemaleControlsView
     /// <summary>
     /// Neck and Eyes controls
     /// </summary>
-    private readonly LookAtRotator.TYPE[] MainFemaleNeckTargets = { LookAtRotator.TYPE.NO, LookAtRotator.TYPE.TARGET,
-        LookAtRotator.TYPE.HOLD };
+    private readonly LookAtRotator.TYPE[] MainFemaleNeckTargets = {
+        LookAtRotator.TYPE.NO,
+        LookAtRotator.TYPE.TARGET,
+        LookAtRotator.TYPE.HOLD
+    };
 
-    private readonly LookAtRotator.TYPE[] MainFemaleEyesTargets = { LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.NO,
-        LookAtRotator.TYPE.FORWARD, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD };
+    private readonly LookAtRotator.TYPE[] MainFemaleEyesTargets = {
+        LookAtRotator.TYPE.TARGET,
+        LookAtRotator.TYPE.NO,
+        LookAtRotator.TYPE.FORWARD,
+        LookAtRotator.TYPE.TARGET,
+        LookAtRotator.TYPE.HOLD
+    };
 
-    private readonly LookAtRotator.TYPE[] VisitorFemaleNeckTargets = { LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.NO,
-        LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD };
+    private readonly LookAtRotator.TYPE[] VisitorFemaleNeckTargets = {
+        LookAtRotator.TYPE.TARGET,
+        LookAtRotator.TYPE.NO,
+        LookAtRotator.TYPE.TARGET,
+        LookAtRotator.TYPE.HOLD
+    };
 
-    private readonly LookAtRotator.TYPE[] VisitorFemaleEyesTargets = { LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.NO,
-        LookAtRotator.TYPE.FORWARD, LookAtRotator.TYPE.TARGET, LookAtRotator.TYPE.HOLD };
+    private readonly LookAtRotator.TYPE[] VisitorFemaleEyesTargets = {
+        LookAtRotator.TYPE.TARGET,
+        LookAtRotator.TYPE.NO,
+        LookAtRotator.TYPE.FORWARD,
+        LookAtRotator.TYPE.TARGET,
+        LookAtRotator.TYPE.HOLD
+    };
 
     private static string GetLookAtRotatorNeckLabel(LookAtRotator.TYPE type, int index) {
         // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -246,6 +230,8 @@ internal class FemaleControlsView
     private void DrawEyeLookTarget(Female female) {
         Subtitle(FemaleLookTargetLabel);
 
+        var isVisitor = !SceneUtils.IsMainFemale(female);
+
         // ReSharper disable once ConvertToLocalFunction
         Func<LookAtRotator.TYPE, int, bool> isActiveCheck = (type, btnIndex) => {
             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -278,7 +264,7 @@ internal class FemaleControlsView
                 case LookAtRotator.TYPE.TARGET:
                 {
                     var target = idx == 0
-                        ? SceneUtils.GetVisitorDefaultLookTarget()
+                        ? isVisitor ? SceneUtils.GetVisitorDefaultLookTarget() : null
                         : SceneUtils.GetCameraTransform();
 
                     female.ChangeEyeLook(type, target, false);
@@ -286,8 +272,6 @@ internal class FemaleControlsView
                 }
             }
         };
-
-        var isVisitor = !SceneUtils.IsMainFemale(female);
 
         var model = isVisitor
             ? VisitorFemaleEyesTargets
@@ -303,220 +287,6 @@ internal class FemaleControlsView
         );
     }
 
-
-    /// <summary>
-    /// LAR settings
-    /// </summary>
-    private void DrawApplyQuaternionCalculationForLar() {
-        Subtitle(ApplyQuaternionCalculationForLarLabel);
-        Info("ⓘ Improves target following for neck and eyes for higher rotator values.");
-        Flow(
-            new[] { true, false },
-            (state, _) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                Ash.PersistentSettings.ApplyNewLarCalculationLogic.Value == state,
-                () => Ash.PersistentSettings.ApplyNewLarCalculationLogic.Value = state)
-        );
-    }
-
-    private void DrawNeckRotatorOverrides() {
-        Subtitle(NeckRotatorOverridesSubtitle);
-        Info("ⓘ Overrides values for how far neck can turn. Recommended to use with Quaternion LookAtRotator calculation.");
-        Flow(
-            new[] { true, false },
-            (state, _) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                Ash.PersistentSettings.OverrideNeckRotatorSettings.Value == state,
-                () => {
-                    if (state) FemaleHooks.InitNeckLarForAllFemales();
-                    else FemaleHooks.ResetNeckLarForAllFemales();
-
-                    Ash.PersistentSettings.OverrideNeckRotatorSettings.Value = state;
-                })
-        );
-
-        if (!Ash.PersistentSettings.OverrideNeckRotatorSettings.Value)
-            return;
-
-        var dirty = false;
-
-        var neckRotatorMaxUpValue = Ash.PersistentSettings.NeckRotatorMaxUpValue.Value;
-        GUILayout.Label($"Neck max up {Ash.PersistentSettings.NeckRotatorMaxUpValue.Value:F2}");
-        Ash.PersistentSettings.NeckRotatorMaxUpValue.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.NeckRotatorMaxUpValue.Value, 0f, 180f);
-
-        if (!Mathf.Approximately(Ash.PersistentSettings.NeckRotatorMaxUpValue.Value, neckRotatorMaxUpValue))
-            dirty = true;
-
-        var neckRotatorMaxDownValue = Ash.PersistentSettings.NeckRotatorMaxDownValue.Value;
-        GUILayout.Label($"Neck max down {Ash.PersistentSettings.NeckRotatorMaxDownValue.Value:F2}");
-        Ash.PersistentSettings.NeckRotatorMaxDownValue.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.NeckRotatorMaxDownValue.Value, 0f, 180f);
-
-        if (!Mathf.Approximately(Ash.PersistentSettings.NeckRotatorMaxDownValue.Value, neckRotatorMaxDownValue))
-            dirty = true;
-
-        var neckBoneMaxYawMagnitudeValue = Ash.PersistentSettings.NeckBoneMaxYawMagnitudeValue.Value;
-        GUILayout.Label($"Neck yaw magnitude {Ash.PersistentSettings.NeckBoneMaxYawMagnitudeValue.Value:F2}");
-        Ash.PersistentSettings.NeckBoneMaxYawMagnitudeValue.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.NeckBoneMaxYawMagnitudeValue.Value, 0f, 180f);
-
-        if (!Mathf.Approximately(Ash.PersistentSettings.NeckBoneMaxYawMagnitudeValue.Value, neckBoneMaxYawMagnitudeValue))
-            dirty = true;
-
-        var headBoneMaxYawMagnitudeValue = Ash.PersistentSettings.HeadBoneMaxYawMagnitudeValue.Value;
-        GUILayout.Label($"Head yaw magnitude {Ash.PersistentSettings.HeadBoneMaxYawMagnitudeValue.Value:F2}");
-        Ash.PersistentSettings.HeadBoneMaxYawMagnitudeValue.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.HeadBoneMaxYawMagnitudeValue.Value, 0f, 180f);
-
-        if (!Mathf.Approximately(Ash.PersistentSettings.HeadBoneMaxYawMagnitudeValue.Value, headBoneMaxYawMagnitudeValue))
-            dirty = true;
-
-        if (!dirty)
-            return;
-
-        FemaleHooks.InitNeckLarForAllFemales();
-    }
-
-    private void DrawEyesRotatorOverrides() {
-        Subtitle(EyesRotatorOverridesSubtitle);
-        Info("ⓘ Overrides values for how far eyes can turn. Recommended to use with Quaternion LookAtRotator calculation.");
-        Flow(
-            new[] { true, false },
-            (state, _) => RadioButton(ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                Ash.PersistentSettings.OverrideEyesRotatorSettings.Value == state,
-                () => {
-                    if (state) FemaleHooks.InitEyesLarForAllFemales();
-                    else FemaleHooks.ResetEyesLarForAllFemales();
-
-                    Ash.PersistentSettings.OverrideEyesRotatorSettings.Value = state;
-                })
-        );
-
-        if (!Ash.PersistentSettings.OverrideEyesRotatorSettings.Value)
-            return;
-
-        var dirty = false;
-
-        var eyesRotatorMaxUpValue = Ash.PersistentSettings.EyesRotatorMaxUpValue.Value;
-        GUILayout.Label($"Eyes max up {Ash.PersistentSettings.EyesRotatorMaxUpValue.Value:F2}");
-        Ash.PersistentSettings.EyesRotatorMaxUpValue.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.EyesRotatorMaxUpValue.Value, 0f, 180f);
-
-        if (!Mathf.Approximately(Ash.PersistentSettings.EyesRotatorMaxUpValue.Value, eyesRotatorMaxUpValue))
-            dirty = true;
-
-        var eyesRotatorMaxDownValue = Ash.PersistentSettings.EyesRotatorMaxDownValue.Value;
-        GUILayout.Label($"Eyes max down {Ash.PersistentSettings.EyesRotatorMaxDownValue.Value:F2}");
-        Ash.PersistentSettings.EyesRotatorMaxDownValue.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.EyesRotatorMaxDownValue.Value, 0f, 180f);
-
-        if (!Mathf.Approximately(Ash.PersistentSettings.EyesRotatorMaxDownValue.Value, eyesRotatorMaxDownValue))
-            dirty = true;
-
-        var eyesBoneMaxPositiveYawValue = Ash.PersistentSettings.EyesBoneMaxPositiveYawValue.Value;
-        GUILayout.Label($"Eyes max positive yaw {Ash.PersistentSettings.EyesBoneMaxPositiveYawValue.Value:F2}");
-        Ash.PersistentSettings.EyesBoneMaxPositiveYawValue.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.EyesBoneMaxPositiveYawValue.Value, 0f, 180f);
-
-        if (!Mathf.Approximately(Ash.PersistentSettings.EyesBoneMaxPositiveYawValue.Value, eyesBoneMaxPositiveYawValue))
-            dirty = true;
-
-        var eyesBoneMaxNegativeYawValue = Ash.PersistentSettings.EyesBoneMaxNegativeYawValue.Value;
-        GUILayout.Label($"Eyes max negative yaw {Ash.PersistentSettings.EyesBoneMaxNegativeYawValue.Value:F2}");
-        Ash.PersistentSettings.EyesBoneMaxNegativeYawValue.Value = GUILayout.HorizontalSlider(Ash.PersistentSettings.EyesBoneMaxNegativeYawValue.Value, 0f, 180f);
-
-        if (!Mathf.Approximately(Ash.PersistentSettings.EyesBoneMaxNegativeYawValue.Value, eyesBoneMaxNegativeYawValue))
-            dirty = true;
-
-        if (!dirty)
-            return;
-
-        FemaleHooks.InitEyesLarForAllFemales();
-    }
-
-    #region VectorTargeting
-        #if DEBUG
-            /// <summary>
-            /// Vector target debugging section
-            /// </summary>
-            private static bool IsVectorTargetActive;
-
-            private static TargetTypes TargetType = TargetTypes.Neck;
-
-            private static Vector3 NeckVectorTarget = Vector3.zero;
-            private static Vector3 Eye0VectorTarget = Vector3.zero;
-            private static Vector3 Eye1VectorTarget = Vector3.zero;
-
-            private static int EyeIndex;
-
-            private enum TargetTypes
-            {
-                Neck,
-                Eyes,
-            }
-
-
-            private void DrawSetVectorTarget(Female female) {
-                Subtitle("Activate vector target:");
-                Flow(
-                    new[] { true, false },
-                    (state, idx) => RadioButton(
-                        ToggleStateLabels.GetValueOrDefaultValue(state, ErrorLabel),
-                        IsVectorTargetActive == state,
-                        () => IsVectorTargetActive = state
-                    )
-                );
-
-                if (!IsVectorTargetActive)
-                    return;
-
-                Subtitle("Choose target type:");
-                Flow(
-                    new[] { TargetTypes.Neck, TargetTypes.Eyes },
-                    (state, idx) => RadioButton(
-                        state == TargetTypes.Neck ? "Neck" : "Eyes",
-                        TargetType == state,
-                        () => TargetType = state)
-                );
-
-                if (TargetType == TargetTypes.Eyes) {
-                    Subtitle("Choose eye index:");
-                    Flow(
-                        new[] { 0, 1 },
-                        (state, idx) => RadioButton(
-                            idx == 0 ? "Left" : "Right",
-                            EyeIndex == state,
-                            () => EyeIndex = state)
-                    );
-                }
-
-                ref var activeVector = ref TargetType == TargetTypes.Neck
-                    ? ref NeckVectorTarget
-                    : ref EyeIndex == 0
-                        ? ref Eye0VectorTarget
-                        : ref Eye1VectorTarget;
-
-                GUILayout.Label($"X {activeVector.x:F2}");
-                activeVector = activeVector with {
-                    x = GUILayout.HorizontalSlider(activeVector.x, -180f, 180f)
-                };
-
-                GUILayout.Label($"Y {activeVector.y:F2}");
-                activeVector = activeVector with {
-                    y = GUILayout.HorizontalSlider(activeVector.y, -180f, 180f)
-                };
-
-                GUILayout.Label($"Z {activeVector.z:F2}");
-                activeVector = activeVector with {
-                    z = GUILayout.HorizontalSlider(activeVector.z, -180f, 180f)
-                };
-
-                if (TargetType == TargetTypes.Neck) {
-                    female.ChangeNeckLook(LookAtRotator.TYPE.TARGET, activeVector, false);
-                } else {
-                    female.eyeLookType = female.eyeLook.calcType = LookAtRotator.TYPE.NO;
-                    female.eyeLookTarget = female.eyeLook.target = null;
-                    female.eyeLookForce = false;
-                    female.eyeLook.noRate = 0f;
-                    female.eyeLook.targetPos = Vector3.zero;
-
-                    female.eyeLook.rotateBones[EyeIndex].bone.localRotation = Quaternion.Euler(activeVector);
-                }
-            }
-        #endif
-    #endregion
 
     /// <summary>
     /// Expression controls

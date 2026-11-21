@@ -1,9 +1,11 @@
 using H;
 using HarmonyLib;
 
-namespace Ash.Core.Features.AshPlugin.Features.AnimationControls.Hooks._MixController;
+namespace Ash.Core.Features.AshPlugin.Features.DebuggingTesting.Hooks._MixController;
 
+#if DEBUG
 [HarmonyPatch]
+#endif
 internal class MixControllerHooks
 {
     [HarmonyPostfix]
