@@ -135,6 +135,7 @@
         <Compile Include="Core\BetterApplicables\SharedHooks\_Female\FemaleHooks.cs" />
         <Compile Include="Core\BetterApplicables\SharedHooks\_Head\HeadHooks.cs" />
         <Compile Include="Core\BetterApplicables\SharedHooks\_Male\MaleHooks.cs" />
+        <Compile Include="Core\BetterApplicables\SharedHooks\_Studio\StudioHooks.cs" />
         <Compile Include="Core\BetterApplicables\SharedUtils\ApplicablesTextureUtils.cs" />
         <Compile Include="GlobalUtils\AssetBundleUtils.cs" />
         <Compile Include="GlobalUtils\DictionaryUtils.cs" />

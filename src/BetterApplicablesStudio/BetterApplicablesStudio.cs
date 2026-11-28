@@ -5,6 +5,7 @@ using BetterApplicablesStudio.Core.BetterApplicables.BetterCheekShadows.Managers
 using BetterApplicablesStudio.Core.BetterApplicables.BetterEyeShadows.Managers;
 using BetterApplicablesStudio.Core.BetterApplicables.BetterMoles.Managers;
 using BetterApplicablesStudio.Core.BetterApplicables.BetterTattoos.Managers;
+using BetterApplicablesStudio.Core.BetterApplicables.SharedHooks._Studio;
 using HarmonyLib;
 using KKAPI;
 using UnityEngine;
@@ -21,7 +22,7 @@ public class BetterApplicablesStudio : BaseUnityPlugin
     // ReSharper disable once MemberCanBePrivate.Global
     public const string GUID = "inviter42.betterapplicablesstudio";
     public const string AshGuid = "inviter42.anotherscenehelper";
-    public const string Version = "1.1.2.1";
+    public const string Version = "1.1.3";
 
     internal new static ManualLogSource Logger;
 
@@ -30,9 +31,14 @@ public class BetterApplicablesStudio : BaseUnityPlugin
     internal static BetterCheekShadowDataManager BetterCheekShadowDataManager;
     internal static BetterMoleDataManager BetterMoleDataManager;
 
+    internal static bool StudioSceneIsBeingLoaded { get; private set; }
+    internal static bool StudioSceneIsBeingImported { get; private set; }
+
     private static GameObject BetterApplicablesStudioGameObj;
 
     private static Harmony Harmony;
+
+
 
     private void Awake() {
         if (Application.productName != "PlayHomeStudio") {
@@ -41,6 +47,19 @@ public class BetterApplicablesStudio : BaseUnityPlugin
         }
 
         InitializePlugin();
+
+        StudioHooks.StudioSceneStartedLoading += OnStudioSceneStartedLoading;
+        StudioHooks.StudioSceneFinishedLoading += OnStudioSceneFinishedLoading;
+        StudioHooks.StudioSceneStartedImporting += OnStudioSceneStartedImporting;
+        StudioHooks.StudioSceneFinishedImporting += OnStudioSceneFinishedImporting;
+    }
+
+    private void OnDestroy() {
+
+        StudioHooks.StudioSceneStartedLoading -= OnStudioSceneStartedLoading;
+        StudioHooks.StudioSceneFinishedLoading -= OnStudioSceneFinishedLoading;
+        StudioHooks.StudioSceneStartedImporting -= OnStudioSceneStartedImporting;
+        StudioHooks.StudioSceneFinishedImporting -= OnStudioSceneFinishedImporting;
     }
 
     private void InitializePlugin() {
@@ -69,5 +88,25 @@ public class BetterApplicablesStudio : BaseUnityPlugin
         BetterMoleDataManager = BetterApplicablesStudioGameObj.GetComponent<BetterMoleDataManager>();
 
         DontDestroyOnLoad(BetterApplicablesStudioGameObj);
+    }
+
+    private static void OnStudioSceneStartedLoading() {
+        Logger.LogDebug("OnStudioSceneStartedLoading");
+        StudioSceneIsBeingLoaded = true;
+    }
+
+    private static void OnStudioSceneFinishedLoading() {
+        Logger.LogDebug($"OnStudioSceneFinishedLoading");
+        StudioSceneIsBeingLoaded = false;
+    }
+
+    private static void OnStudioSceneStartedImporting() {
+        Logger.LogDebug("OnStudioSceneStartedImporting");
+        StudioSceneIsBeingImported = true;
+    }
+
+    private static void OnStudioSceneFinishedImporting() {
+        Logger.LogDebug($"OnStudioSceneFinishedImporting");
+        StudioSceneIsBeingImported = false;
     }
 }
