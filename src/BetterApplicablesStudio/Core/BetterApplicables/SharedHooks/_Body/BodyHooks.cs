@@ -50,7 +50,7 @@ internal class BodyHooks
         mat.SetFloat(SunburnA, num);
 
         ApplicablesTextureUtils.ConfigureMaterialSlotForMultiTexture(
-            BetterApplicablesStudio.BetterTattooDataManager.GetSerializableTextureDataList(Part.Body),
+            BetterApplicablesStudio.BetterTattooDataManager.GetSerializableTextureDataList(__instance.human.customParam, Part.Body),
             __instance,
             Part.Body,
             BetterCategory.Tattoo,
@@ -91,7 +91,7 @@ internal class BodyHooks
         mat.SetFloat(OffsetV, body.skinColor.offset_v);
 
         ApplicablesTextureUtils.ConfigureMaterialSlotForMultiTexture(
-            BetterApplicablesStudio.BetterTattooDataManager.GetSerializableTextureDataList(Part.Body),
+            BetterApplicablesStudio.BetterTattooDataManager.GetSerializableTextureDataList(__instance.human.customParam, Part.Body),
             __instance,
             Part.Body,
             BetterCategory.Tattoo,

@@ -52,7 +52,7 @@ internal class HeadHooks
         mat.SetFloat(OffsetV, __instance.human.customParam.body.skinColor.offset_v);
 
         ApplicablesTextureUtils.ConfigureMaterialSlotForMultiTexture(
-            BetterApplicablesStudio.BetterCheekShadowDataManager.GetSerializableTextureDataList(Part.Head),
+            BetterApplicablesStudio.BetterCheekShadowDataManager.GetSerializableTextureDataList(__instance.human.customParam, Part.Head),
             __instance,
             Part.Head,
             BetterCategory.CheekShadow,
@@ -63,7 +63,7 @@ internal class HeadHooks
         );
 
         ApplicablesTextureUtils.ConfigureMaterialSlotForMultiTexture(
-            BetterApplicablesStudio.BetterEyeShadowDataManager.GetSerializableTextureDataList(Part.Head),
+            BetterApplicablesStudio.BetterEyeShadowDataManager.GetSerializableTextureDataList(__instance.human.customParam, Part.Head),
             __instance,
             Part.Head,
             BetterCategory.EyeShadow,
@@ -79,7 +79,7 @@ internal class HeadHooks
         mat.SetColor(LipColor, lipColor);
 
         ApplicablesTextureUtils.ConfigureMaterialSlotForMultiTexture(
-            BetterApplicablesStudio.BetterMoleDataManager.GetSerializableTextureDataList(Part.Head),
+            BetterApplicablesStudio.BetterMoleDataManager.GetSerializableTextureDataList(__instance.human.customParam, Part.Head),
             __instance,
             Part.Head,
             BetterCategory.Mole,
@@ -90,7 +90,7 @@ internal class HeadHooks
         );
 
         ApplicablesTextureUtils.ConfigureMaterialSlotForMultiTexture(
-            BetterApplicablesStudio.BetterTattooDataManager.GetSerializableTextureDataList(Part.Head),
+            BetterApplicablesStudio.BetterTattooDataManager.GetSerializableTextureDataList(__instance.human.customParam, Part.Head),
             __instance,
             Part.Head,
             BetterCategory.Tattoo,
@@ -147,7 +147,7 @@ internal class HeadHooks
         mat.SetTexture(TattooTex, __instance.tattooTex);
 
         ApplicablesTextureUtils.ConfigureMaterialSlotForMultiTexture(
-            BetterApplicablesStudio.BetterTattooDataManager.GetSerializableTextureDataList(Part.Head),
+            BetterApplicablesStudio.BetterTattooDataManager.GetSerializableTextureDataList(__instance.human.customParam, Part.Head),
             __instance,
             Part.Head,
             BetterCategory.Tattoo,

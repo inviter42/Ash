@@ -6,13 +6,12 @@ namespace BetterApplicablesStudio.Core.BetterApplicables.SharedHooks._Female;
 [HarmonyPatch]
 internal class FemaleHooks
 {
-    internal static event Action<Female> FemaleIsBeingApplied;
+    internal static event Action<Female> FemaleIsAwaken;
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(Female), nameof(Female.Apply))]
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(Female), nameof(Female.Awake))]
     // ReSharper disable once InconsistentNaming
-    internal static bool FemaleApplyPrefix(Female __instance) {
-        FemaleIsBeingApplied?.Invoke(__instance);
-        return true;
+    internal static void FemaleAwakePostfix(Female __instance) {
+        FemaleIsAwaken?.Invoke(__instance);
     }
 }
